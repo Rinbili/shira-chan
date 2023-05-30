@@ -16,6 +16,7 @@ func main() {
 		entgql.WithSchemaGenerator(),
 		entgql.WithSchemaPath("./ent.graphql"),
 		entgql.WithConfigPath("./gqlgen.yml"),
+		entgql.WithWhereInputs(true),
 	)
 
 	if err != nil {

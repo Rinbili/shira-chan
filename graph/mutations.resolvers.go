@@ -9,30 +9,26 @@ import (
 	"shira-chan-dev/ent"
 )
 
-//// CreateUser is the resolver for the createUser field.
-//func (r *mutationResolver) CreateUser(ctx context.Context, input ent.CreateUserInput) (*ent.User, error) {
-//	return r.client.User.Create().SetInput(input).Save(ctx)
-//}
-
-func (mutationResolver) CreateUser(ctx context.Context, input ent.CreateUserInput) (*ent.User, error) {
+// CreateUser is the resolver for the createUser field.
+func (r *mutationResolver) CreateUser(ctx context.Context, input ent.CreateUserInput) (*ent.User, error) {
 	client := ent.FromContext(ctx)
 	return client.User.Create().SetInput(input).Save(ctx)
 }
 
 // CreateOrder is the resolver for the createOrder field.
-func (mutationResolver) CreateOrder(ctx context.Context, input ent.CreateOrderInput) (*ent.Order, error) {
+func (r *mutationResolver) CreateOrder(ctx context.Context, input ent.CreateOrderInput) (*ent.Order, error) {
 	client := ent.FromContext(ctx)
 	return client.Order.Create().SetInput(input).Save(ctx)
 }
 
 // UpdateUser is the resolver for the updateUser field.
-func (mutationResolver) UpdateUser(ctx context.Context, id int, input ent.UpdateUserInput) (*ent.User, error) {
+func (r *mutationResolver) UpdateUser(ctx context.Context, id int, input ent.UpdateUserInput) (*ent.User, error) {
 	client := ent.FromContext(ctx)
 	return client.User.UpdateOneID(id).SetInput(input).Save(ctx)
 }
 
 // UpdateOrder is the resolver for the updateOrder field.
-func (mutationResolver) UpdateOrder(ctx context.Context, id int, input ent.UpdateOrderInput) (*ent.Order, error) {
+func (r *mutationResolver) UpdateOrder(ctx context.Context, id int, input ent.UpdateOrderInput) (*ent.Order, error) {
 	client := ent.FromContext(ctx)
 	return client.Order.UpdateOneID(id).SetInput(input).Save(ctx)
 }

@@ -51,7 +51,7 @@ func (o *OrderQuery) collectField(ctx context.Context, opCtx *graphql.OperationC
 				path  = append(path, alias)
 				query = (&UserClient{config: o.config}).Query()
 			)
-			args := newUserPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newUserPaginateArgs(fieldArgs(ctx, new(UserWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -235,6 +235,9 @@ func newOrderPaginateArgs(rv map[string]any) *orderPaginateArgs {
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*OrderWhereInput); ok {
+		args.opts = append(args.opts, WithOrderFilter(v.Filter))
+	}
 	return args
 }
 
@@ -265,7 +268,7 @@ func (u *UserQuery) collectField(ctx context.Context, opCtx *graphql.OperationCo
 				path  = append(path, alias)
 				query = (&OrderClient{config: u.config}).Query()
 			)
-			args := newOrderPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newOrderPaginateArgs(fieldArgs(ctx, new(OrderWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -349,7 +352,7 @@ func (u *UserQuery) collectField(ctx context.Context, opCtx *graphql.OperationCo
 				path  = append(path, alias)
 				query = (&OrderClient{config: u.config}).Query()
 			)
-			args := newOrderPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newOrderPaginateArgs(fieldArgs(ctx, new(OrderWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -527,6 +530,9 @@ func newUserPaginateArgs(rv map[string]any) *userPaginateArgs {
 				args.opts = append(args.opts, WithUserOrder(v))
 			}
 		}
+	}
+	if v, ok := rv[whereField].(*UserWhereInput); ok {
+		args.opts = append(args.opts, WithUserFilter(v.Filter))
 	}
 	return args
 }

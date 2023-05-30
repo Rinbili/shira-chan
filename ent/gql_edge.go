@@ -17,10 +17,11 @@ func (o *Order) Requester(ctx context.Context) (*User, error) {
 }
 
 func (o *Order) Receiver(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *UserOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *UserOrder, where *UserWhereInput,
 ) (*UserConnection, error) {
 	opts := []UserPaginateOption{
 		WithUserOrder(orderBy),
+		WithUserFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := o.Edges.totalCount[1][alias]
@@ -37,10 +38,11 @@ func (o *Order) Receiver(
 }
 
 func (u *User) Requested(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *OrderOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *OrderOrder, where *OrderWhereInput,
 ) (*OrderConnection, error) {
 	opts := []OrderPaginateOption{
 		WithOrderOrder(orderBy),
+		WithOrderFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := u.Edges.totalCount[0][alias]
@@ -57,10 +59,11 @@ func (u *User) Requested(
 }
 
 func (u *User) Received(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *OrderOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *OrderOrder, where *OrderWhereInput,
 ) (*OrderConnection, error) {
 	opts := []OrderPaginateOption{
 		WithOrderOrder(orderBy),
+		WithOrderFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := u.Edges.totalCount[1][alias]

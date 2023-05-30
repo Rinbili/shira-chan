@@ -5,3 +5,7 @@ type Mutation {
     updateUser(id: ID!, input: UpdateUserInput!): User
     updateOrder(id: ID!, input: UpdateOrderInput!): Order
 }
+
+extend input UserWhereInput {
+    isCompleted: Boolean
+}

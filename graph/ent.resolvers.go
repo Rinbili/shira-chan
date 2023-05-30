@@ -22,20 +22,22 @@ func (r *queryResolver) Nodes(ctx context.Context, ids []int) ([]ent.Noder, erro
 }
 
 // Orders is the resolver for the orders field.
-func (r *queryResolver) Orders(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.OrderOrder) (*ent.OrderConnection, error) {
+func (r *queryResolver) Orders(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.OrderOrder, where *ent.OrderWhereInput) (*ent.OrderConnection, error) {
 	return r.client.Order.
 		Query().
 		Paginate(ctx, after, first, before, last,
 			ent.WithOrderOrder(orderBy),
+			ent.WithOrderFilter(where.Filter),
 		)
 }
 
 // Users is the resolver for the users field.
-func (r *queryResolver) Users(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.UserOrder) (*ent.UserConnection, error) {
+func (r *queryResolver) Users(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.UserOrder, where *ent.UserWhereInput) (*ent.UserConnection, error) {
 	return r.client.User.
 		Query().
 		Paginate(ctx, after, first, before, last,
 			ent.WithUserOrder(orderBy),
+			ent.WithUserFilter(where.Filter),
 		)
 }
 
