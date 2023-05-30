@@ -142,19 +142,19 @@ func (oc *OrderCreate) SetRequester(u *User) *OrderCreate {
 	return oc.SetRequesterID(u.ID)
 }
 
-// AddReceifeIDs adds the "receives" edge to the User entity by IDs.
-func (oc *OrderCreate) AddReceifeIDs(ids ...int) *OrderCreate {
-	oc.mutation.AddReceifeIDs(ids...)
+// AddReceiverIDs adds the "receiver" edge to the User entity by IDs.
+func (oc *OrderCreate) AddReceiverIDs(ids ...int) *OrderCreate {
+	oc.mutation.AddReceiverIDs(ids...)
 	return oc
 }
 
-// AddReceives adds the "receives" edges to the User entity.
-func (oc *OrderCreate) AddReceives(u ...*User) *OrderCreate {
+// AddReceiver adds the "receiver" edges to the User entity.
+func (oc *OrderCreate) AddReceiver(u ...*User) *OrderCreate {
 	ids := make([]int, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
-	return oc.AddReceifeIDs(ids...)
+	return oc.AddReceiverIDs(ids...)
 }
 
 // Mutation returns the OrderMutation object of the builder.
@@ -341,15 +341,15 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.user_requests = &nodes[0]
+		_node.user_requested = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := oc.mutation.ReceivesIDs(); len(nodes) > 0 {
+	if nodes := oc.mutation.ReceiverIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   order.ReceivesTable,
-			Columns: order.ReceivesPrimaryKey,
+			Table:   order.ReceiverTable,
+			Columns: order.ReceiverPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),

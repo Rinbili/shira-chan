@@ -21,7 +21,7 @@ var (
 		{Name: "hope_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
-		{Name: "user_requests", Type: field.TypeInt, Nullable: true},
+		{Name: "user_requested", Type: field.TypeInt, Nullable: true},
 	}
 	// OrdersTable holds the schema information for the "Orders" table.
 	OrdersTable = &schema.Table{
@@ -30,7 +30,7 @@ var (
 		PrimaryKey: []*schema.Column{OrdersColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "Orders_Users_requests",
+				Symbol:     "Orders_Users_requested",
 				Columns:    []*schema.Column{OrdersColumns[10]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -56,26 +56,26 @@ var (
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
 	}
-	// OrderReceivesColumns holds the columns for the "order_receives" table.
-	OrderReceivesColumns = []*schema.Column{
+	// OrderReceiverColumns holds the columns for the "order_receiver" table.
+	OrderReceiverColumns = []*schema.Column{
 		{Name: "order_id", Type: field.TypeInt},
 		{Name: "user_id", Type: field.TypeInt},
 	}
-	// OrderReceivesTable holds the schema information for the "order_receives" table.
-	OrderReceivesTable = &schema.Table{
-		Name:       "order_receives",
-		Columns:    OrderReceivesColumns,
-		PrimaryKey: []*schema.Column{OrderReceivesColumns[0], OrderReceivesColumns[1]},
+	// OrderReceiverTable holds the schema information for the "order_receiver" table.
+	OrderReceiverTable = &schema.Table{
+		Name:       "order_receiver",
+		Columns:    OrderReceiverColumns,
+		PrimaryKey: []*schema.Column{OrderReceiverColumns[0], OrderReceiverColumns[1]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "order_receives_order_id",
-				Columns:    []*schema.Column{OrderReceivesColumns[0]},
+				Symbol:     "order_receiver_order_id",
+				Columns:    []*schema.Column{OrderReceiverColumns[0]},
 				RefColumns: []*schema.Column{OrdersColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
-				Symbol:     "order_receives_user_id",
-				Columns:    []*schema.Column{OrderReceivesColumns[1]},
+				Symbol:     "order_receiver_user_id",
+				Columns:    []*schema.Column{OrderReceiverColumns[1]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -85,7 +85,7 @@ var (
 	Tables = []*schema.Table{
 		OrdersTable,
 		UsersTable,
-		OrderReceivesTable,
+		OrderReceiverTable,
 	}
 )
 
@@ -97,6 +97,6 @@ func init() {
 	UsersTable.Annotation = &entsql.Annotation{
 		Table: "Users",
 	}
-	OrderReceivesTable.ForeignKeys[0].RefTable = OrdersTable
-	OrderReceivesTable.ForeignKeys[1].RefTable = UsersTable
+	OrderReceiverTable.ForeignKeys[0].RefTable = OrdersTable
+	OrderReceiverTable.ForeignKeys[1].RefTable = UsersTable
 }

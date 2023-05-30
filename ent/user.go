@@ -44,35 +44,35 @@ type User struct {
 // UserEdges holds the relations/edges for other nodes in the graph.
 type UserEdges struct {
 	// 需求
-	Requests []*Order `json:"requests,omitempty"`
+	Requested []*Order `json:"requested,omitempty"`
 	// 接单
-	Receiver []*Order `json:"receiver,omitempty"`
+	Received []*Order `json:"received,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
 	// totalCount holds the count of the edges above.
 	totalCount [2]map[string]int
 
-	namedRequests map[string][]*Order
-	namedReceiver map[string][]*Order
+	namedRequested map[string][]*Order
+	namedReceived  map[string][]*Order
 }
 
-// RequestsOrErr returns the Requests value or an error if the edge
+// RequestedOrErr returns the Requested value or an error if the edge
 // was not loaded in eager-loading.
-func (e UserEdges) RequestsOrErr() ([]*Order, error) {
+func (e UserEdges) RequestedOrErr() ([]*Order, error) {
 	if e.loadedTypes[0] {
-		return e.Requests, nil
+		return e.Requested, nil
 	}
-	return nil, &NotLoadedError{edge: "requests"}
+	return nil, &NotLoadedError{edge: "requested"}
 }
 
-// ReceiverOrErr returns the Receiver value or an error if the edge
+// ReceivedOrErr returns the Received value or an error if the edge
 // was not loaded in eager-loading.
-func (e UserEdges) ReceiverOrErr() ([]*Order, error) {
+func (e UserEdges) ReceivedOrErr() ([]*Order, error) {
 	if e.loadedTypes[1] {
-		return e.Receiver, nil
+		return e.Received, nil
 	}
-	return nil, &NotLoadedError{edge: "receiver"}
+	return nil, &NotLoadedError{edge: "received"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -174,14 +174,14 @@ func (u *User) Value(name string) (ent.Value, error) {
 	return u.selectValues.Get(name)
 }
 
-// QueryRequests queries the "requests" edge of the User entity.
-func (u *User) QueryRequests() *OrderQuery {
-	return NewUserClient(u.config).QueryRequests(u)
+// QueryRequested queries the "requested" edge of the User entity.
+func (u *User) QueryRequested() *OrderQuery {
+	return NewUserClient(u.config).QueryRequested(u)
 }
 
-// QueryReceiver queries the "receiver" edge of the User entity.
-func (u *User) QueryReceiver() *OrderQuery {
-	return NewUserClient(u.config).QueryReceiver(u)
+// QueryReceived queries the "received" edge of the User entity.
+func (u *User) QueryReceived() *OrderQuery {
+	return NewUserClient(u.config).QueryReceived(u)
 }
 
 // Update returns a builder for updating this User.
@@ -236,51 +236,51 @@ func (u *User) String() string {
 	return builder.String()
 }
 
-// NamedRequests returns the Requests named value or an error if the edge was not
+// NamedRequested returns the Requested named value or an error if the edge was not
 // loaded in eager-loading with this name.
-func (u *User) NamedRequests(name string) ([]*Order, error) {
-	if u.Edges.namedRequests == nil {
+func (u *User) NamedRequested(name string) ([]*Order, error) {
+	if u.Edges.namedRequested == nil {
 		return nil, &NotLoadedError{edge: name}
 	}
-	nodes, ok := u.Edges.namedRequests[name]
+	nodes, ok := u.Edges.namedRequested[name]
 	if !ok {
 		return nil, &NotLoadedError{edge: name}
 	}
 	return nodes, nil
 }
 
-func (u *User) appendNamedRequests(name string, edges ...*Order) {
-	if u.Edges.namedRequests == nil {
-		u.Edges.namedRequests = make(map[string][]*Order)
+func (u *User) appendNamedRequested(name string, edges ...*Order) {
+	if u.Edges.namedRequested == nil {
+		u.Edges.namedRequested = make(map[string][]*Order)
 	}
 	if len(edges) == 0 {
-		u.Edges.namedRequests[name] = []*Order{}
+		u.Edges.namedRequested[name] = []*Order{}
 	} else {
-		u.Edges.namedRequests[name] = append(u.Edges.namedRequests[name], edges...)
+		u.Edges.namedRequested[name] = append(u.Edges.namedRequested[name], edges...)
 	}
 }
 
-// NamedReceiver returns the Receiver named value or an error if the edge was not
+// NamedReceived returns the Received named value or an error if the edge was not
 // loaded in eager-loading with this name.
-func (u *User) NamedReceiver(name string) ([]*Order, error) {
-	if u.Edges.namedReceiver == nil {
+func (u *User) NamedReceived(name string) ([]*Order, error) {
+	if u.Edges.namedReceived == nil {
 		return nil, &NotLoadedError{edge: name}
 	}
-	nodes, ok := u.Edges.namedReceiver[name]
+	nodes, ok := u.Edges.namedReceived[name]
 	if !ok {
 		return nil, &NotLoadedError{edge: name}
 	}
 	return nodes, nil
 }
 
-func (u *User) appendNamedReceiver(name string, edges ...*Order) {
-	if u.Edges.namedReceiver == nil {
-		u.Edges.namedReceiver = make(map[string][]*Order)
+func (u *User) appendNamedReceived(name string, edges ...*Order) {
+	if u.Edges.namedReceived == nil {
+		u.Edges.namedReceived = make(map[string][]*Order)
 	}
 	if len(edges) == 0 {
-		u.Edges.namedReceiver[name] = []*Order{}
+		u.Edges.namedReceived[name] = []*Order{}
 	} else {
-		u.Edges.namedReceiver[name] = append(u.Edges.namedReceiver[name], edges...)
+		u.Edges.namedReceived[name] = append(u.Edges.namedReceived[name], edges...)
 	}
 }
 

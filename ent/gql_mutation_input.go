@@ -20,7 +20,7 @@ type CreateOrderInput struct {
 	CreatedAt   *time.Time
 	UpdatedAt   *time.Time
 	RequesterID *int
-	ReceifeIDs  []int
+	ReceiverIDs []int
 }
 
 // Mutate applies the CreateOrderInput on the OrderMutation builder.
@@ -49,8 +49,8 @@ func (i *CreateOrderInput) Mutate(m *OrderMutation) {
 	if v := i.RequesterID; v != nil {
 		m.SetRequesterID(*v)
 	}
-	if v := i.ReceifeIDs; len(v) > 0 {
-		m.AddReceifeIDs(v...)
+	if v := i.ReceiverIDs; len(v) > 0 {
+		m.AddReceiverIDs(v...)
 	}
 }
 
@@ -62,20 +62,20 @@ func (c *OrderCreate) SetInput(i CreateOrderInput) *OrderCreate {
 
 // UpdateOrderInput represents a mutation input for updating orders.
 type UpdateOrderInput struct {
-	Title            *string
-	Content          *string
-	Contact          *string
-	Type             *order.Type
-	Status           *order.Status
-	ClearEvaluation  bool
-	Evaluation       *float64
-	HopeAt           *time.Time
-	UpdatedAt        *time.Time
-	ClearRequester   bool
-	RequesterID      *int
-	ClearReceives    bool
-	AddReceifeIDs    []int
-	RemoveReceifeIDs []int
+	Title             *string
+	Content           *string
+	Contact           *string
+	Type              *order.Type
+	Status            *order.Status
+	ClearEvaluation   bool
+	Evaluation        *float64
+	HopeAt            *time.Time
+	UpdatedAt         *time.Time
+	ClearRequester    bool
+	RequesterID       *int
+	ClearReceiver     bool
+	AddReceiverIDs    []int
+	RemoveReceiverIDs []int
 }
 
 // Mutate applies the UpdateOrderInput on the OrderMutation builder.
@@ -113,14 +113,14 @@ func (i *UpdateOrderInput) Mutate(m *OrderMutation) {
 	if v := i.RequesterID; v != nil {
 		m.SetRequesterID(*v)
 	}
-	if i.ClearReceives {
-		m.ClearReceives()
+	if i.ClearReceiver {
+		m.ClearReceiver()
 	}
-	if v := i.AddReceifeIDs; len(v) > 0 {
-		m.AddReceifeIDs(v...)
+	if v := i.AddReceiverIDs; len(v) > 0 {
+		m.AddReceiverIDs(v...)
 	}
-	if v := i.RemoveReceifeIDs; len(v) > 0 {
-		m.RemoveReceifeIDs(v...)
+	if v := i.RemoveReceiverIDs; len(v) > 0 {
+		m.RemoveReceiverIDs(v...)
 	}
 }
 
@@ -138,17 +138,17 @@ func (c *OrderUpdateOne) SetInput(i UpdateOrderInput) *OrderUpdateOne {
 
 // CreateUserInput represents a mutation input for creating users.
 type CreateUserInput struct {
-	Uname       string
-	Passwd      string
-	Phone       string
-	Wechat      *string
-	Level       *user.Level
-	Dept        *user.Dept
-	State       *user.State
-	CreatedAt   *time.Time
-	UpdatedAt   *time.Time
-	RequestIDs  []int
-	ReceiverIDs []int
+	Uname        string
+	Passwd       string
+	Phone        string
+	Wechat       *string
+	Level        *user.Level
+	Dept         *user.Dept
+	State        *user.State
+	CreatedAt    *time.Time
+	UpdatedAt    *time.Time
+	RequestedIDs []int
+	ReceivedIDs  []int
 }
 
 // Mutate applies the CreateUserInput on the UserMutation builder.
@@ -174,11 +174,11 @@ func (i *CreateUserInput) Mutate(m *UserMutation) {
 	if v := i.UpdatedAt; v != nil {
 		m.SetUpdatedAt(*v)
 	}
-	if v := i.RequestIDs; len(v) > 0 {
-		m.AddRequestIDs(v...)
+	if v := i.RequestedIDs; len(v) > 0 {
+		m.AddRequestedIDs(v...)
 	}
-	if v := i.ReceiverIDs; len(v) > 0 {
-		m.AddReceiverIDs(v...)
+	if v := i.ReceivedIDs; len(v) > 0 {
+		m.AddReceivedIDs(v...)
 	}
 }
 
@@ -190,20 +190,20 @@ func (c *UserCreate) SetInput(i CreateUserInput) *UserCreate {
 
 // UpdateUserInput represents a mutation input for updating users.
 type UpdateUserInput struct {
-	Uname             *string
-	Passwd            *string
-	Phone             *string
-	Wechat            *string
-	Level             *user.Level
-	Dept              *user.Dept
-	State             *user.State
-	UpdatedAt         *time.Time
-	ClearRequests     bool
-	AddRequestIDs     []int
-	RemoveRequestIDs  []int
-	ClearReceiver     bool
-	AddReceiverIDs    []int
-	RemoveReceiverIDs []int
+	Uname              *string
+	Passwd             *string
+	Phone              *string
+	Wechat             *string
+	Level              *user.Level
+	Dept               *user.Dept
+	State              *user.State
+	UpdatedAt          *time.Time
+	ClearRequested     bool
+	AddRequestedIDs    []int
+	RemoveRequestedIDs []int
+	ClearReceived      bool
+	AddReceivedIDs     []int
+	RemoveReceivedIDs  []int
 }
 
 // Mutate applies the UpdateUserInput on the UserMutation builder.
@@ -232,23 +232,23 @@ func (i *UpdateUserInput) Mutate(m *UserMutation) {
 	if v := i.UpdatedAt; v != nil {
 		m.SetUpdatedAt(*v)
 	}
-	if i.ClearRequests {
-		m.ClearRequests()
+	if i.ClearRequested {
+		m.ClearRequested()
 	}
-	if v := i.AddRequestIDs; len(v) > 0 {
-		m.AddRequestIDs(v...)
+	if v := i.AddRequestedIDs; len(v) > 0 {
+		m.AddRequestedIDs(v...)
 	}
-	if v := i.RemoveRequestIDs; len(v) > 0 {
-		m.RemoveRequestIDs(v...)
+	if v := i.RemoveRequestedIDs; len(v) > 0 {
+		m.RemoveRequestedIDs(v...)
 	}
-	if i.ClearReceiver {
-		m.ClearReceiver()
+	if i.ClearReceived {
+		m.ClearReceived()
 	}
-	if v := i.AddReceiverIDs; len(v) > 0 {
-		m.AddReceiverIDs(v...)
+	if v := i.AddReceivedIDs; len(v) > 0 {
+		m.AddReceivedIDs(v...)
 	}
-	if v := i.RemoveReceiverIDs; len(v) > 0 {
-		m.RemoveReceiverIDs(v...)
+	if v := i.RemoveReceivedIDs; len(v) > 0 {
+		m.RemoveReceivedIDs(v...)
 	}
 }
 

@@ -310,15 +310,15 @@ func (c *OrderClient) QueryRequester(o *Order) *UserQuery {
 	return query
 }
 
-// QueryReceives queries the receives edge of a Order.
-func (c *OrderClient) QueryReceives(o *Order) *UserQuery {
+// QueryReceiver queries the receiver edge of a Order.
+func (c *OrderClient) QueryReceiver(o *Order) *UserQuery {
 	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := o.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(order.Table, order.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, order.ReceivesTable, order.ReceivesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, false, order.ReceiverTable, order.ReceiverPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
 		return fromV, nil
@@ -444,15 +444,15 @@ func (c *UserClient) GetX(ctx context.Context, id int) *User {
 	return obj
 }
 
-// QueryRequests queries the requests edge of a User.
-func (c *UserClient) QueryRequests(u *User) *OrderQuery {
+// QueryRequested queries the requested edge of a User.
+func (c *UserClient) QueryRequested(u *User) *OrderQuery {
 	query := (&OrderClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(order.Table, order.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.RequestsTable, user.RequestsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.RequestedTable, user.RequestedColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil
@@ -460,15 +460,15 @@ func (c *UserClient) QueryRequests(u *User) *OrderQuery {
 	return query
 }
 
-// QueryReceiver queries the receiver edge of a User.
-func (c *UserClient) QueryReceiver(u *User) *OrderQuery {
+// QueryReceived queries the received edge of a User.
+func (c *UserClient) QueryReceived(u *User) *OrderQuery {
 	query := (&OrderClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(order.Table, order.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, user.ReceiverTable, user.ReceiverPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, true, user.ReceivedTable, user.ReceivedPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

@@ -48,9 +48,9 @@ type OrderMutation struct {
 	clearedFields    map[string]struct{}
 	requester        *int
 	clearedrequester bool
-	receives         map[int]struct{}
-	removedreceives  map[int]struct{}
-	clearedreceives  bool
+	receiver         map[int]struct{}
+	removedreceiver  map[int]struct{}
+	clearedreceiver  bool
 	done             bool
 	oldValue         func(context.Context) (*Order, error)
 	predicates       []predicate.Order
@@ -551,58 +551,58 @@ func (m *OrderMutation) ResetRequester() {
 	m.clearedrequester = false
 }
 
-// AddReceifeIDs adds the "receives" edge to the User entity by ids.
-func (m *OrderMutation) AddReceifeIDs(ids ...int) {
-	if m.receives == nil {
-		m.receives = make(map[int]struct{})
+// AddReceiverIDs adds the "receiver" edge to the User entity by ids.
+func (m *OrderMutation) AddReceiverIDs(ids ...int) {
+	if m.receiver == nil {
+		m.receiver = make(map[int]struct{})
 	}
 	for i := range ids {
-		m.receives[ids[i]] = struct{}{}
+		m.receiver[ids[i]] = struct{}{}
 	}
 }
 
-// ClearReceives clears the "receives" edge to the User entity.
-func (m *OrderMutation) ClearReceives() {
-	m.clearedreceives = true
+// ClearReceiver clears the "receiver" edge to the User entity.
+func (m *OrderMutation) ClearReceiver() {
+	m.clearedreceiver = true
 }
 
-// ReceivesCleared reports if the "receives" edge to the User entity was cleared.
-func (m *OrderMutation) ReceivesCleared() bool {
-	return m.clearedreceives
+// ReceiverCleared reports if the "receiver" edge to the User entity was cleared.
+func (m *OrderMutation) ReceiverCleared() bool {
+	return m.clearedreceiver
 }
 
-// RemoveReceifeIDs removes the "receives" edge to the User entity by IDs.
-func (m *OrderMutation) RemoveReceifeIDs(ids ...int) {
-	if m.removedreceives == nil {
-		m.removedreceives = make(map[int]struct{})
+// RemoveReceiverIDs removes the "receiver" edge to the User entity by IDs.
+func (m *OrderMutation) RemoveReceiverIDs(ids ...int) {
+	if m.removedreceiver == nil {
+		m.removedreceiver = make(map[int]struct{})
 	}
 	for i := range ids {
-		delete(m.receives, ids[i])
-		m.removedreceives[ids[i]] = struct{}{}
+		delete(m.receiver, ids[i])
+		m.removedreceiver[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedReceives returns the removed IDs of the "receives" edge to the User entity.
-func (m *OrderMutation) RemovedReceivesIDs() (ids []int) {
-	for id := range m.removedreceives {
+// RemovedReceiver returns the removed IDs of the "receiver" edge to the User entity.
+func (m *OrderMutation) RemovedReceiverIDs() (ids []int) {
+	for id := range m.removedreceiver {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ReceivesIDs returns the "receives" edge IDs in the mutation.
-func (m *OrderMutation) ReceivesIDs() (ids []int) {
-	for id := range m.receives {
+// ReceiverIDs returns the "receiver" edge IDs in the mutation.
+func (m *OrderMutation) ReceiverIDs() (ids []int) {
+	for id := range m.receiver {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetReceives resets all changes to the "receives" edge.
-func (m *OrderMutation) ResetReceives() {
-	m.receives = nil
-	m.clearedreceives = false
-	m.removedreceives = nil
+// ResetReceiver resets all changes to the "receiver" edge.
+func (m *OrderMutation) ResetReceiver() {
+	m.receiver = nil
+	m.clearedreceiver = false
+	m.removedreceiver = nil
 }
 
 // Where appends a list predicates to the OrderMutation builder.
@@ -902,8 +902,8 @@ func (m *OrderMutation) AddedEdges() []string {
 	if m.requester != nil {
 		edges = append(edges, order.EdgeRequester)
 	}
-	if m.receives != nil {
-		edges = append(edges, order.EdgeReceives)
+	if m.receiver != nil {
+		edges = append(edges, order.EdgeReceiver)
 	}
 	return edges
 }
@@ -916,9 +916,9 @@ func (m *OrderMutation) AddedIDs(name string) []ent.Value {
 		if id := m.requester; id != nil {
 			return []ent.Value{*id}
 		}
-	case order.EdgeReceives:
-		ids := make([]ent.Value, 0, len(m.receives))
-		for id := range m.receives {
+	case order.EdgeReceiver:
+		ids := make([]ent.Value, 0, len(m.receiver))
+		for id := range m.receiver {
 			ids = append(ids, id)
 		}
 		return ids
@@ -929,8 +929,8 @@ func (m *OrderMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *OrderMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removedreceives != nil {
-		edges = append(edges, order.EdgeReceives)
+	if m.removedreceiver != nil {
+		edges = append(edges, order.EdgeReceiver)
 	}
 	return edges
 }
@@ -939,9 +939,9 @@ func (m *OrderMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *OrderMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case order.EdgeReceives:
-		ids := make([]ent.Value, 0, len(m.removedreceives))
-		for id := range m.removedreceives {
+	case order.EdgeReceiver:
+		ids := make([]ent.Value, 0, len(m.removedreceiver))
+		for id := range m.removedreceiver {
 			ids = append(ids, id)
 		}
 		return ids
@@ -955,8 +955,8 @@ func (m *OrderMutation) ClearedEdges() []string {
 	if m.clearedrequester {
 		edges = append(edges, order.EdgeRequester)
 	}
-	if m.clearedreceives {
-		edges = append(edges, order.EdgeReceives)
+	if m.clearedreceiver {
+		edges = append(edges, order.EdgeReceiver)
 	}
 	return edges
 }
@@ -967,8 +967,8 @@ func (m *OrderMutation) EdgeCleared(name string) bool {
 	switch name {
 	case order.EdgeRequester:
 		return m.clearedrequester
-	case order.EdgeReceives:
-		return m.clearedreceives
+	case order.EdgeReceiver:
+		return m.clearedreceiver
 	}
 	return false
 }
@@ -991,8 +991,8 @@ func (m *OrderMutation) ResetEdge(name string) error {
 	case order.EdgeRequester:
 		m.ResetRequester()
 		return nil
-	case order.EdgeReceives:
-		m.ResetReceives()
+	case order.EdgeReceiver:
+		m.ResetReceiver()
 		return nil
 	}
 	return fmt.Errorf("unknown Order edge %s", name)
@@ -1001,28 +1001,28 @@ func (m *OrderMutation) ResetEdge(name string) error {
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *int
-	uname           *string
-	passwd          *string
-	phone           *string
-	wechat          *string
-	level           *user.Level
-	dept            *user.Dept
-	state           *user.State
-	created_at      *time.Time
-	updated_at      *time.Time
-	clearedFields   map[string]struct{}
-	requests        map[int]struct{}
-	removedrequests map[int]struct{}
-	clearedrequests bool
-	receiver        map[int]struct{}
-	removedreceiver map[int]struct{}
-	clearedreceiver bool
-	done            bool
-	oldValue        func(context.Context) (*User, error)
-	predicates      []predicate.User
+	op               Op
+	typ              string
+	id               *int
+	uname            *string
+	passwd           *string
+	phone            *string
+	wechat           *string
+	level            *user.Level
+	dept             *user.Dept
+	state            *user.State
+	created_at       *time.Time
+	updated_at       *time.Time
+	clearedFields    map[string]struct{}
+	requested        map[int]struct{}
+	removedrequested map[int]struct{}
+	clearedrequested bool
+	received         map[int]struct{}
+	removedreceived  map[int]struct{}
+	clearedreceived  bool
+	done             bool
+	oldValue         func(context.Context) (*User, error)
+	predicates       []predicate.User
 }
 
 var _ ent.Mutation = (*UserMutation)(nil)
@@ -1447,112 +1447,112 @@ func (m *UserMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// AddRequestIDs adds the "requests" edge to the Order entity by ids.
-func (m *UserMutation) AddRequestIDs(ids ...int) {
-	if m.requests == nil {
-		m.requests = make(map[int]struct{})
+// AddRequestedIDs adds the "requested" edge to the Order entity by ids.
+func (m *UserMutation) AddRequestedIDs(ids ...int) {
+	if m.requested == nil {
+		m.requested = make(map[int]struct{})
 	}
 	for i := range ids {
-		m.requests[ids[i]] = struct{}{}
+		m.requested[ids[i]] = struct{}{}
 	}
 }
 
-// ClearRequests clears the "requests" edge to the Order entity.
-func (m *UserMutation) ClearRequests() {
-	m.clearedrequests = true
+// ClearRequested clears the "requested" edge to the Order entity.
+func (m *UserMutation) ClearRequested() {
+	m.clearedrequested = true
 }
 
-// RequestsCleared reports if the "requests" edge to the Order entity was cleared.
-func (m *UserMutation) RequestsCleared() bool {
-	return m.clearedrequests
+// RequestedCleared reports if the "requested" edge to the Order entity was cleared.
+func (m *UserMutation) RequestedCleared() bool {
+	return m.clearedrequested
 }
 
-// RemoveRequestIDs removes the "requests" edge to the Order entity by IDs.
-func (m *UserMutation) RemoveRequestIDs(ids ...int) {
-	if m.removedrequests == nil {
-		m.removedrequests = make(map[int]struct{})
+// RemoveRequestedIDs removes the "requested" edge to the Order entity by IDs.
+func (m *UserMutation) RemoveRequestedIDs(ids ...int) {
+	if m.removedrequested == nil {
+		m.removedrequested = make(map[int]struct{})
 	}
 	for i := range ids {
-		delete(m.requests, ids[i])
-		m.removedrequests[ids[i]] = struct{}{}
+		delete(m.requested, ids[i])
+		m.removedrequested[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedRequests returns the removed IDs of the "requests" edge to the Order entity.
-func (m *UserMutation) RemovedRequestsIDs() (ids []int) {
-	for id := range m.removedrequests {
+// RemovedRequested returns the removed IDs of the "requested" edge to the Order entity.
+func (m *UserMutation) RemovedRequestedIDs() (ids []int) {
+	for id := range m.removedrequested {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// RequestsIDs returns the "requests" edge IDs in the mutation.
-func (m *UserMutation) RequestsIDs() (ids []int) {
-	for id := range m.requests {
+// RequestedIDs returns the "requested" edge IDs in the mutation.
+func (m *UserMutation) RequestedIDs() (ids []int) {
+	for id := range m.requested {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetRequests resets all changes to the "requests" edge.
-func (m *UserMutation) ResetRequests() {
-	m.requests = nil
-	m.clearedrequests = false
-	m.removedrequests = nil
+// ResetRequested resets all changes to the "requested" edge.
+func (m *UserMutation) ResetRequested() {
+	m.requested = nil
+	m.clearedrequested = false
+	m.removedrequested = nil
 }
 
-// AddReceiverIDs adds the "receiver" edge to the Order entity by ids.
-func (m *UserMutation) AddReceiverIDs(ids ...int) {
-	if m.receiver == nil {
-		m.receiver = make(map[int]struct{})
+// AddReceivedIDs adds the "received" edge to the Order entity by ids.
+func (m *UserMutation) AddReceivedIDs(ids ...int) {
+	if m.received == nil {
+		m.received = make(map[int]struct{})
 	}
 	for i := range ids {
-		m.receiver[ids[i]] = struct{}{}
+		m.received[ids[i]] = struct{}{}
 	}
 }
 
-// ClearReceiver clears the "receiver" edge to the Order entity.
-func (m *UserMutation) ClearReceiver() {
-	m.clearedreceiver = true
+// ClearReceived clears the "received" edge to the Order entity.
+func (m *UserMutation) ClearReceived() {
+	m.clearedreceived = true
 }
 
-// ReceiverCleared reports if the "receiver" edge to the Order entity was cleared.
-func (m *UserMutation) ReceiverCleared() bool {
-	return m.clearedreceiver
+// ReceivedCleared reports if the "received" edge to the Order entity was cleared.
+func (m *UserMutation) ReceivedCleared() bool {
+	return m.clearedreceived
 }
 
-// RemoveReceiverIDs removes the "receiver" edge to the Order entity by IDs.
-func (m *UserMutation) RemoveReceiverIDs(ids ...int) {
-	if m.removedreceiver == nil {
-		m.removedreceiver = make(map[int]struct{})
+// RemoveReceivedIDs removes the "received" edge to the Order entity by IDs.
+func (m *UserMutation) RemoveReceivedIDs(ids ...int) {
+	if m.removedreceived == nil {
+		m.removedreceived = make(map[int]struct{})
 	}
 	for i := range ids {
-		delete(m.receiver, ids[i])
-		m.removedreceiver[ids[i]] = struct{}{}
+		delete(m.received, ids[i])
+		m.removedreceived[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedReceiver returns the removed IDs of the "receiver" edge to the Order entity.
-func (m *UserMutation) RemovedReceiverIDs() (ids []int) {
-	for id := range m.removedreceiver {
+// RemovedReceived returns the removed IDs of the "received" edge to the Order entity.
+func (m *UserMutation) RemovedReceivedIDs() (ids []int) {
+	for id := range m.removedreceived {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ReceiverIDs returns the "receiver" edge IDs in the mutation.
-func (m *UserMutation) ReceiverIDs() (ids []int) {
-	for id := range m.receiver {
+// ReceivedIDs returns the "received" edge IDs in the mutation.
+func (m *UserMutation) ReceivedIDs() (ids []int) {
+	for id := range m.received {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetReceiver resets all changes to the "receiver" edge.
-func (m *UserMutation) ResetReceiver() {
-	m.receiver = nil
-	m.clearedreceiver = false
-	m.removedreceiver = nil
+// ResetReceived resets all changes to the "received" edge.
+func (m *UserMutation) ResetReceived() {
+	m.received = nil
+	m.clearedreceived = false
+	m.removedreceived = nil
 }
 
 // Where appends a list predicates to the UserMutation builder.
@@ -1825,11 +1825,11 @@ func (m *UserMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.requests != nil {
-		edges = append(edges, user.EdgeRequests)
+	if m.requested != nil {
+		edges = append(edges, user.EdgeRequested)
 	}
-	if m.receiver != nil {
-		edges = append(edges, user.EdgeReceiver)
+	if m.received != nil {
+		edges = append(edges, user.EdgeReceived)
 	}
 	return edges
 }
@@ -1838,15 +1838,15 @@ func (m *UserMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *UserMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case user.EdgeRequests:
-		ids := make([]ent.Value, 0, len(m.requests))
-		for id := range m.requests {
+	case user.EdgeRequested:
+		ids := make([]ent.Value, 0, len(m.requested))
+		for id := range m.requested {
 			ids = append(ids, id)
 		}
 		return ids
-	case user.EdgeReceiver:
-		ids := make([]ent.Value, 0, len(m.receiver))
-		for id := range m.receiver {
+	case user.EdgeReceived:
+		ids := make([]ent.Value, 0, len(m.received))
+		for id := range m.received {
 			ids = append(ids, id)
 		}
 		return ids
@@ -1857,11 +1857,11 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removedrequests != nil {
-		edges = append(edges, user.EdgeRequests)
+	if m.removedrequested != nil {
+		edges = append(edges, user.EdgeRequested)
 	}
-	if m.removedreceiver != nil {
-		edges = append(edges, user.EdgeReceiver)
+	if m.removedreceived != nil {
+		edges = append(edges, user.EdgeReceived)
 	}
 	return edges
 }
@@ -1870,15 +1870,15 @@ func (m *UserMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case user.EdgeRequests:
-		ids := make([]ent.Value, 0, len(m.removedrequests))
-		for id := range m.removedrequests {
+	case user.EdgeRequested:
+		ids := make([]ent.Value, 0, len(m.removedrequested))
+		for id := range m.removedrequested {
 			ids = append(ids, id)
 		}
 		return ids
-	case user.EdgeReceiver:
-		ids := make([]ent.Value, 0, len(m.removedreceiver))
-		for id := range m.removedreceiver {
+	case user.EdgeReceived:
+		ids := make([]ent.Value, 0, len(m.removedreceived))
+		for id := range m.removedreceived {
 			ids = append(ids, id)
 		}
 		return ids
@@ -1889,11 +1889,11 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.clearedrequests {
-		edges = append(edges, user.EdgeRequests)
+	if m.clearedrequested {
+		edges = append(edges, user.EdgeRequested)
 	}
-	if m.clearedreceiver {
-		edges = append(edges, user.EdgeReceiver)
+	if m.clearedreceived {
+		edges = append(edges, user.EdgeReceived)
 	}
 	return edges
 }
@@ -1902,10 +1902,10 @@ func (m *UserMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *UserMutation) EdgeCleared(name string) bool {
 	switch name {
-	case user.EdgeRequests:
-		return m.clearedrequests
-	case user.EdgeReceiver:
-		return m.clearedreceiver
+	case user.EdgeRequested:
+		return m.clearedrequested
+	case user.EdgeReceived:
+		return m.clearedreceived
 	}
 	return false
 }
@@ -1922,11 +1922,11 @@ func (m *UserMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *UserMutation) ResetEdge(name string) error {
 	switch name {
-	case user.EdgeRequests:
-		m.ResetRequests()
+	case user.EdgeRequested:
+		m.ResetRequested()
 		return nil
-	case user.EdgeReceiver:
-		m.ResetReceiver()
+	case user.EdgeReceived:
+		m.ResetReceived()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

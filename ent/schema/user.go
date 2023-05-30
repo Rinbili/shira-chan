@@ -97,16 +97,16 @@ func (User) Fields() []ent.Field {
 
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("requests", Order.Type).
-			//Annotations(
-			//	entgql.RelayConnection(),
-			//	entgql.OrderField("ORDER_COUNT")).
+		edge.To("requested", Order.Type).
+			Annotations(
+				entgql.RelayConnection(),
+				entgql.OrderField("REQUESTED_COUNT")).
 			Comment("需求"),
-		edge.From("receiver", Order.Type).
-			Ref("receives").
-			//Annotations(
-			//	entgql.RelayConnection(),
-			//	entgql.OrderField("ORDER_COUNT")).
+		edge.From("received", Order.Type).
+			Ref("receiver").
+			Annotations(
+				entgql.RelayConnection(),
+				entgql.OrderField("RECEIVED_COUNT")).
 			Comment("接单"),
 	}
 }

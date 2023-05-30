@@ -141,19 +141,19 @@ func (ou *OrderUpdate) SetRequester(u *User) *OrderUpdate {
 	return ou.SetRequesterID(u.ID)
 }
 
-// AddReceifeIDs adds the "receives" edge to the User entity by IDs.
-func (ou *OrderUpdate) AddReceifeIDs(ids ...int) *OrderUpdate {
-	ou.mutation.AddReceifeIDs(ids...)
+// AddReceiverIDs adds the "receiver" edge to the User entity by IDs.
+func (ou *OrderUpdate) AddReceiverIDs(ids ...int) *OrderUpdate {
+	ou.mutation.AddReceiverIDs(ids...)
 	return ou
 }
 
-// AddReceives adds the "receives" edges to the User entity.
-func (ou *OrderUpdate) AddReceives(u ...*User) *OrderUpdate {
+// AddReceiver adds the "receiver" edges to the User entity.
+func (ou *OrderUpdate) AddReceiver(u ...*User) *OrderUpdate {
 	ids := make([]int, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
-	return ou.AddReceifeIDs(ids...)
+	return ou.AddReceiverIDs(ids...)
 }
 
 // Mutation returns the OrderMutation object of the builder.
@@ -167,25 +167,25 @@ func (ou *OrderUpdate) ClearRequester() *OrderUpdate {
 	return ou
 }
 
-// ClearReceives clears all "receives" edges to the User entity.
-func (ou *OrderUpdate) ClearReceives() *OrderUpdate {
-	ou.mutation.ClearReceives()
+// ClearReceiver clears all "receiver" edges to the User entity.
+func (ou *OrderUpdate) ClearReceiver() *OrderUpdate {
+	ou.mutation.ClearReceiver()
 	return ou
 }
 
-// RemoveReceifeIDs removes the "receives" edge to User entities by IDs.
-func (ou *OrderUpdate) RemoveReceifeIDs(ids ...int) *OrderUpdate {
-	ou.mutation.RemoveReceifeIDs(ids...)
+// RemoveReceiverIDs removes the "receiver" edge to User entities by IDs.
+func (ou *OrderUpdate) RemoveReceiverIDs(ids ...int) *OrderUpdate {
+	ou.mutation.RemoveReceiverIDs(ids...)
 	return ou
 }
 
-// RemoveReceives removes "receives" edges to User entities.
-func (ou *OrderUpdate) RemoveReceives(u ...*User) *OrderUpdate {
+// RemoveReceiver removes "receiver" edges to User entities.
+func (ou *OrderUpdate) RemoveReceiver(u ...*User) *OrderUpdate {
 	ids := make([]int, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
-	return ou.RemoveReceifeIDs(ids...)
+	return ou.RemoveReceiverIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -325,12 +325,12 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ou.mutation.ReceivesCleared() {
+	if ou.mutation.ReceiverCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   order.ReceivesTable,
-			Columns: order.ReceivesPrimaryKey,
+			Table:   order.ReceiverTable,
+			Columns: order.ReceiverPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -338,12 +338,12 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ou.mutation.RemovedReceivesIDs(); len(nodes) > 0 && !ou.mutation.ReceivesCleared() {
+	if nodes := ou.mutation.RemovedReceiverIDs(); len(nodes) > 0 && !ou.mutation.ReceiverCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   order.ReceivesTable,
-			Columns: order.ReceivesPrimaryKey,
+			Table:   order.ReceiverTable,
+			Columns: order.ReceiverPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -354,12 +354,12 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ou.mutation.ReceivesIDs(); len(nodes) > 0 {
+	if nodes := ou.mutation.ReceiverIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   order.ReceivesTable,
-			Columns: order.ReceivesPrimaryKey,
+			Table:   order.ReceiverTable,
+			Columns: order.ReceiverPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -502,19 +502,19 @@ func (ouo *OrderUpdateOne) SetRequester(u *User) *OrderUpdateOne {
 	return ouo.SetRequesterID(u.ID)
 }
 
-// AddReceifeIDs adds the "receives" edge to the User entity by IDs.
-func (ouo *OrderUpdateOne) AddReceifeIDs(ids ...int) *OrderUpdateOne {
-	ouo.mutation.AddReceifeIDs(ids...)
+// AddReceiverIDs adds the "receiver" edge to the User entity by IDs.
+func (ouo *OrderUpdateOne) AddReceiverIDs(ids ...int) *OrderUpdateOne {
+	ouo.mutation.AddReceiverIDs(ids...)
 	return ouo
 }
 
-// AddReceives adds the "receives" edges to the User entity.
-func (ouo *OrderUpdateOne) AddReceives(u ...*User) *OrderUpdateOne {
+// AddReceiver adds the "receiver" edges to the User entity.
+func (ouo *OrderUpdateOne) AddReceiver(u ...*User) *OrderUpdateOne {
 	ids := make([]int, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
-	return ouo.AddReceifeIDs(ids...)
+	return ouo.AddReceiverIDs(ids...)
 }
 
 // Mutation returns the OrderMutation object of the builder.
@@ -528,25 +528,25 @@ func (ouo *OrderUpdateOne) ClearRequester() *OrderUpdateOne {
 	return ouo
 }
 
-// ClearReceives clears all "receives" edges to the User entity.
-func (ouo *OrderUpdateOne) ClearReceives() *OrderUpdateOne {
-	ouo.mutation.ClearReceives()
+// ClearReceiver clears all "receiver" edges to the User entity.
+func (ouo *OrderUpdateOne) ClearReceiver() *OrderUpdateOne {
+	ouo.mutation.ClearReceiver()
 	return ouo
 }
 
-// RemoveReceifeIDs removes the "receives" edge to User entities by IDs.
-func (ouo *OrderUpdateOne) RemoveReceifeIDs(ids ...int) *OrderUpdateOne {
-	ouo.mutation.RemoveReceifeIDs(ids...)
+// RemoveReceiverIDs removes the "receiver" edge to User entities by IDs.
+func (ouo *OrderUpdateOne) RemoveReceiverIDs(ids ...int) *OrderUpdateOne {
+	ouo.mutation.RemoveReceiverIDs(ids...)
 	return ouo
 }
 
-// RemoveReceives removes "receives" edges to User entities.
-func (ouo *OrderUpdateOne) RemoveReceives(u ...*User) *OrderUpdateOne {
+// RemoveReceiver removes "receiver" edges to User entities.
+func (ouo *OrderUpdateOne) RemoveReceiver(u ...*User) *OrderUpdateOne {
 	ids := make([]int, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
-	return ouo.RemoveReceifeIDs(ids...)
+	return ouo.RemoveReceiverIDs(ids...)
 }
 
 // Where appends a list predicates to the OrderUpdate builder.
@@ -716,12 +716,12 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ouo.mutation.ReceivesCleared() {
+	if ouo.mutation.ReceiverCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   order.ReceivesTable,
-			Columns: order.ReceivesPrimaryKey,
+			Table:   order.ReceiverTable,
+			Columns: order.ReceiverPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -729,12 +729,12 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ouo.mutation.RemovedReceivesIDs(); len(nodes) > 0 && !ouo.mutation.ReceivesCleared() {
+	if nodes := ouo.mutation.RemovedReceiverIDs(); len(nodes) > 0 && !ouo.mutation.ReceiverCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   order.ReceivesTable,
-			Columns: order.ReceivesPrimaryKey,
+			Table:   order.ReceiverTable,
+			Columns: order.ReceiverPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -745,12 +745,12 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ouo.mutation.ReceivesIDs(); len(nodes) > 0 {
+	if nodes := ouo.mutation.ReceiverIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   order.ReceivesTable,
-			Columns: order.ReceivesPrimaryKey,
+			Table:   order.ReceiverTable,
+			Columns: order.ReceiverPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),

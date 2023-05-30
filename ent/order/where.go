@@ -518,21 +518,21 @@ func HasRequesterWith(preds ...predicate.User) predicate.Order {
 	})
 }
 
-// HasReceives applies the HasEdge predicate on the "receives" edge.
-func HasReceives() predicate.Order {
+// HasReceiver applies the HasEdge predicate on the "receiver" edge.
+func HasReceiver() predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, ReceivesTable, ReceivesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, false, ReceiverTable, ReceiverPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasReceivesWith applies the HasEdge predicate on the "receives" edge with a given conditions (other predicates).
-func HasReceivesWith(preds ...predicate.User) predicate.Order {
+// HasReceiverWith applies the HasEdge predicate on the "receiver" edge with a given conditions (other predicates).
+func HasReceiverWith(preds ...predicate.User) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		step := newReceivesStep()
+		step := newReceiverStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

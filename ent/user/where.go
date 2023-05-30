@@ -485,21 +485,21 @@ func UpdatedAtLTE(v time.Time) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
-// HasRequests applies the HasEdge predicate on the "requests" edge.
-func HasRequests() predicate.User {
+// HasRequested applies the HasEdge predicate on the "requested" edge.
+func HasRequested() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, RequestsTable, RequestsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, RequestedTable, RequestedColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasRequestsWith applies the HasEdge predicate on the "requests" edge with a given conditions (other predicates).
-func HasRequestsWith(preds ...predicate.Order) predicate.User {
+// HasRequestedWith applies the HasEdge predicate on the "requested" edge with a given conditions (other predicates).
+func HasRequestedWith(preds ...predicate.Order) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		step := newRequestsStep()
+		step := newRequestedStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -508,21 +508,21 @@ func HasRequestsWith(preds ...predicate.Order) predicate.User {
 	})
 }
 
-// HasReceiver applies the HasEdge predicate on the "receiver" edge.
-func HasReceiver() predicate.User {
+// HasReceived applies the HasEdge predicate on the "received" edge.
+func HasReceived() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, ReceiverTable, ReceiverPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, true, ReceivedTable, ReceivedPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasReceiverWith applies the HasEdge predicate on the "receiver" edge with a given conditions (other predicates).
-func HasReceiverWith(preds ...predicate.Order) predicate.User {
+// HasReceivedWith applies the HasEdge predicate on the "received" edge with a given conditions (other predicates).
+func HasReceivedWith(preds ...predicate.Order) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		step := newReceiverStep()
+		step := newReceivedStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

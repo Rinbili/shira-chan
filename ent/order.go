@@ -38,9 +38,9 @@ type Order struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrderQuery when eager-loading is set.
-	Edges         OrderEdges `json:"edges"`
-	user_requests *int
-	selectValues  sql.SelectValues
+	Edges          OrderEdges `json:"edges"`
+	user_requested *int
+	selectValues   sql.SelectValues
 }
 
 // OrderEdges holds the relations/edges for other nodes in the graph.
@@ -48,14 +48,14 @@ type OrderEdges struct {
 	// 需求者
 	Requester *User `json:"requester,omitempty"`
 	// 接单者
-	Receives []*User `json:"receives,omitempty"`
+	Receiver []*User `json:"receiver,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
 	// totalCount holds the count of the edges above.
 	totalCount [2]map[string]int
 
-	namedReceives map[string][]*User
+	namedReceiver map[string][]*User
 }
 
 // RequesterOrErr returns the Requester value or an error if the edge
@@ -71,13 +71,13 @@ func (e OrderEdges) RequesterOrErr() (*User, error) {
 	return nil, &NotLoadedError{edge: "requester"}
 }
 
-// ReceivesOrErr returns the Receives value or an error if the edge
+// ReceiverOrErr returns the Receiver value or an error if the edge
 // was not loaded in eager-loading.
-func (e OrderEdges) ReceivesOrErr() ([]*User, error) {
+func (e OrderEdges) ReceiverOrErr() ([]*User, error) {
 	if e.loadedTypes[1] {
-		return e.Receives, nil
+		return e.Receiver, nil
 	}
-	return nil, &NotLoadedError{edge: "receives"}
+	return nil, &NotLoadedError{edge: "receiver"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -93,7 +93,7 @@ func (*Order) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case order.FieldHopeAt, order.FieldCreatedAt, order.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case order.ForeignKeys[0]: // user_requests
+		case order.ForeignKeys[0]: // user_requested
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -173,10 +173,10 @@ func (o *Order) assignValues(columns []string, values []any) error {
 			}
 		case order.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field user_requests", value)
+				return fmt.Errorf("unexpected type %T for edge-field user_requested", value)
 			} else if value.Valid {
-				o.user_requests = new(int)
-				*o.user_requests = int(value.Int64)
+				o.user_requested = new(int)
+				*o.user_requested = int(value.Int64)
 			}
 		default:
 			o.selectValues.Set(columns[i], values[i])
@@ -196,9 +196,9 @@ func (o *Order) QueryRequester() *UserQuery {
 	return NewOrderClient(o.config).QueryRequester(o)
 }
 
-// QueryReceives queries the "receives" edge of the Order entity.
-func (o *Order) QueryReceives() *UserQuery {
-	return NewOrderClient(o.config).QueryReceives(o)
+// QueryReceiver queries the "receiver" edge of the Order entity.
+func (o *Order) QueryReceiver() *UserQuery {
+	return NewOrderClient(o.config).QueryReceiver(o)
 }
 
 // Update returns a builder for updating this Order.
@@ -256,27 +256,27 @@ func (o *Order) String() string {
 	return builder.String()
 }
 
-// NamedReceives returns the Receives named value or an error if the edge was not
+// NamedReceiver returns the Receiver named value or an error if the edge was not
 // loaded in eager-loading with this name.
-func (o *Order) NamedReceives(name string) ([]*User, error) {
-	if o.Edges.namedReceives == nil {
+func (o *Order) NamedReceiver(name string) ([]*User, error) {
+	if o.Edges.namedReceiver == nil {
 		return nil, &NotLoadedError{edge: name}
 	}
-	nodes, ok := o.Edges.namedReceives[name]
+	nodes, ok := o.Edges.namedReceiver[name]
 	if !ok {
 		return nil, &NotLoadedError{edge: name}
 	}
 	return nodes, nil
 }
 
-func (o *Order) appendNamedReceives(name string, edges ...*User) {
-	if o.Edges.namedReceives == nil {
-		o.Edges.namedReceives = make(map[string][]*User)
+func (o *Order) appendNamedReceiver(name string, edges ...*User) {
+	if o.Edges.namedReceiver == nil {
+		o.Edges.namedReceiver = make(map[string][]*User)
 	}
 	if len(edges) == 0 {
-		o.Edges.namedReceives[name] = []*User{}
+		o.Edges.namedReceiver[name] = []*User{}
 	} else {
-		o.Edges.namedReceives[name] = append(o.Edges.namedReceives[name], edges...)
+		o.Edges.namedReceiver[name] = append(o.Edges.namedReceiver[name], edges...)
 	}
 }
 

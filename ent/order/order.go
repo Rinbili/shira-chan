@@ -37,8 +37,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// EdgeRequester holds the string denoting the requester edge name in mutations.
 	EdgeRequester = "requester"
-	// EdgeReceives holds the string denoting the receives edge name in mutations.
-	EdgeReceives = "receives"
+	// EdgeReceiver holds the string denoting the receiver edge name in mutations.
+	EdgeReceiver = "receiver"
 	// Table holds the table name of the order in the database.
 	Table = "Orders"
 	// RequesterTable is the table that holds the requester relation/edge.
@@ -47,12 +47,12 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	RequesterInverseTable = "Users"
 	// RequesterColumn is the table column denoting the requester relation/edge.
-	RequesterColumn = "user_requests"
-	// ReceivesTable is the table that holds the receives relation/edge. The primary key declared below.
-	ReceivesTable = "order_receives"
-	// ReceivesInverseTable is the table name for the User entity.
+	RequesterColumn = "user_requested"
+	// ReceiverTable is the table that holds the receiver relation/edge. The primary key declared below.
+	ReceiverTable = "order_receiver"
+	// ReceiverInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
-	ReceivesInverseTable = "Users"
+	ReceiverInverseTable = "Users"
 )
 
 // Columns holds all SQL columns for order fields.
@@ -72,13 +72,13 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "Orders"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"user_requests",
+	"user_requested",
 }
 
 var (
-	// ReceivesPrimaryKey and ReceivesColumn2 are the table columns denoting the
-	// primary key for the receives relation (M2M).
-	ReceivesPrimaryKey = []string{"order_id", "user_id"}
+	// ReceiverPrimaryKey and ReceiverColumn2 are the table columns denoting the
+	// primary key for the receiver relation (M2M).
+	ReceiverPrimaryKey = []string{"order_id", "user_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -229,17 +229,17 @@ func ByRequesterField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByReceivesCount orders the results by receives count.
-func ByReceivesCount(opts ...sql.OrderTermOption) OrderOption {
+// ByReceiverCount orders the results by receiver count.
+func ByReceiverCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newReceivesStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newReceiverStep(), opts...)
 	}
 }
 
-// ByReceives orders the results by receives terms.
-func ByReceives(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByReceiver orders the results by receiver terms.
+func ByReceiver(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newReceivesStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newReceiverStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newRequesterStep() *sqlgraph.Step {
@@ -249,11 +249,11 @@ func newRequesterStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, true, RequesterTable, RequesterColumn),
 	)
 }
-func newReceivesStep() *sqlgraph.Step {
+func newReceiverStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(ReceivesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, ReceivesTable, ReceivesPrimaryKey...),
+		sqlgraph.To(ReceiverInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, ReceiverTable, ReceiverPrimaryKey...),
 	)
 }
 

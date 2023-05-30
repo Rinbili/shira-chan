@@ -35,24 +35,24 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// EdgeRequests holds the string denoting the requests edge name in mutations.
-	EdgeRequests = "requests"
-	// EdgeReceiver holds the string denoting the receiver edge name in mutations.
-	EdgeReceiver = "receiver"
+	// EdgeRequested holds the string denoting the requested edge name in mutations.
+	EdgeRequested = "requested"
+	// EdgeReceived holds the string denoting the received edge name in mutations.
+	EdgeReceived = "received"
 	// Table holds the table name of the user in the database.
 	Table = "Users"
-	// RequestsTable is the table that holds the requests relation/edge.
-	RequestsTable = "Orders"
-	// RequestsInverseTable is the table name for the Order entity.
+	// RequestedTable is the table that holds the requested relation/edge.
+	RequestedTable = "Orders"
+	// RequestedInverseTable is the table name for the Order entity.
 	// It exists in this package in order to avoid circular dependency with the "order" package.
-	RequestsInverseTable = "Orders"
-	// RequestsColumn is the table column denoting the requests relation/edge.
-	RequestsColumn = "user_requests"
-	// ReceiverTable is the table that holds the receiver relation/edge. The primary key declared below.
-	ReceiverTable = "order_receives"
-	// ReceiverInverseTable is the table name for the Order entity.
+	RequestedInverseTable = "Orders"
+	// RequestedColumn is the table column denoting the requested relation/edge.
+	RequestedColumn = "user_requested"
+	// ReceivedTable is the table that holds the received relation/edge. The primary key declared below.
+	ReceivedTable = "order_receiver"
+	// ReceivedInverseTable is the table name for the Order entity.
 	// It exists in this package in order to avoid circular dependency with the "order" package.
-	ReceiverInverseTable = "Orders"
+	ReceivedInverseTable = "Orders"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -70,9 +70,9 @@ var Columns = []string{
 }
 
 var (
-	// ReceiverPrimaryKey and ReceiverColumn2 are the table columns denoting the
-	// primary key for the receiver relation (M2M).
-	ReceiverPrimaryKey = []string{"order_id", "user_id"}
+	// ReceivedPrimaryKey and ReceivedColumn2 are the table columns denoting the
+	// primary key for the received relation (M2M).
+	ReceivedPrimaryKey = []string{"order_id", "user_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -239,45 +239,45 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
-// ByRequestsCount orders the results by requests count.
-func ByRequestsCount(opts ...sql.OrderTermOption) OrderOption {
+// ByRequestedCount orders the results by requested count.
+func ByRequestedCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newRequestsStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newRequestedStep(), opts...)
 	}
 }
 
-// ByRequests orders the results by requests terms.
-func ByRequests(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByRequested orders the results by requested terms.
+func ByRequested(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newRequestsStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newRequestedStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
-// ByReceiverCount orders the results by receiver count.
-func ByReceiverCount(opts ...sql.OrderTermOption) OrderOption {
+// ByReceivedCount orders the results by received count.
+func ByReceivedCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newReceiverStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newReceivedStep(), opts...)
 	}
 }
 
-// ByReceiver orders the results by receiver terms.
-func ByReceiver(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByReceived orders the results by received terms.
+func ByReceived(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newReceiverStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newReceivedStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
-func newRequestsStep() *sqlgraph.Step {
+func newRequestedStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(RequestsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, RequestsTable, RequestsColumn),
+		sqlgraph.To(RequestedInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, RequestedTable, RequestedColumn),
 	)
 }
-func newReceiverStep() *sqlgraph.Step {
+func newReceivedStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(ReceiverInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, true, ReceiverTable, ReceiverPrimaryKey...),
+		sqlgraph.To(ReceivedInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, ReceivedTable, ReceivedPrimaryKey...),
 	)
 }
 

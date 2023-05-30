@@ -24,7 +24,7 @@ input CreateOrderInput {
   """更新时间"""
   updatedAt: Time
   requesterID: ID
-  receifeIDs: [ID!]
+  receiverIDs: [ID!]
 }
 """
 CreateUserInput is used for create User object.
@@ -49,8 +49,8 @@ input CreateUserInput {
   createdAt: Time
   """更新时间"""
   updatedAt: Time
-  requestIDs: [ID!]
-  receiverIDs: [ID!]
+  requestedIDs: [ID!]
+  receivedIDs: [ID!]
 }
 """
 Define a Relay Cursor type:
@@ -87,8 +87,22 @@ type Order implements Node {
   updatedAt: Time!
   """需求者"""
   requester: User
-  """接单者"""
-  receives: [User!]
+  receiver(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: Cursor
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come before the specified cursor."""
+    before: Cursor
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """Ordering options for Users returned from the connection."""
+    orderBy: UserOrder
+  ): UserConnection!
 }
 """A connection to a list of items."""
 type OrderConnection {
@@ -129,6 +143,7 @@ enum OrderOrderField {
   HOPE_AT
   CREAT_AT
   UPDATED_AT
+  RECEIVER_COUNT
 }
 """OrderStatus is enum for the field status"""
 enum OrderStatus @goModel(model: "shira-chan-dev/ent/order.Status") {
@@ -228,9 +243,9 @@ input UpdateOrderInput {
   updatedAt: Time
   requesterID: ID
   clearRequester: Boolean
-  addReceifeIDs: [ID!]
-  removeReceifeIDs: [ID!]
-  clearReceives: Boolean
+  addReceiverIDs: [ID!]
+  removeReceiverIDs: [ID!]
+  clearReceiver: Boolean
 }
 """
 UpdateUserInput is used for update User object.
@@ -253,12 +268,12 @@ input UpdateUserInput {
   state: UserState
   """更新时间"""
   updatedAt: Time
-  addRequestIDs: [ID!]
-  removeRequestIDs: [ID!]
-  clearRequests: Boolean
-  addReceiverIDs: [ID!]
-  removeReceiverIDs: [ID!]
-  clearReceiver: Boolean
+  addRequestedIDs: [ID!]
+  removeRequestedIDs: [ID!]
+  clearRequested: Boolean
+  addReceivedIDs: [ID!]
+  removeReceivedIDs: [ID!]
+  clearReceived: Boolean
 }
 type User implements Node {
   id: ID!
@@ -278,10 +293,38 @@ type User implements Node {
   createdAt: Time!
   """更新时间"""
   updatedAt: Time!
-  """需求"""
-  requests: [Order!]
-  """接单"""
-  receiver: [Order!]
+  requested(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: Cursor
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come before the specified cursor."""
+    before: Cursor
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """Ordering options for Orders returned from the connection."""
+    orderBy: OrderOrder
+  ): OrderConnection!
+  received(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: Cursor
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come before the specified cursor."""
+    before: Cursor
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """Ordering options for Orders returned from the connection."""
+    orderBy: OrderOrder
+  ): OrderConnection!
 }
 """A connection to a list of items."""
 type UserConnection {
@@ -328,6 +371,8 @@ enum UserOrderField {
   STATE
   CREAT_AT
   UPDATED_AT
+  REQUESTED_COUNT
+  RECEIVED_COUNT
 }
 """UserState is enum for the field state"""
 enum UserState @goModel(model: "shira-chan-dev/ent/user.State") {

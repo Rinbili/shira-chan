@@ -232,8 +232,12 @@ func (p *orderPager) applyOrder(query *OrderQuery) *OrderQuery {
 	if p.order.Field != DefaultOrderOrder.Field {
 		query = query.Order(DefaultOrderOrder.Field.toTerm(direction.OrderTermOption()))
 	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
+	switch p.order.Field.column {
+	case OrderOrderFieldReceiverCount.column:
+	default:
+		if len(query.ctx.Fields) > 0 {
+			query.ctx.AppendFieldOnce(p.order.Field.column)
+		}
 	}
 	return query
 }
@@ -243,8 +247,13 @@ func (p *orderPager) orderExpr(query *OrderQuery) sql.Querier {
 	if p.reverse {
 		direction = direction.Reverse()
 	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
+	switch p.order.Field.column {
+	case OrderOrderFieldReceiverCount.column:
+		query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
+	default:
+		if len(query.ctx.Fields) > 0 {
+			query.ctx.AppendFieldOnce(p.order.Field.column)
+		}
 	}
 	return sql.ExprFunc(func(b *sql.Builder) {
 		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
@@ -405,6 +414,25 @@ var (
 			}
 		},
 	}
+	// OrderOrderFieldReceiverCount orders by RECEIVER_COUNT.
+	OrderOrderFieldReceiverCount = &OrderOrderField{
+		Value: func(o *Order) (ent.Value, error) {
+			return o.Value("receiver_count")
+		},
+		column: "receiver_count",
+		toTerm: func(opts ...sql.OrderTermOption) order.OrderOption {
+			return order.ByReceiverCount(
+				append(opts, sql.OrderSelectAs("receiver_count"))...,
+			)
+		},
+		toCursor: func(o *Order) Cursor {
+			cv, _ := o.Value("receiver_count")
+			return Cursor{
+				ID:    o.ID,
+				Value: cv,
+			}
+		},
+	}
 )
 
 // String implement fmt.Stringer interface.
@@ -425,6 +453,8 @@ func (f OrderOrderField) String() string {
 		str = "CREAT_AT"
 	case OrderOrderFieldUpdatedAt.column:
 		str = "UPDATED_AT"
+	case OrderOrderFieldReceiverCount.column:
+		str = "RECEIVER_COUNT"
 	}
 	return str
 }
@@ -455,6 +485,8 @@ func (f *OrderOrderField) UnmarshalGQL(v interface{}) error {
 		*f = *OrderOrderFieldCreatedAt
 	case "UPDATED_AT":
 		*f = *OrderOrderFieldUpdatedAt
+	case "RECEIVER_COUNT":
+		*f = *OrderOrderFieldReceiverCount
 	default:
 		return fmt.Errorf("%s is not a valid OrderOrderField", str)
 	}
@@ -635,8 +667,12 @@ func (p *userPager) applyOrder(query *UserQuery) *UserQuery {
 	if p.order.Field != DefaultUserOrder.Field {
 		query = query.Order(DefaultUserOrder.Field.toTerm(direction.OrderTermOption()))
 	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
+	switch p.order.Field.column {
+	case UserOrderFieldRequestedCount.column, UserOrderFieldReceivedCount.column:
+	default:
+		if len(query.ctx.Fields) > 0 {
+			query.ctx.AppendFieldOnce(p.order.Field.column)
+		}
 	}
 	return query
 }
@@ -646,8 +682,13 @@ func (p *userPager) orderExpr(query *UserQuery) sql.Querier {
 	if p.reverse {
 		direction = direction.Reverse()
 	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
+	switch p.order.Field.column {
+	case UserOrderFieldRequestedCount.column, UserOrderFieldReceivedCount.column:
+		query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
+	default:
+		if len(query.ctx.Fields) > 0 {
+			query.ctx.AppendFieldOnce(p.order.Field.column)
+		}
 	}
 	return sql.ExprFunc(func(b *sql.Builder) {
 		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
@@ -794,6 +835,44 @@ var (
 			}
 		},
 	}
+	// UserOrderFieldRequestedCount orders by REQUESTED_COUNT.
+	UserOrderFieldRequestedCount = &UserOrderField{
+		Value: func(u *User) (ent.Value, error) {
+			return u.Value("requested_count")
+		},
+		column: "requested_count",
+		toTerm: func(opts ...sql.OrderTermOption) user.OrderOption {
+			return user.ByRequestedCount(
+				append(opts, sql.OrderSelectAs("requested_count"))...,
+			)
+		},
+		toCursor: func(u *User) Cursor {
+			cv, _ := u.Value("requested_count")
+			return Cursor{
+				ID:    u.ID,
+				Value: cv,
+			}
+		},
+	}
+	// UserOrderFieldReceivedCount orders by RECEIVED_COUNT.
+	UserOrderFieldReceivedCount = &UserOrderField{
+		Value: func(u *User) (ent.Value, error) {
+			return u.Value("received_count")
+		},
+		column: "received_count",
+		toTerm: func(opts ...sql.OrderTermOption) user.OrderOption {
+			return user.ByReceivedCount(
+				append(opts, sql.OrderSelectAs("received_count"))...,
+			)
+		},
+		toCursor: func(u *User) Cursor {
+			cv, _ := u.Value("received_count")
+			return Cursor{
+				ID:    u.ID,
+				Value: cv,
+			}
+		},
+	}
 )
 
 // String implement fmt.Stringer interface.
@@ -812,6 +891,10 @@ func (f UserOrderField) String() string {
 		str = "CREAT_AT"
 	case UserOrderFieldUpdatedAt.column:
 		str = "UPDATED_AT"
+	case UserOrderFieldRequestedCount.column:
+		str = "REQUESTED_COUNT"
+	case UserOrderFieldReceivedCount.column:
+		str = "RECEIVED_COUNT"
 	}
 	return str
 }
@@ -840,6 +923,10 @@ func (f *UserOrderField) UnmarshalGQL(v interface{}) error {
 		*f = *UserOrderFieldCreatedAt
 	case "UPDATED_AT":
 		*f = *UserOrderFieldUpdatedAt
+	case "REQUESTED_COUNT":
+		*f = *UserOrderFieldRequestedCount
+	case "RECEIVED_COUNT":
+		*f = *UserOrderFieldReceivedCount
 	default:
 		return fmt.Errorf("%s is not a valid UserOrderField", str)
 	}

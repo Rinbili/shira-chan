@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"entgo.io/contrib/entgql"
 	"github.com/gin-gonic/gin"
 	"log"
 	"os"
@@ -35,6 +36,7 @@ func GraphqlHandler() gin.HandlerFunc {
 	// NewExecutableSchema and Config are in the generated.go file
 	// Resolver is in the resolver.go file
 	h := handler.NewDefaultServer(graph.NewSchema(client))
+	h.Use(entgql.Transactioner{TxOpener: client})
 
 	return func(c *gin.Context) {
 		h.ServeHTTP(c.Writer, c.Request)

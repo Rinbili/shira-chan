@@ -19,16 +19,16 @@ import (
 // UserQuery is the builder for querying User entities.
 type UserQuery struct {
 	config
-	ctx               *QueryContext
-	order             []user.OrderOption
-	inters            []Interceptor
-	predicates        []predicate.User
-	withRequests      *OrderQuery
-	withReceiver      *OrderQuery
-	modifiers         []func(*sql.Selector)
-	loadTotal         []func(context.Context, []*User) error
-	withNamedRequests map[string]*OrderQuery
-	withNamedReceiver map[string]*OrderQuery
+	ctx                *QueryContext
+	order              []user.OrderOption
+	inters             []Interceptor
+	predicates         []predicate.User
+	withRequested      *OrderQuery
+	withReceived       *OrderQuery
+	modifiers          []func(*sql.Selector)
+	loadTotal          []func(context.Context, []*User) error
+	withNamedRequested map[string]*OrderQuery
+	withNamedReceived  map[string]*OrderQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -65,8 +65,8 @@ func (uq *UserQuery) Order(o ...user.OrderOption) *UserQuery {
 	return uq
 }
 
-// QueryRequests chains the current query on the "requests" edge.
-func (uq *UserQuery) QueryRequests() *OrderQuery {
+// QueryRequested chains the current query on the "requested" edge.
+func (uq *UserQuery) QueryRequested() *OrderQuery {
 	query := (&OrderClient{config: uq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := uq.prepareQuery(ctx); err != nil {
@@ -79,7 +79,7 @@ func (uq *UserQuery) QueryRequests() *OrderQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(order.Table, order.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.RequestsTable, user.RequestsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.RequestedTable, user.RequestedColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -87,8 +87,8 @@ func (uq *UserQuery) QueryRequests() *OrderQuery {
 	return query
 }
 
-// QueryReceiver chains the current query on the "receiver" edge.
-func (uq *UserQuery) QueryReceiver() *OrderQuery {
+// QueryReceived chains the current query on the "received" edge.
+func (uq *UserQuery) QueryReceived() *OrderQuery {
 	query := (&OrderClient{config: uq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := uq.prepareQuery(ctx); err != nil {
@@ -101,7 +101,7 @@ func (uq *UserQuery) QueryReceiver() *OrderQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(order.Table, order.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, user.ReceiverTable, user.ReceiverPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, true, user.ReceivedTable, user.ReceivedPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -296,38 +296,38 @@ func (uq *UserQuery) Clone() *UserQuery {
 		return nil
 	}
 	return &UserQuery{
-		config:       uq.config,
-		ctx:          uq.ctx.Clone(),
-		order:        append([]user.OrderOption{}, uq.order...),
-		inters:       append([]Interceptor{}, uq.inters...),
-		predicates:   append([]predicate.User{}, uq.predicates...),
-		withRequests: uq.withRequests.Clone(),
-		withReceiver: uq.withReceiver.Clone(),
+		config:        uq.config,
+		ctx:           uq.ctx.Clone(),
+		order:         append([]user.OrderOption{}, uq.order...),
+		inters:        append([]Interceptor{}, uq.inters...),
+		predicates:    append([]predicate.User{}, uq.predicates...),
+		withRequested: uq.withRequested.Clone(),
+		withReceived:  uq.withReceived.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
 	}
 }
 
-// WithRequests tells the query-builder to eager-load the nodes that are connected to
-// the "requests" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithRequests(opts ...func(*OrderQuery)) *UserQuery {
+// WithRequested tells the query-builder to eager-load the nodes that are connected to
+// the "requested" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithRequested(opts ...func(*OrderQuery)) *UserQuery {
 	query := (&OrderClient{config: uq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	uq.withRequests = query
+	uq.withRequested = query
 	return uq
 }
 
-// WithReceiver tells the query-builder to eager-load the nodes that are connected to
-// the "receiver" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithReceiver(opts ...func(*OrderQuery)) *UserQuery {
+// WithReceived tells the query-builder to eager-load the nodes that are connected to
+// the "received" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithReceived(opts ...func(*OrderQuery)) *UserQuery {
 	query := (&OrderClient{config: uq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	uq.withReceiver = query
+	uq.withReceived = query
 	return uq
 }
 
@@ -410,8 +410,8 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
 		loadedTypes = [2]bool{
-			uq.withRequests != nil,
-			uq.withReceiver != nil,
+			uq.withRequested != nil,
+			uq.withReceived != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -435,31 +435,31 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := uq.withRequests; query != nil {
-		if err := uq.loadRequests(ctx, query, nodes,
-			func(n *User) { n.Edges.Requests = []*Order{} },
-			func(n *User, e *Order) { n.Edges.Requests = append(n.Edges.Requests, e) }); err != nil {
+	if query := uq.withRequested; query != nil {
+		if err := uq.loadRequested(ctx, query, nodes,
+			func(n *User) { n.Edges.Requested = []*Order{} },
+			func(n *User, e *Order) { n.Edges.Requested = append(n.Edges.Requested, e) }); err != nil {
 			return nil, err
 		}
 	}
-	if query := uq.withReceiver; query != nil {
-		if err := uq.loadReceiver(ctx, query, nodes,
-			func(n *User) { n.Edges.Receiver = []*Order{} },
-			func(n *User, e *Order) { n.Edges.Receiver = append(n.Edges.Receiver, e) }); err != nil {
+	if query := uq.withReceived; query != nil {
+		if err := uq.loadReceived(ctx, query, nodes,
+			func(n *User) { n.Edges.Received = []*Order{} },
+			func(n *User, e *Order) { n.Edges.Received = append(n.Edges.Received, e) }); err != nil {
 			return nil, err
 		}
 	}
-	for name, query := range uq.withNamedRequests {
-		if err := uq.loadRequests(ctx, query, nodes,
-			func(n *User) { n.appendNamedRequests(name) },
-			func(n *User, e *Order) { n.appendNamedRequests(name, e) }); err != nil {
+	for name, query := range uq.withNamedRequested {
+		if err := uq.loadRequested(ctx, query, nodes,
+			func(n *User) { n.appendNamedRequested(name) },
+			func(n *User, e *Order) { n.appendNamedRequested(name, e) }); err != nil {
 			return nil, err
 		}
 	}
-	for name, query := range uq.withNamedReceiver {
-		if err := uq.loadReceiver(ctx, query, nodes,
-			func(n *User) { n.appendNamedReceiver(name) },
-			func(n *User, e *Order) { n.appendNamedReceiver(name, e) }); err != nil {
+	for name, query := range uq.withNamedReceived {
+		if err := uq.loadReceived(ctx, query, nodes,
+			func(n *User) { n.appendNamedReceived(name) },
+			func(n *User, e *Order) { n.appendNamedReceived(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -471,7 +471,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	return nodes, nil
 }
 
-func (uq *UserQuery) loadRequests(ctx context.Context, query *OrderQuery, nodes []*User, init func(*User), assign func(*User, *Order)) error {
+func (uq *UserQuery) loadRequested(ctx context.Context, query *OrderQuery, nodes []*User, init func(*User), assign func(*User, *Order)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int]*User)
 	for i := range nodes {
@@ -483,26 +483,26 @@ func (uq *UserQuery) loadRequests(ctx context.Context, query *OrderQuery, nodes 
 	}
 	query.withFKs = true
 	query.Where(predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(user.RequestsColumn), fks...))
+		s.Where(sql.InValues(s.C(user.RequestedColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.user_requests
+		fk := n.user_requested
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "user_requests" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "user_requested" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "user_requests" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "user_requested" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
 	return nil
 }
-func (uq *UserQuery) loadReceiver(ctx context.Context, query *OrderQuery, nodes []*User, init func(*User), assign func(*User, *Order)) error {
+func (uq *UserQuery) loadReceived(ctx context.Context, query *OrderQuery, nodes []*User, init func(*User), assign func(*User, *Order)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
 	byID := make(map[int]*User)
 	nids := make(map[int]map[*User]struct{})
@@ -514,11 +514,11 @@ func (uq *UserQuery) loadReceiver(ctx context.Context, query *OrderQuery, nodes 
 		}
 	}
 	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(user.ReceiverTable)
-		s.Join(joinT).On(s.C(order.FieldID), joinT.C(user.ReceiverPrimaryKey[0]))
-		s.Where(sql.InValues(joinT.C(user.ReceiverPrimaryKey[1]), edgeIDs...))
+		joinT := sql.Table(user.ReceivedTable)
+		s.Join(joinT).On(s.C(order.FieldID), joinT.C(user.ReceivedPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(user.ReceivedPrimaryKey[1]), edgeIDs...))
 		columns := s.SelectedColumns()
-		s.Select(joinT.C(user.ReceiverPrimaryKey[1]))
+		s.Select(joinT.C(user.ReceivedPrimaryKey[1]))
 		s.AppendSelect(columns...)
 		s.SetDistinct(false)
 	})
@@ -555,7 +555,7 @@ func (uq *UserQuery) loadReceiver(ctx context.Context, query *OrderQuery, nodes 
 	for _, n := range neighbors {
 		nodes, ok := nids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected "receiver" node returned %v`, n.ID)
+			return fmt.Errorf(`unexpected "received" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)
@@ -648,31 +648,31 @@ func (uq *UserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
-// WithNamedRequests tells the query-builder to eager-load the nodes that are connected to the "requests"
+// WithNamedRequested tells the query-builder to eager-load the nodes that are connected to the "requested"
 // edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithNamedRequests(name string, opts ...func(*OrderQuery)) *UserQuery {
+func (uq *UserQuery) WithNamedRequested(name string, opts ...func(*OrderQuery)) *UserQuery {
 	query := (&OrderClient{config: uq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	if uq.withNamedRequests == nil {
-		uq.withNamedRequests = make(map[string]*OrderQuery)
+	if uq.withNamedRequested == nil {
+		uq.withNamedRequested = make(map[string]*OrderQuery)
 	}
-	uq.withNamedRequests[name] = query
+	uq.withNamedRequested[name] = query
 	return uq
 }
 
-// WithNamedReceiver tells the query-builder to eager-load the nodes that are connected to the "receiver"
+// WithNamedReceived tells the query-builder to eager-load the nodes that are connected to the "received"
 // edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithNamedReceiver(name string, opts ...func(*OrderQuery)) *UserQuery {
+func (uq *UserQuery) WithNamedReceived(name string, opts ...func(*OrderQuery)) *UserQuery {
 	query := (&OrderClient{config: uq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	if uq.withNamedReceiver == nil {
-		uq.withNamedReceiver = make(map[string]*OrderQuery)
+	if uq.withNamedReceived == nil {
+		uq.withNamedReceived = make(map[string]*OrderQuery)
 	}
-	uq.withNamedReceiver[name] = query
+	uq.withNamedReceived[name] = query
 	return uq
 }
 

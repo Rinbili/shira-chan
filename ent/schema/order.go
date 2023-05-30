@@ -20,6 +20,7 @@ func (Order) Annotations() []schema.Annotation {
 		entsql.Annotation{Table: "Orders"},
 		entgql.RelayConnection(),
 		entgql.QueryField(),
+		////多字段排序，貌似用不到
 		//entgql.MultiOrder(),
 		entgql.Mutations(
 			entgql.MutationCreate(),
@@ -38,6 +39,7 @@ func (Order) Fields() []ent.Field {
 			NotEmpty(),
 		field.Text("content").
 			MaxLen(15000).
+			////内容排序，应该用不到
 			//Annotations(
 			//	entgql.OrderField("CONTENT")).
 			Comment("内容").
@@ -101,13 +103,13 @@ func (Order) Fields() []ent.Field {
 func (Order) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("requester", User.Type).
-			Ref("requests").
+			Ref("requested").
 			Unique().
 			Comment("需求者"),
-		edge.To("receives", User.Type).
-			//Annotations(
-			//	entgql.RelayConnection(),
-			//	entgql.OrderField("RECEIVES_COUNT")).
+		edge.To("receiver", User.Type).
+			Annotations(
+				entgql.RelayConnection(),
+				entgql.OrderField("RECEIVER_COUNT")).
 			Comment("接单者"),
 	}
 }

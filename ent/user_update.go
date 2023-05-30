@@ -109,34 +109,34 @@ func (uu *UserUpdate) SetUpdatedAt(t time.Time) *UserUpdate {
 	return uu
 }
 
-// AddRequestIDs adds the "requests" edge to the Order entity by IDs.
-func (uu *UserUpdate) AddRequestIDs(ids ...int) *UserUpdate {
-	uu.mutation.AddRequestIDs(ids...)
+// AddRequestedIDs adds the "requested" edge to the Order entity by IDs.
+func (uu *UserUpdate) AddRequestedIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddRequestedIDs(ids...)
 	return uu
 }
 
-// AddRequests adds the "requests" edges to the Order entity.
-func (uu *UserUpdate) AddRequests(o ...*Order) *UserUpdate {
+// AddRequested adds the "requested" edges to the Order entity.
+func (uu *UserUpdate) AddRequested(o ...*Order) *UserUpdate {
 	ids := make([]int, len(o))
 	for i := range o {
 		ids[i] = o[i].ID
 	}
-	return uu.AddRequestIDs(ids...)
+	return uu.AddRequestedIDs(ids...)
 }
 
-// AddReceiverIDs adds the "receiver" edge to the Order entity by IDs.
-func (uu *UserUpdate) AddReceiverIDs(ids ...int) *UserUpdate {
-	uu.mutation.AddReceiverIDs(ids...)
+// AddReceivedIDs adds the "received" edge to the Order entity by IDs.
+func (uu *UserUpdate) AddReceivedIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddReceivedIDs(ids...)
 	return uu
 }
 
-// AddReceiver adds the "receiver" edges to the Order entity.
-func (uu *UserUpdate) AddReceiver(o ...*Order) *UserUpdate {
+// AddReceived adds the "received" edges to the Order entity.
+func (uu *UserUpdate) AddReceived(o ...*Order) *UserUpdate {
 	ids := make([]int, len(o))
 	for i := range o {
 		ids[i] = o[i].ID
 	}
-	return uu.AddReceiverIDs(ids...)
+	return uu.AddReceivedIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -144,46 +144,46 @@ func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
 }
 
-// ClearRequests clears all "requests" edges to the Order entity.
-func (uu *UserUpdate) ClearRequests() *UserUpdate {
-	uu.mutation.ClearRequests()
+// ClearRequested clears all "requested" edges to the Order entity.
+func (uu *UserUpdate) ClearRequested() *UserUpdate {
+	uu.mutation.ClearRequested()
 	return uu
 }
 
-// RemoveRequestIDs removes the "requests" edge to Order entities by IDs.
-func (uu *UserUpdate) RemoveRequestIDs(ids ...int) *UserUpdate {
-	uu.mutation.RemoveRequestIDs(ids...)
+// RemoveRequestedIDs removes the "requested" edge to Order entities by IDs.
+func (uu *UserUpdate) RemoveRequestedIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveRequestedIDs(ids...)
 	return uu
 }
 
-// RemoveRequests removes "requests" edges to Order entities.
-func (uu *UserUpdate) RemoveRequests(o ...*Order) *UserUpdate {
+// RemoveRequested removes "requested" edges to Order entities.
+func (uu *UserUpdate) RemoveRequested(o ...*Order) *UserUpdate {
 	ids := make([]int, len(o))
 	for i := range o {
 		ids[i] = o[i].ID
 	}
-	return uu.RemoveRequestIDs(ids...)
+	return uu.RemoveRequestedIDs(ids...)
 }
 
-// ClearReceiver clears all "receiver" edges to the Order entity.
-func (uu *UserUpdate) ClearReceiver() *UserUpdate {
-	uu.mutation.ClearReceiver()
+// ClearReceived clears all "received" edges to the Order entity.
+func (uu *UserUpdate) ClearReceived() *UserUpdate {
+	uu.mutation.ClearReceived()
 	return uu
 }
 
-// RemoveReceiverIDs removes the "receiver" edge to Order entities by IDs.
-func (uu *UserUpdate) RemoveReceiverIDs(ids ...int) *UserUpdate {
-	uu.mutation.RemoveReceiverIDs(ids...)
+// RemoveReceivedIDs removes the "received" edge to Order entities by IDs.
+func (uu *UserUpdate) RemoveReceivedIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveReceivedIDs(ids...)
 	return uu
 }
 
-// RemoveReceiver removes "receiver" edges to Order entities.
-func (uu *UserUpdate) RemoveReceiver(o ...*Order) *UserUpdate {
+// RemoveReceived removes "received" edges to Order entities.
+func (uu *UserUpdate) RemoveReceived(o ...*Order) *UserUpdate {
 	ids := make([]int, len(o))
 	for i := range o {
 		ids[i] = o[i].ID
 	}
-	return uu.RemoveReceiverIDs(ids...)
+	return uu.RemoveReceivedIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -298,12 +298,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if uu.mutation.RequestsCleared() {
+	if uu.mutation.RequestedCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.RequestsTable,
-			Columns: []string{user.RequestsColumn},
+			Table:   user.RequestedTable,
+			Columns: []string{user.RequestedColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeInt),
@@ -311,12 +311,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uu.mutation.RemovedRequestsIDs(); len(nodes) > 0 && !uu.mutation.RequestsCleared() {
+	if nodes := uu.mutation.RemovedRequestedIDs(); len(nodes) > 0 && !uu.mutation.RequestedCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.RequestsTable,
-			Columns: []string{user.RequestsColumn},
+			Table:   user.RequestedTable,
+			Columns: []string{user.RequestedColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeInt),
@@ -327,12 +327,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uu.mutation.RequestsIDs(); len(nodes) > 0 {
+	if nodes := uu.mutation.RequestedIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.RequestsTable,
-			Columns: []string{user.RequestsColumn},
+			Table:   user.RequestedTable,
+			Columns: []string{user.RequestedColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeInt),
@@ -343,12 +343,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if uu.mutation.ReceiverCleared() {
+	if uu.mutation.ReceivedCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   user.ReceiverTable,
-			Columns: user.ReceiverPrimaryKey,
+			Table:   user.ReceivedTable,
+			Columns: user.ReceivedPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeInt),
@@ -356,12 +356,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uu.mutation.RemovedReceiverIDs(); len(nodes) > 0 && !uu.mutation.ReceiverCleared() {
+	if nodes := uu.mutation.RemovedReceivedIDs(); len(nodes) > 0 && !uu.mutation.ReceivedCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   user.ReceiverTable,
-			Columns: user.ReceiverPrimaryKey,
+			Table:   user.ReceivedTable,
+			Columns: user.ReceivedPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeInt),
@@ -372,12 +372,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uu.mutation.ReceiverIDs(); len(nodes) > 0 {
+	if nodes := uu.mutation.ReceivedIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   user.ReceiverTable,
-			Columns: user.ReceiverPrimaryKey,
+			Table:   user.ReceivedTable,
+			Columns: user.ReceivedPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeInt),
@@ -488,34 +488,34 @@ func (uuo *UserUpdateOne) SetUpdatedAt(t time.Time) *UserUpdateOne {
 	return uuo
 }
 
-// AddRequestIDs adds the "requests" edge to the Order entity by IDs.
-func (uuo *UserUpdateOne) AddRequestIDs(ids ...int) *UserUpdateOne {
-	uuo.mutation.AddRequestIDs(ids...)
+// AddRequestedIDs adds the "requested" edge to the Order entity by IDs.
+func (uuo *UserUpdateOne) AddRequestedIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddRequestedIDs(ids...)
 	return uuo
 }
 
-// AddRequests adds the "requests" edges to the Order entity.
-func (uuo *UserUpdateOne) AddRequests(o ...*Order) *UserUpdateOne {
+// AddRequested adds the "requested" edges to the Order entity.
+func (uuo *UserUpdateOne) AddRequested(o ...*Order) *UserUpdateOne {
 	ids := make([]int, len(o))
 	for i := range o {
 		ids[i] = o[i].ID
 	}
-	return uuo.AddRequestIDs(ids...)
+	return uuo.AddRequestedIDs(ids...)
 }
 
-// AddReceiverIDs adds the "receiver" edge to the Order entity by IDs.
-func (uuo *UserUpdateOne) AddReceiverIDs(ids ...int) *UserUpdateOne {
-	uuo.mutation.AddReceiverIDs(ids...)
+// AddReceivedIDs adds the "received" edge to the Order entity by IDs.
+func (uuo *UserUpdateOne) AddReceivedIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddReceivedIDs(ids...)
 	return uuo
 }
 
-// AddReceiver adds the "receiver" edges to the Order entity.
-func (uuo *UserUpdateOne) AddReceiver(o ...*Order) *UserUpdateOne {
+// AddReceived adds the "received" edges to the Order entity.
+func (uuo *UserUpdateOne) AddReceived(o ...*Order) *UserUpdateOne {
 	ids := make([]int, len(o))
 	for i := range o {
 		ids[i] = o[i].ID
 	}
-	return uuo.AddReceiverIDs(ids...)
+	return uuo.AddReceivedIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -523,46 +523,46 @@ func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
 }
 
-// ClearRequests clears all "requests" edges to the Order entity.
-func (uuo *UserUpdateOne) ClearRequests() *UserUpdateOne {
-	uuo.mutation.ClearRequests()
+// ClearRequested clears all "requested" edges to the Order entity.
+func (uuo *UserUpdateOne) ClearRequested() *UserUpdateOne {
+	uuo.mutation.ClearRequested()
 	return uuo
 }
 
-// RemoveRequestIDs removes the "requests" edge to Order entities by IDs.
-func (uuo *UserUpdateOne) RemoveRequestIDs(ids ...int) *UserUpdateOne {
-	uuo.mutation.RemoveRequestIDs(ids...)
+// RemoveRequestedIDs removes the "requested" edge to Order entities by IDs.
+func (uuo *UserUpdateOne) RemoveRequestedIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveRequestedIDs(ids...)
 	return uuo
 }
 
-// RemoveRequests removes "requests" edges to Order entities.
-func (uuo *UserUpdateOne) RemoveRequests(o ...*Order) *UserUpdateOne {
+// RemoveRequested removes "requested" edges to Order entities.
+func (uuo *UserUpdateOne) RemoveRequested(o ...*Order) *UserUpdateOne {
 	ids := make([]int, len(o))
 	for i := range o {
 		ids[i] = o[i].ID
 	}
-	return uuo.RemoveRequestIDs(ids...)
+	return uuo.RemoveRequestedIDs(ids...)
 }
 
-// ClearReceiver clears all "receiver" edges to the Order entity.
-func (uuo *UserUpdateOne) ClearReceiver() *UserUpdateOne {
-	uuo.mutation.ClearReceiver()
+// ClearReceived clears all "received" edges to the Order entity.
+func (uuo *UserUpdateOne) ClearReceived() *UserUpdateOne {
+	uuo.mutation.ClearReceived()
 	return uuo
 }
 
-// RemoveReceiverIDs removes the "receiver" edge to Order entities by IDs.
-func (uuo *UserUpdateOne) RemoveReceiverIDs(ids ...int) *UserUpdateOne {
-	uuo.mutation.RemoveReceiverIDs(ids...)
+// RemoveReceivedIDs removes the "received" edge to Order entities by IDs.
+func (uuo *UserUpdateOne) RemoveReceivedIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveReceivedIDs(ids...)
 	return uuo
 }
 
-// RemoveReceiver removes "receiver" edges to Order entities.
-func (uuo *UserUpdateOne) RemoveReceiver(o ...*Order) *UserUpdateOne {
+// RemoveReceived removes "received" edges to Order entities.
+func (uuo *UserUpdateOne) RemoveReceived(o ...*Order) *UserUpdateOne {
 	ids := make([]int, len(o))
 	for i := range o {
 		ids[i] = o[i].ID
 	}
-	return uuo.RemoveReceiverIDs(ids...)
+	return uuo.RemoveReceivedIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -707,12 +707,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if value, ok := uuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if uuo.mutation.RequestsCleared() {
+	if uuo.mutation.RequestedCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.RequestsTable,
-			Columns: []string{user.RequestsColumn},
+			Table:   user.RequestedTable,
+			Columns: []string{user.RequestedColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeInt),
@@ -720,12 +720,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uuo.mutation.RemovedRequestsIDs(); len(nodes) > 0 && !uuo.mutation.RequestsCleared() {
+	if nodes := uuo.mutation.RemovedRequestedIDs(); len(nodes) > 0 && !uuo.mutation.RequestedCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.RequestsTable,
-			Columns: []string{user.RequestsColumn},
+			Table:   user.RequestedTable,
+			Columns: []string{user.RequestedColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeInt),
@@ -736,12 +736,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uuo.mutation.RequestsIDs(); len(nodes) > 0 {
+	if nodes := uuo.mutation.RequestedIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.RequestsTable,
-			Columns: []string{user.RequestsColumn},
+			Table:   user.RequestedTable,
+			Columns: []string{user.RequestedColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeInt),
@@ -752,12 +752,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if uuo.mutation.ReceiverCleared() {
+	if uuo.mutation.ReceivedCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   user.ReceiverTable,
-			Columns: user.ReceiverPrimaryKey,
+			Table:   user.ReceivedTable,
+			Columns: user.ReceivedPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeInt),
@@ -765,12 +765,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uuo.mutation.RemovedReceiverIDs(); len(nodes) > 0 && !uuo.mutation.ReceiverCleared() {
+	if nodes := uuo.mutation.RemovedReceivedIDs(); len(nodes) > 0 && !uuo.mutation.ReceivedCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   user.ReceiverTable,
-			Columns: user.ReceiverPrimaryKey,
+			Table:   user.ReceivedTable,
+			Columns: user.ReceivedPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeInt),
@@ -781,12 +781,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uuo.mutation.ReceiverIDs(); len(nodes) > 0 {
+	if nodes := uuo.mutation.ReceivedIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   user.ReceiverTable,
-			Columns: user.ReceiverPrimaryKey,
+			Table:   user.ReceivedTable,
+			Columns: user.ReceivedPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeInt),

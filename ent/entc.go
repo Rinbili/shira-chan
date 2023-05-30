@@ -1,7 +1,7 @@
 //go:build ignore
 // +build ignore
 
-package ent
+package main
 
 import (
 	"log"

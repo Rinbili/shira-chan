@@ -6,8 +6,9 @@ package graph
 
 import (
 	"context"
-	"entgo.io/contrib/entgql"
 	"shira-chan-dev/ent"
+
+	"entgo.io/contrib/entgql"
 )
 
 // Node is the resolver for the node field.
