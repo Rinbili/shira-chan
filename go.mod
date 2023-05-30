@@ -6,6 +6,7 @@ require (
 	entgo.io/contrib v0.4.6-0.20230528061351-71a92f4e190c
 	entgo.io/ent v0.12.3
 	github.com/99designs/gqlgen v0.17.31
+	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/hashicorp/go-multierror v1.1.1

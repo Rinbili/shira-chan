@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"shira-chan-dev/app/handlers"
@@ -8,6 +9,12 @@ import (
 
 func main() {
 	r := gin.Default()
+	corsConf := cors.DefaultConfig()
+	corsConf.AllowAllOrigins = true
+	corsConf.AllowMethods = []string{"GET", "POST", "DELETE", "OPTIONS", "PUT"}
+	corsConf.AllowHeaders = []string{"Authorization", "Content-Type", "Upgrade", "Origin",
+		"Connection", "Accept-Encoding", "Accept-Language", "Host", "Access-Control-Request-Method", "Access-Control-Request-Headers"}
+	r.Use(cors.New(corsConf))
 	r.POST("/query", handlers.GraphqlHandler())
 	r.GET("/graphql", handlers.PlaygroundHandler())
 	err := r.Run()
