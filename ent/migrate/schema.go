@@ -41,7 +41,7 @@ var (
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "uname", Type: field.TypeString, Size: 30},
-		{Name: "passwd", Type: field.TypeString, Size: 20},
+		{Name: "passwd", Type: field.TypeString, Size: 2147483647},
 		{Name: "phone", Type: field.TypeString, Unique: true, Size: 15},
 		{Name: "wechat", Type: field.TypeString, Size: 30, Default: ""},
 		{Name: "level", Type: field.TypeEnum, Enums: []string{"root", "admin", "president", "minister", "member", "user", "banned"}, Default: "user"},

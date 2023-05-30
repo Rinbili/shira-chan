@@ -37,7 +37,6 @@ func (User) Fields() []ent.Field {
 			Comment("用户名").
 			NotEmpty(),
 		field.Text("passwd").
-			MaxLen(20).
 			Sensitive().
 			Comment("密码").
 			NotEmpty(),

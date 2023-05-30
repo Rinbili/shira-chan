@@ -6,13 +6,44 @@ package graph
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"shira-chan-dev/app/utils"
 	"shira-chan-dev/ent"
+	"shira-chan-dev/ent/user"
 )
 
-// CreateUser is the resolver for the createUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, input ent.CreateUserInput) (*ent.User, error) {
+// Signup is the resolver for the signup field.
+func (r *mutationResolver) Signup(ctx context.Context, phone string, password string, uname string) (*ent.User, error) {
 	client := ent.FromContext(ctx)
-	return client.User.Create().SetInput(input).Save(ctx)
+	passwd, err := utils.GetPwd(password)
+	if err != nil {
+		return nil, err
+	}
+	return client.User.Create().
+		SetUname(uname).
+		SetPhone(phone).
+		SetPasswd(string(passwd)).
+		Save(ctx)
+}
+
+// Login is the resolver for the login field.
+func (r *mutationResolver) Login(ctx context.Context, phone string, password string) (*Token, error) {
+	u, err := r.client.User.Query().
+		Where(user.PhoneEQ(phone)).Only(ctx)
+	if err != nil || u.Level == "banned" {
+		return nil, errors.New("bad user")
+	}
+	if utils.ComparePwd(u.Passwd, password) {
+		token, err := utils.GetToken(u.ID, u.Uname, u.Level.String())
+		return &Token{Token: &token}, err
+	}
+	return nil, errors.New("bad passwd")
+}
+
+// Logout is the resolver for the logout field.
+func (r *mutationResolver) Logout(ctx context.Context) (*ent.User, error) {
+	return nil, nil
 }
 
 // CreateOrder is the resolver for the createOrder field.
@@ -37,3 +68,17 @@ func (r *mutationResolver) UpdateOrder(ctx context.Context, id int, input ent.Up
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
 type mutationResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *userWhereInputResolver) IsCompleted(ctx context.Context, obj *ent.UserWhereInput, data *bool) error {
+	panic(fmt.Errorf("not implemented: IsCompleted - isCompleted"))
+}
+func (r *mutationResolver) CreateUser(ctx context.Context, input ent.CreateUserInput) (*ent.User, error) {
+	client := ent.FromContext(ctx)
+	return client.User.Create().SetInput(input).Save(ctx)
+}

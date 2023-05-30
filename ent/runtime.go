@@ -92,21 +92,7 @@ func init() {
 	// userDescPasswd is the schema descriptor for passwd field.
 	userDescPasswd := userFields[1].Descriptor()
 	// user.PasswdValidator is a validator for the "passwd" field. It is called by the builders before save.
-	user.PasswdValidator = func() func(string) error {
-		validators := userDescPasswd.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(passwd string) error {
-			for _, fn := range fns {
-				if err := fn(passwd); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
+	user.PasswdValidator = userDescPasswd.Validators[0].(func(string) error)
 	// userDescPhone is the schema descriptor for phone field.
 	userDescPhone := userFields[2].Descriptor()
 	// user.PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
