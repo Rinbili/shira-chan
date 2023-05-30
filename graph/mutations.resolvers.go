@@ -7,7 +7,6 @@ package graph
 import (
 	"context"
 	"errors"
-	"fmt"
 	"shira-chan-dev/app/utils"
 	"shira-chan-dev/ent"
 	"shira-chan-dev/ent/user"
@@ -75,9 +74,6 @@ type mutationResolver struct{ *Resolver }
 //   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
 //     it when you're done.
 //   - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *userWhereInputResolver) IsCompleted(ctx context.Context, obj *ent.UserWhereInput, data *bool) error {
-	panic(fmt.Errorf("not implemented: IsCompleted - isCompleted"))
-}
 func (r *mutationResolver) CreateUser(ctx context.Context, input ent.CreateUserInput) (*ent.User, error) {
 	client := ent.FromContext(ctx)
 	return client.User.Create().SetInput(input).Save(ctx)
