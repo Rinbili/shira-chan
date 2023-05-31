@@ -40,29 +40,43 @@ func (oc *OrderCreate) SetContact(s string) *OrderCreate {
 }
 
 // SetType sets the "type" field.
-func (oc *OrderCreate) SetType(o order.Type) *OrderCreate {
-	oc.mutation.SetType(o)
+func (oc *OrderCreate) SetType(s string) *OrderCreate {
+	oc.mutation.SetType(s)
 	return oc
 }
 
 // SetNillableType sets the "type" field if the given value is not nil.
-func (oc *OrderCreate) SetNillableType(o *order.Type) *OrderCreate {
-	if o != nil {
-		oc.SetType(*o)
+func (oc *OrderCreate) SetNillableType(s *string) *OrderCreate {
+	if s != nil {
+		oc.SetType(*s)
 	}
 	return oc
 }
 
-// SetStatus sets the "status" field.
-func (oc *OrderCreate) SetStatus(o order.Status) *OrderCreate {
-	oc.mutation.SetStatus(o)
+// SetIsClosed sets the "is_closed" field.
+func (oc *OrderCreate) SetIsClosed(b bool) *OrderCreate {
+	oc.mutation.SetIsClosed(b)
 	return oc
 }
 
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (oc *OrderCreate) SetNillableStatus(o *order.Status) *OrderCreate {
-	if o != nil {
-		oc.SetStatus(*o)
+// SetNillableIsClosed sets the "is_closed" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableIsClosed(b *bool) *OrderCreate {
+	if b != nil {
+		oc.SetIsClosed(*b)
+	}
+	return oc
+}
+
+// SetIsFinished sets the "is_finished" field.
+func (oc *OrderCreate) SetIsFinished(b bool) *OrderCreate {
+	oc.mutation.SetIsFinished(b)
+	return oc
+}
+
+// SetNillableIsFinished sets the "is_finished" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableIsFinished(b *bool) *OrderCreate {
+	if b != nil {
+		oc.SetIsFinished(*b)
 	}
 	return oc
 }
@@ -70,14 +84,6 @@ func (oc *OrderCreate) SetNillableStatus(o *order.Status) *OrderCreate {
 // SetEvaluation sets the "evaluation" field.
 func (oc *OrderCreate) SetEvaluation(f float64) *OrderCreate {
 	oc.mutation.SetEvaluation(f)
-	return oc
-}
-
-// SetNillableEvaluation sets the "evaluation" field if the given value is not nil.
-func (oc *OrderCreate) SetNillableEvaluation(f *float64) *OrderCreate {
-	if f != nil {
-		oc.SetEvaluation(*f)
-	}
 	return oc
 }
 
@@ -196,12 +202,16 @@ func (oc *OrderCreate) defaults() {
 		v := order.DefaultType
 		oc.mutation.SetType(v)
 	}
-	if _, ok := oc.mutation.Status(); !ok {
-		v := order.DefaultStatus
-		oc.mutation.SetStatus(v)
+	if _, ok := oc.mutation.IsClosed(); !ok {
+		v := order.DefaultIsClosed
+		oc.mutation.SetIsClosed(v)
+	}
+	if _, ok := oc.mutation.IsFinished(); !ok {
+		v := order.DefaultIsFinished
+		oc.mutation.SetIsFinished(v)
 	}
 	if _, ok := oc.mutation.HopeAt(); !ok {
-		v := order.DefaultHopeAt
+		v := order.DefaultHopeAt()
 		oc.mutation.SetHopeAt(v)
 	}
 	if _, ok := oc.mutation.CreatedAt(); !ok {
@@ -243,17 +253,18 @@ func (oc *OrderCreate) check() error {
 	if _, ok := oc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Order.type"`)}
 	}
-	if v, ok := oc.mutation.GetType(); ok {
-		if err := order.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Order.type": %w`, err)}
-		}
+	if _, ok := oc.mutation.IsClosed(); !ok {
+		return &ValidationError{Name: "is_closed", err: errors.New(`ent: missing required field "Order.is_closed"`)}
 	}
-	if _, ok := oc.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Order.status"`)}
+	if _, ok := oc.mutation.IsFinished(); !ok {
+		return &ValidationError{Name: "is_finished", err: errors.New(`ent: missing required field "Order.is_finished"`)}
 	}
-	if v, ok := oc.mutation.Status(); ok {
-		if err := order.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Order.status": %w`, err)}
+	if _, ok := oc.mutation.Evaluation(); !ok {
+		return &ValidationError{Name: "evaluation", err: errors.New(`ent: missing required field "Order.evaluation"`)}
+	}
+	if v, ok := oc.mutation.Evaluation(); ok {
+		if err := order.EvaluationValidator(v); err != nil {
+			return &ValidationError{Name: "evaluation", err: fmt.Errorf(`ent: validator failed for field "Order.evaluation": %w`, err)}
 		}
 	}
 	if _, ok := oc.mutation.HopeAt(); !ok {
@@ -304,12 +315,16 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 		_node.Contact = value
 	}
 	if value, ok := oc.mutation.GetType(); ok {
-		_spec.SetField(order.FieldType, field.TypeEnum, value)
+		_spec.SetField(order.FieldType, field.TypeString, value)
 		_node.Type = value
 	}
-	if value, ok := oc.mutation.Status(); ok {
-		_spec.SetField(order.FieldStatus, field.TypeEnum, value)
-		_node.Status = value
+	if value, ok := oc.mutation.IsClosed(); ok {
+		_spec.SetField(order.FieldIsClosed, field.TypeBool, value)
+		_node.IsClosed = value
+	}
+	if value, ok := oc.mutation.IsFinished(); ok {
+		_spec.SetField(order.FieldIsFinished, field.TypeBool, value)
+		_node.IsFinished = value
 	}
 	if value, ok := oc.mutation.Evaluation(); ok {
 		_spec.SetField(order.FieldEvaluation, field.TypeFloat64, value)

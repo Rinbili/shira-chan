@@ -75,6 +75,16 @@ func Wechat(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldWechat, v))
 }
 
+// IsAdmin applies equality check predicate on the "is_admin" field. It's identical to IsAdminEQ.
+func IsAdmin(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsAdmin, v))
+}
+
+// IsActive applies equality check predicate on the "is_active" field. It's identical to IsActiveEQ.
+func IsActive(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsActive, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldCreatedAt, v))
@@ -345,64 +355,24 @@ func WechatContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldWechat, v))
 }
 
-// LevelEQ applies the EQ predicate on the "level" field.
-func LevelEQ(v Level) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldLevel, v))
+// IsAdminEQ applies the EQ predicate on the "is_admin" field.
+func IsAdminEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsAdmin, v))
 }
 
-// LevelNEQ applies the NEQ predicate on the "level" field.
-func LevelNEQ(v Level) predicate.User {
-	return predicate.User(sql.FieldNEQ(FieldLevel, v))
+// IsAdminNEQ applies the NEQ predicate on the "is_admin" field.
+func IsAdminNEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldIsAdmin, v))
 }
 
-// LevelIn applies the In predicate on the "level" field.
-func LevelIn(vs ...Level) predicate.User {
-	return predicate.User(sql.FieldIn(FieldLevel, vs...))
+// IsActiveEQ applies the EQ predicate on the "is_active" field.
+func IsActiveEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsActive, v))
 }
 
-// LevelNotIn applies the NotIn predicate on the "level" field.
-func LevelNotIn(vs ...Level) predicate.User {
-	return predicate.User(sql.FieldNotIn(FieldLevel, vs...))
-}
-
-// DeptEQ applies the EQ predicate on the "dept" field.
-func DeptEQ(v Dept) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldDept, v))
-}
-
-// DeptNEQ applies the NEQ predicate on the "dept" field.
-func DeptNEQ(v Dept) predicate.User {
-	return predicate.User(sql.FieldNEQ(FieldDept, v))
-}
-
-// DeptIn applies the In predicate on the "dept" field.
-func DeptIn(vs ...Dept) predicate.User {
-	return predicate.User(sql.FieldIn(FieldDept, vs...))
-}
-
-// DeptNotIn applies the NotIn predicate on the "dept" field.
-func DeptNotIn(vs ...Dept) predicate.User {
-	return predicate.User(sql.FieldNotIn(FieldDept, vs...))
-}
-
-// StateEQ applies the EQ predicate on the "state" field.
-func StateEQ(v State) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldState, v))
-}
-
-// StateNEQ applies the NEQ predicate on the "state" field.
-func StateNEQ(v State) predicate.User {
-	return predicate.User(sql.FieldNEQ(FieldState, v))
-}
-
-// StateIn applies the In predicate on the "state" field.
-func StateIn(vs ...State) predicate.User {
-	return predicate.User(sql.FieldIn(FieldState, vs...))
-}
-
-// StateNotIn applies the NotIn predicate on the "state" field.
-func StateNotIn(vs ...State) predicate.User {
-	return predicate.User(sql.FieldNotIn(FieldState, vs...))
+// IsActiveNEQ applies the NEQ predicate on the "is_active" field.
+func IsActiveNEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldIsActive, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

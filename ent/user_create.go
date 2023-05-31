@@ -53,44 +53,30 @@ func (uc *UserCreate) SetNillableWechat(s *string) *UserCreate {
 	return uc
 }
 
-// SetLevel sets the "level" field.
-func (uc *UserCreate) SetLevel(u user.Level) *UserCreate {
-	uc.mutation.SetLevel(u)
+// SetIsAdmin sets the "is_admin" field.
+func (uc *UserCreate) SetIsAdmin(b bool) *UserCreate {
+	uc.mutation.SetIsAdmin(b)
 	return uc
 }
 
-// SetNillableLevel sets the "level" field if the given value is not nil.
-func (uc *UserCreate) SetNillableLevel(u *user.Level) *UserCreate {
-	if u != nil {
-		uc.SetLevel(*u)
+// SetNillableIsAdmin sets the "is_admin" field if the given value is not nil.
+func (uc *UserCreate) SetNillableIsAdmin(b *bool) *UserCreate {
+	if b != nil {
+		uc.SetIsAdmin(*b)
 	}
 	return uc
 }
 
-// SetDept sets the "dept" field.
-func (uc *UserCreate) SetDept(u user.Dept) *UserCreate {
-	uc.mutation.SetDept(u)
+// SetIsActive sets the "is_active" field.
+func (uc *UserCreate) SetIsActive(b bool) *UserCreate {
+	uc.mutation.SetIsActive(b)
 	return uc
 }
 
-// SetNillableDept sets the "dept" field if the given value is not nil.
-func (uc *UserCreate) SetNillableDept(u *user.Dept) *UserCreate {
-	if u != nil {
-		uc.SetDept(*u)
-	}
-	return uc
-}
-
-// SetState sets the "state" field.
-func (uc *UserCreate) SetState(u user.State) *UserCreate {
-	uc.mutation.SetState(u)
-	return uc
-}
-
-// SetNillableState sets the "state" field if the given value is not nil.
-func (uc *UserCreate) SetNillableState(u *user.State) *UserCreate {
-	if u != nil {
-		uc.SetState(*u)
+// SetNillableIsActive sets the "is_active" field if the given value is not nil.
+func (uc *UserCreate) SetNillableIsActive(b *bool) *UserCreate {
+	if b != nil {
+		uc.SetIsActive(*b)
 	}
 	return uc
 }
@@ -192,17 +178,13 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultWechat
 		uc.mutation.SetWechat(v)
 	}
-	if _, ok := uc.mutation.Level(); !ok {
-		v := user.DefaultLevel
-		uc.mutation.SetLevel(v)
+	if _, ok := uc.mutation.IsAdmin(); !ok {
+		v := user.DefaultIsAdmin
+		uc.mutation.SetIsAdmin(v)
 	}
-	if _, ok := uc.mutation.Dept(); !ok {
-		v := user.DefaultDept
-		uc.mutation.SetDept(v)
-	}
-	if _, ok := uc.mutation.State(); !ok {
-		v := user.DefaultState
-		uc.mutation.SetState(v)
+	if _, ok := uc.mutation.IsActive(); !ok {
+		v := user.DefaultIsActive
+		uc.mutation.SetIsActive(v)
 	}
 	if _, ok := uc.mutation.CreatedAt(); !ok {
 		v := user.DefaultCreatedAt()
@@ -248,29 +230,11 @@ func (uc *UserCreate) check() error {
 			return &ValidationError{Name: "wechat", err: fmt.Errorf(`ent: validator failed for field "User.wechat": %w`, err)}
 		}
 	}
-	if _, ok := uc.mutation.Level(); !ok {
-		return &ValidationError{Name: "level", err: errors.New(`ent: missing required field "User.level"`)}
+	if _, ok := uc.mutation.IsAdmin(); !ok {
+		return &ValidationError{Name: "is_admin", err: errors.New(`ent: missing required field "User.is_admin"`)}
 	}
-	if v, ok := uc.mutation.Level(); ok {
-		if err := user.LevelValidator(v); err != nil {
-			return &ValidationError{Name: "level", err: fmt.Errorf(`ent: validator failed for field "User.level": %w`, err)}
-		}
-	}
-	if _, ok := uc.mutation.Dept(); !ok {
-		return &ValidationError{Name: "dept", err: errors.New(`ent: missing required field "User.dept"`)}
-	}
-	if v, ok := uc.mutation.Dept(); ok {
-		if err := user.DeptValidator(v); err != nil {
-			return &ValidationError{Name: "dept", err: fmt.Errorf(`ent: validator failed for field "User.dept": %w`, err)}
-		}
-	}
-	if _, ok := uc.mutation.State(); !ok {
-		return &ValidationError{Name: "state", err: errors.New(`ent: missing required field "User.state"`)}
-	}
-	if v, ok := uc.mutation.State(); ok {
-		if err := user.StateValidator(v); err != nil {
-			return &ValidationError{Name: "state", err: fmt.Errorf(`ent: validator failed for field "User.state": %w`, err)}
-		}
+	if _, ok := uc.mutation.IsActive(); !ok {
+		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "User.is_active"`)}
 	}
 	if _, ok := uc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "User.created_at"`)}
@@ -320,17 +284,13 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldWechat, field.TypeString, value)
 		_node.Wechat = value
 	}
-	if value, ok := uc.mutation.Level(); ok {
-		_spec.SetField(user.FieldLevel, field.TypeEnum, value)
-		_node.Level = value
+	if value, ok := uc.mutation.IsAdmin(); ok {
+		_spec.SetField(user.FieldIsAdmin, field.TypeBool, value)
+		_node.IsAdmin = value
 	}
-	if value, ok := uc.mutation.Dept(); ok {
-		_spec.SetField(user.FieldDept, field.TypeEnum, value)
-		_node.Dept = value
-	}
-	if value, ok := uc.mutation.State(); ok {
-		_spec.SetField(user.FieldState, field.TypeEnum, value)
-		_node.State = value
+	if value, ok := uc.mutation.IsActive(); ok {
+		_spec.SetField(user.FieldIsActive, field.TypeBool, value)
+		_node.IsActive = value
 	}
 	if value, ok := uc.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)

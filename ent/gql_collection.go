@@ -153,10 +153,15 @@ func (o *OrderQuery) collectField(ctx context.Context, opCtx *graphql.OperationC
 				selectedFields = append(selectedFields, order.FieldType)
 				fieldSeen[order.FieldType] = struct{}{}
 			}
-		case "status":
-			if _, ok := fieldSeen[order.FieldStatus]; !ok {
-				selectedFields = append(selectedFields, order.FieldStatus)
-				fieldSeen[order.FieldStatus] = struct{}{}
+		case "isClosed":
+			if _, ok := fieldSeen[order.FieldIsClosed]; !ok {
+				selectedFields = append(selectedFields, order.FieldIsClosed)
+				fieldSeen[order.FieldIsClosed] = struct{}{}
+			}
+		case "isFinished":
+			if _, ok := fieldSeen[order.FieldIsFinished]; !ok {
+				selectedFields = append(selectedFields, order.FieldIsFinished)
+				fieldSeen[order.FieldIsFinished] = struct{}{}
 			}
 		case "evaluation":
 			if _, ok := fieldSeen[order.FieldEvaluation]; !ok {
@@ -449,20 +454,15 @@ func (u *UserQuery) collectField(ctx context.Context, opCtx *graphql.OperationCo
 				selectedFields = append(selectedFields, user.FieldWechat)
 				fieldSeen[user.FieldWechat] = struct{}{}
 			}
-		case "level":
-			if _, ok := fieldSeen[user.FieldLevel]; !ok {
-				selectedFields = append(selectedFields, user.FieldLevel)
-				fieldSeen[user.FieldLevel] = struct{}{}
+		case "isAdmin":
+			if _, ok := fieldSeen[user.FieldIsAdmin]; !ok {
+				selectedFields = append(selectedFields, user.FieldIsAdmin)
+				fieldSeen[user.FieldIsAdmin] = struct{}{}
 			}
-		case "dept":
-			if _, ok := fieldSeen[user.FieldDept]; !ok {
-				selectedFields = append(selectedFields, user.FieldDept)
-				fieldSeen[user.FieldDept] = struct{}{}
-			}
-		case "state":
-			if _, ok := fieldSeen[user.FieldState]; !ok {
-				selectedFields = append(selectedFields, user.FieldState)
-				fieldSeen[user.FieldState] = struct{}{}
+		case "isActive":
+			if _, ok := fieldSeen[user.FieldIsActive]; !ok {
+				selectedFields = append(selectedFields, user.FieldIsActive)
+				fieldSeen[user.FieldIsActive] = struct{}{}
 			}
 		case "createdAt":
 			if _, ok := fieldSeen[user.FieldCreatedAt]; !ok {

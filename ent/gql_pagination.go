@@ -344,17 +344,31 @@ var (
 			}
 		},
 	}
-	// OrderOrderFieldStatus orders Order by status.
-	OrderOrderFieldStatus = &OrderOrderField{
+	// OrderOrderFieldIsClosed orders Order by is_closed.
+	OrderOrderFieldIsClosed = &OrderOrderField{
 		Value: func(o *Order) (ent.Value, error) {
-			return o.Status, nil
+			return o.IsClosed, nil
 		},
-		column: order.FieldStatus,
-		toTerm: order.ByStatus,
+		column: order.FieldIsClosed,
+		toTerm: order.ByIsClosed,
 		toCursor: func(o *Order) Cursor {
 			return Cursor{
 				ID:    o.ID,
-				Value: o.Status,
+				Value: o.IsClosed,
+			}
+		},
+	}
+	// OrderOrderFieldIsFinished orders Order by is_finished.
+	OrderOrderFieldIsFinished = &OrderOrderField{
+		Value: func(o *Order) (ent.Value, error) {
+			return o.IsFinished, nil
+		},
+		column: order.FieldIsFinished,
+		toTerm: order.ByIsFinished,
+		toCursor: func(o *Order) Cursor {
+			return Cursor{
+				ID:    o.ID,
+				Value: o.IsFinished,
 			}
 		},
 	}
@@ -443,8 +457,10 @@ func (f OrderOrderField) String() string {
 		str = "TITLE"
 	case OrderOrderFieldType.column:
 		str = "TYPE"
-	case OrderOrderFieldStatus.column:
-		str = "STATUS"
+	case OrderOrderFieldIsClosed.column:
+		str = "IS_CLOSED"
+	case OrderOrderFieldIsFinished.column:
+		str = "IS_FINISHED"
 	case OrderOrderFieldEvaluation.column:
 		str = "EVALUATION"
 	case OrderOrderFieldHopeAt.column:
@@ -475,8 +491,10 @@ func (f *OrderOrderField) UnmarshalGQL(v interface{}) error {
 		*f = *OrderOrderFieldTitle
 	case "TYPE":
 		*f = *OrderOrderFieldType
-	case "STATUS":
-		*f = *OrderOrderFieldStatus
+	case "IS_CLOSED":
+		*f = *OrderOrderFieldIsClosed
+	case "IS_FINISHED":
+		*f = *OrderOrderFieldIsFinished
 	case "EVALUATION":
 		*f = *OrderOrderFieldEvaluation
 	case "HOPE_AT":
@@ -765,45 +783,31 @@ var (
 			}
 		},
 	}
-	// UserOrderFieldLevel orders User by level.
-	UserOrderFieldLevel = &UserOrderField{
+	// UserOrderFieldIsAdmin orders User by is_admin.
+	UserOrderFieldIsAdmin = &UserOrderField{
 		Value: func(u *User) (ent.Value, error) {
-			return u.Level, nil
+			return u.IsAdmin, nil
 		},
-		column: user.FieldLevel,
-		toTerm: user.ByLevel,
+		column: user.FieldIsAdmin,
+		toTerm: user.ByIsAdmin,
 		toCursor: func(u *User) Cursor {
 			return Cursor{
 				ID:    u.ID,
-				Value: u.Level,
+				Value: u.IsAdmin,
 			}
 		},
 	}
-	// UserOrderFieldDept orders User by dept.
-	UserOrderFieldDept = &UserOrderField{
+	// UserOrderFieldIsActive orders User by is_active.
+	UserOrderFieldIsActive = &UserOrderField{
 		Value: func(u *User) (ent.Value, error) {
-			return u.Dept, nil
+			return u.IsActive, nil
 		},
-		column: user.FieldDept,
-		toTerm: user.ByDept,
+		column: user.FieldIsActive,
+		toTerm: user.ByIsActive,
 		toCursor: func(u *User) Cursor {
 			return Cursor{
 				ID:    u.ID,
-				Value: u.Dept,
-			}
-		},
-	}
-	// UserOrderFieldState orders User by state.
-	UserOrderFieldState = &UserOrderField{
-		Value: func(u *User) (ent.Value, error) {
-			return u.State, nil
-		},
-		column: user.FieldState,
-		toTerm: user.ByState,
-		toCursor: func(u *User) Cursor {
-			return Cursor{
-				ID:    u.ID,
-				Value: u.State,
+				Value: u.IsActive,
 			}
 		},
 	}
@@ -881,11 +885,9 @@ func (f UserOrderField) String() string {
 	switch f.column {
 	case UserOrderFieldUname.column:
 		str = "UNAME"
-	case UserOrderFieldLevel.column:
-		str = "LEVEL"
-	case UserOrderFieldDept.column:
-		str = "DEPT"
-	case UserOrderFieldState.column:
+	case UserOrderFieldIsAdmin.column:
+		str = "IS_ADMIN"
+	case UserOrderFieldIsActive.column:
 		str = "STATE"
 	case UserOrderFieldCreatedAt.column:
 		str = "CREAT_AT"
@@ -913,12 +915,10 @@ func (f *UserOrderField) UnmarshalGQL(v interface{}) error {
 	switch str {
 	case "UNAME":
 		*f = *UserOrderFieldUname
-	case "LEVEL":
-		*f = *UserOrderFieldLevel
-	case "DEPT":
-		*f = *UserOrderFieldDept
+	case "IS_ADMIN":
+		*f = *UserOrderFieldIsAdmin
 	case "STATE":
-		*f = *UserOrderFieldState
+		*f = *UserOrderFieldIsActive
 	case "CREAT_AT":
 		*f = *UserOrderFieldCreatedAt
 	case "UPDATED_AT":

@@ -38,8 +38,9 @@ type OrderMutation struct {
 	title            *string
 	content          *string
 	contact          *string
-	_type            *order.Type
-	status           *order.Status
+	_type            *string
+	is_closed        *bool
+	is_finished      *bool
 	evaluation       *float64
 	addevaluation    *float64
 	hope_at          *time.Time
@@ -263,12 +264,12 @@ func (m *OrderMutation) ResetContact() {
 }
 
 // SetType sets the "type" field.
-func (m *OrderMutation) SetType(o order.Type) {
-	m._type = &o
+func (m *OrderMutation) SetType(s string) {
+	m._type = &s
 }
 
 // GetType returns the value of the "type" field in the mutation.
-func (m *OrderMutation) GetType() (r order.Type, exists bool) {
+func (m *OrderMutation) GetType() (r string, exists bool) {
 	v := m._type
 	if v == nil {
 		return
@@ -279,7 +280,7 @@ func (m *OrderMutation) GetType() (r order.Type, exists bool) {
 // OldType returns the old "type" field's value of the Order entity.
 // If the Order object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OrderMutation) OldType(ctx context.Context) (v order.Type, err error) {
+func (m *OrderMutation) OldType(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldType is only allowed on UpdateOne operations")
 	}
@@ -298,40 +299,76 @@ func (m *OrderMutation) ResetType() {
 	m._type = nil
 }
 
-// SetStatus sets the "status" field.
-func (m *OrderMutation) SetStatus(o order.Status) {
-	m.status = &o
+// SetIsClosed sets the "is_closed" field.
+func (m *OrderMutation) SetIsClosed(b bool) {
+	m.is_closed = &b
 }
 
-// Status returns the value of the "status" field in the mutation.
-func (m *OrderMutation) Status() (r order.Status, exists bool) {
-	v := m.status
+// IsClosed returns the value of the "is_closed" field in the mutation.
+func (m *OrderMutation) IsClosed() (r bool, exists bool) {
+	v := m.is_closed
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldStatus returns the old "status" field's value of the Order entity.
+// OldIsClosed returns the old "is_closed" field's value of the Order entity.
 // If the Order object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OrderMutation) OldStatus(ctx context.Context) (v order.Status, err error) {
+func (m *OrderMutation) OldIsClosed(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+		return v, errors.New("OldIsClosed is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldStatus requires an ID field in the mutation")
+		return v, errors.New("OldIsClosed requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+		return v, fmt.Errorf("querying old value for OldIsClosed: %w", err)
 	}
-	return oldValue.Status, nil
+	return oldValue.IsClosed, nil
 }
 
-// ResetStatus resets all changes to the "status" field.
-func (m *OrderMutation) ResetStatus() {
-	m.status = nil
+// ResetIsClosed resets all changes to the "is_closed" field.
+func (m *OrderMutation) ResetIsClosed() {
+	m.is_closed = nil
+}
+
+// SetIsFinished sets the "is_finished" field.
+func (m *OrderMutation) SetIsFinished(b bool) {
+	m.is_finished = &b
+}
+
+// IsFinished returns the value of the "is_finished" field in the mutation.
+func (m *OrderMutation) IsFinished() (r bool, exists bool) {
+	v := m.is_finished
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsFinished returns the old "is_finished" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldIsFinished(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsFinished is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsFinished requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsFinished: %w", err)
+	}
+	return oldValue.IsFinished, nil
+}
+
+// ResetIsFinished resets all changes to the "is_finished" field.
+func (m *OrderMutation) ResetIsFinished() {
+	m.is_finished = nil
 }
 
 // SetEvaluation sets the "evaluation" field.
@@ -384,24 +421,10 @@ func (m *OrderMutation) AddedEvaluation() (r float64, exists bool) {
 	return *v, true
 }
 
-// ClearEvaluation clears the value of the "evaluation" field.
-func (m *OrderMutation) ClearEvaluation() {
-	m.evaluation = nil
-	m.addevaluation = nil
-	m.clearedFields[order.FieldEvaluation] = struct{}{}
-}
-
-// EvaluationCleared returns if the "evaluation" field was cleared in this mutation.
-func (m *OrderMutation) EvaluationCleared() bool {
-	_, ok := m.clearedFields[order.FieldEvaluation]
-	return ok
-}
-
 // ResetEvaluation resets all changes to the "evaluation" field.
 func (m *OrderMutation) ResetEvaluation() {
 	m.evaluation = nil
 	m.addevaluation = nil
-	delete(m.clearedFields, order.FieldEvaluation)
 }
 
 // SetHopeAt sets the "hope_at" field.
@@ -639,7 +662,7 @@ func (m *OrderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *OrderMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.title != nil {
 		fields = append(fields, order.FieldTitle)
 	}
@@ -652,8 +675,11 @@ func (m *OrderMutation) Fields() []string {
 	if m._type != nil {
 		fields = append(fields, order.FieldType)
 	}
-	if m.status != nil {
-		fields = append(fields, order.FieldStatus)
+	if m.is_closed != nil {
+		fields = append(fields, order.FieldIsClosed)
+	}
+	if m.is_finished != nil {
+		fields = append(fields, order.FieldIsFinished)
 	}
 	if m.evaluation != nil {
 		fields = append(fields, order.FieldEvaluation)
@@ -683,8 +709,10 @@ func (m *OrderMutation) Field(name string) (ent.Value, bool) {
 		return m.Contact()
 	case order.FieldType:
 		return m.GetType()
-	case order.FieldStatus:
-		return m.Status()
+	case order.FieldIsClosed:
+		return m.IsClosed()
+	case order.FieldIsFinished:
+		return m.IsFinished()
 	case order.FieldEvaluation:
 		return m.Evaluation()
 	case order.FieldHopeAt:
@@ -710,8 +738,10 @@ func (m *OrderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldContact(ctx)
 	case order.FieldType:
 		return m.OldType(ctx)
-	case order.FieldStatus:
-		return m.OldStatus(ctx)
+	case order.FieldIsClosed:
+		return m.OldIsClosed(ctx)
+	case order.FieldIsFinished:
+		return m.OldIsFinished(ctx)
 	case order.FieldEvaluation:
 		return m.OldEvaluation(ctx)
 	case order.FieldHopeAt:
@@ -751,18 +781,25 @@ func (m *OrderMutation) SetField(name string, value ent.Value) error {
 		m.SetContact(v)
 		return nil
 	case order.FieldType:
-		v, ok := value.(order.Type)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetType(v)
 		return nil
-	case order.FieldStatus:
-		v, ok := value.(order.Status)
+	case order.FieldIsClosed:
+		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetStatus(v)
+		m.SetIsClosed(v)
+		return nil
+	case order.FieldIsFinished:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsFinished(v)
 		return nil
 	case order.FieldEvaluation:
 		v, ok := value.(float64)
@@ -836,11 +873,7 @@ func (m *OrderMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *OrderMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(order.FieldEvaluation) {
-		fields = append(fields, order.FieldEvaluation)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -853,11 +886,6 @@ func (m *OrderMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *OrderMutation) ClearField(name string) error {
-	switch name {
-	case order.FieldEvaluation:
-		m.ClearEvaluation()
-		return nil
-	}
 	return fmt.Errorf("unknown Order nullable field %s", name)
 }
 
@@ -877,8 +905,11 @@ func (m *OrderMutation) ResetField(name string) error {
 	case order.FieldType:
 		m.ResetType()
 		return nil
-	case order.FieldStatus:
-		m.ResetStatus()
+	case order.FieldIsClosed:
+		m.ResetIsClosed()
+		return nil
+	case order.FieldIsFinished:
+		m.ResetIsFinished()
 		return nil
 	case order.FieldEvaluation:
 		m.ResetEvaluation()
@@ -1008,9 +1039,8 @@ type UserMutation struct {
 	passwd           *string
 	phone            *string
 	wechat           *string
-	level            *user.Level
-	dept             *user.Dept
-	state            *user.State
+	is_admin         *bool
+	is_active        *bool
 	created_at       *time.Time
 	updated_at       *time.Time
 	clearedFields    map[string]struct{}
@@ -1267,112 +1297,76 @@ func (m *UserMutation) ResetWechat() {
 	m.wechat = nil
 }
 
-// SetLevel sets the "level" field.
-func (m *UserMutation) SetLevel(u user.Level) {
-	m.level = &u
+// SetIsAdmin sets the "is_admin" field.
+func (m *UserMutation) SetIsAdmin(b bool) {
+	m.is_admin = &b
 }
 
-// Level returns the value of the "level" field in the mutation.
-func (m *UserMutation) Level() (r user.Level, exists bool) {
-	v := m.level
+// IsAdmin returns the value of the "is_admin" field in the mutation.
+func (m *UserMutation) IsAdmin() (r bool, exists bool) {
+	v := m.is_admin
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldLevel returns the old "level" field's value of the User entity.
+// OldIsAdmin returns the old "is_admin" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldLevel(ctx context.Context) (v user.Level, err error) {
+func (m *UserMutation) OldIsAdmin(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLevel is only allowed on UpdateOne operations")
+		return v, errors.New("OldIsAdmin is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLevel requires an ID field in the mutation")
+		return v, errors.New("OldIsAdmin requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLevel: %w", err)
+		return v, fmt.Errorf("querying old value for OldIsAdmin: %w", err)
 	}
-	return oldValue.Level, nil
+	return oldValue.IsAdmin, nil
 }
 
-// ResetLevel resets all changes to the "level" field.
-func (m *UserMutation) ResetLevel() {
-	m.level = nil
+// ResetIsAdmin resets all changes to the "is_admin" field.
+func (m *UserMutation) ResetIsAdmin() {
+	m.is_admin = nil
 }
 
-// SetDept sets the "dept" field.
-func (m *UserMutation) SetDept(u user.Dept) {
-	m.dept = &u
+// SetIsActive sets the "is_active" field.
+func (m *UserMutation) SetIsActive(b bool) {
+	m.is_active = &b
 }
 
-// Dept returns the value of the "dept" field in the mutation.
-func (m *UserMutation) Dept() (r user.Dept, exists bool) {
-	v := m.dept
+// IsActive returns the value of the "is_active" field in the mutation.
+func (m *UserMutation) IsActive() (r bool, exists bool) {
+	v := m.is_active
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldDept returns the old "dept" field's value of the User entity.
+// OldIsActive returns the old "is_active" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldDept(ctx context.Context) (v user.Dept, err error) {
+func (m *UserMutation) OldIsActive(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDept is only allowed on UpdateOne operations")
+		return v, errors.New("OldIsActive is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDept requires an ID field in the mutation")
+		return v, errors.New("OldIsActive requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDept: %w", err)
+		return v, fmt.Errorf("querying old value for OldIsActive: %w", err)
 	}
-	return oldValue.Dept, nil
+	return oldValue.IsActive, nil
 }
 
-// ResetDept resets all changes to the "dept" field.
-func (m *UserMutation) ResetDept() {
-	m.dept = nil
-}
-
-// SetState sets the "state" field.
-func (m *UserMutation) SetState(u user.State) {
-	m.state = &u
-}
-
-// State returns the value of the "state" field in the mutation.
-func (m *UserMutation) State() (r user.State, exists bool) {
-	v := m.state
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldState returns the old "state" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldState(ctx context.Context) (v user.State, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldState is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldState requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldState: %w", err)
-	}
-	return oldValue.State, nil
-}
-
-// ResetState resets all changes to the "state" field.
-func (m *UserMutation) ResetState() {
-	m.state = nil
+// ResetIsActive resets all changes to the "is_active" field.
+func (m *UserMutation) ResetIsActive() {
+	m.is_active = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -1589,7 +1583,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 8)
 	if m.uname != nil {
 		fields = append(fields, user.FieldUname)
 	}
@@ -1602,14 +1596,11 @@ func (m *UserMutation) Fields() []string {
 	if m.wechat != nil {
 		fields = append(fields, user.FieldWechat)
 	}
-	if m.level != nil {
-		fields = append(fields, user.FieldLevel)
+	if m.is_admin != nil {
+		fields = append(fields, user.FieldIsAdmin)
 	}
-	if m.dept != nil {
-		fields = append(fields, user.FieldDept)
-	}
-	if m.state != nil {
-		fields = append(fields, user.FieldState)
+	if m.is_active != nil {
+		fields = append(fields, user.FieldIsActive)
 	}
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
@@ -1633,12 +1624,10 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Phone()
 	case user.FieldWechat:
 		return m.Wechat()
-	case user.FieldLevel:
-		return m.Level()
-	case user.FieldDept:
-		return m.Dept()
-	case user.FieldState:
-		return m.State()
+	case user.FieldIsAdmin:
+		return m.IsAdmin()
+	case user.FieldIsActive:
+		return m.IsActive()
 	case user.FieldCreatedAt:
 		return m.CreatedAt()
 	case user.FieldUpdatedAt:
@@ -1660,12 +1649,10 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldPhone(ctx)
 	case user.FieldWechat:
 		return m.OldWechat(ctx)
-	case user.FieldLevel:
-		return m.OldLevel(ctx)
-	case user.FieldDept:
-		return m.OldDept(ctx)
-	case user.FieldState:
-		return m.OldState(ctx)
+	case user.FieldIsAdmin:
+		return m.OldIsAdmin(ctx)
+	case user.FieldIsActive:
+		return m.OldIsActive(ctx)
 	case user.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case user.FieldUpdatedAt:
@@ -1707,26 +1694,19 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetWechat(v)
 		return nil
-	case user.FieldLevel:
-		v, ok := value.(user.Level)
+	case user.FieldIsAdmin:
+		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetLevel(v)
+		m.SetIsAdmin(v)
 		return nil
-	case user.FieldDept:
-		v, ok := value.(user.Dept)
+	case user.FieldIsActive:
+		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetDept(v)
-		return nil
-	case user.FieldState:
-		v, ok := value.(user.State)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetState(v)
+		m.SetIsActive(v)
 		return nil
 	case user.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -1803,14 +1783,11 @@ func (m *UserMutation) ResetField(name string) error {
 	case user.FieldWechat:
 		m.ResetWechat()
 		return nil
-	case user.FieldLevel:
-		m.ResetLevel()
+	case user.FieldIsAdmin:
+		m.ResetIsAdmin()
 		return nil
-	case user.FieldDept:
-		m.ResetDept()
-		return nil
-	case user.FieldState:
-		m.ResetState()
+	case user.FieldIsActive:
+		m.ResetIsActive()
 		return nil
 	case user.FieldCreatedAt:
 		m.ResetCreatedAt()

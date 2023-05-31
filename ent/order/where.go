@@ -70,6 +70,21 @@ func Contact(v string) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldContact, v))
 }
 
+// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
+func Type(v string) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldType, v))
+}
+
+// IsClosed applies equality check predicate on the "is_closed" field. It's identical to IsClosedEQ.
+func IsClosed(v bool) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldIsClosed, v))
+}
+
+// IsFinished applies equality check predicate on the "is_finished" field. It's identical to IsFinishedEQ.
+func IsFinished(v bool) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldIsFinished, v))
+}
+
 // Evaluation applies equality check predicate on the "evaluation" field. It's identical to EvaluationEQ.
 func Evaluation(v float64) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldEvaluation, v))
@@ -286,43 +301,88 @@ func ContactContainsFold(v string) predicate.Order {
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.
-func TypeEQ(v Type) predicate.Order {
+func TypeEQ(v string) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldType, v))
 }
 
 // TypeNEQ applies the NEQ predicate on the "type" field.
-func TypeNEQ(v Type) predicate.Order {
+func TypeNEQ(v string) predicate.Order {
 	return predicate.Order(sql.FieldNEQ(FieldType, v))
 }
 
 // TypeIn applies the In predicate on the "type" field.
-func TypeIn(vs ...Type) predicate.Order {
+func TypeIn(vs ...string) predicate.Order {
 	return predicate.Order(sql.FieldIn(FieldType, vs...))
 }
 
 // TypeNotIn applies the NotIn predicate on the "type" field.
-func TypeNotIn(vs ...Type) predicate.Order {
+func TypeNotIn(vs ...string) predicate.Order {
 	return predicate.Order(sql.FieldNotIn(FieldType, vs...))
 }
 
-// StatusEQ applies the EQ predicate on the "status" field.
-func StatusEQ(v Status) predicate.Order {
-	return predicate.Order(sql.FieldEQ(FieldStatus, v))
+// TypeGT applies the GT predicate on the "type" field.
+func TypeGT(v string) predicate.Order {
+	return predicate.Order(sql.FieldGT(FieldType, v))
 }
 
-// StatusNEQ applies the NEQ predicate on the "status" field.
-func StatusNEQ(v Status) predicate.Order {
-	return predicate.Order(sql.FieldNEQ(FieldStatus, v))
+// TypeGTE applies the GTE predicate on the "type" field.
+func TypeGTE(v string) predicate.Order {
+	return predicate.Order(sql.FieldGTE(FieldType, v))
 }
 
-// StatusIn applies the In predicate on the "status" field.
-func StatusIn(vs ...Status) predicate.Order {
-	return predicate.Order(sql.FieldIn(FieldStatus, vs...))
+// TypeLT applies the LT predicate on the "type" field.
+func TypeLT(v string) predicate.Order {
+	return predicate.Order(sql.FieldLT(FieldType, v))
 }
 
-// StatusNotIn applies the NotIn predicate on the "status" field.
-func StatusNotIn(vs ...Status) predicate.Order {
-	return predicate.Order(sql.FieldNotIn(FieldStatus, vs...))
+// TypeLTE applies the LTE predicate on the "type" field.
+func TypeLTE(v string) predicate.Order {
+	return predicate.Order(sql.FieldLTE(FieldType, v))
+}
+
+// TypeContains applies the Contains predicate on the "type" field.
+func TypeContains(v string) predicate.Order {
+	return predicate.Order(sql.FieldContains(FieldType, v))
+}
+
+// TypeHasPrefix applies the HasPrefix predicate on the "type" field.
+func TypeHasPrefix(v string) predicate.Order {
+	return predicate.Order(sql.FieldHasPrefix(FieldType, v))
+}
+
+// TypeHasSuffix applies the HasSuffix predicate on the "type" field.
+func TypeHasSuffix(v string) predicate.Order {
+	return predicate.Order(sql.FieldHasSuffix(FieldType, v))
+}
+
+// TypeEqualFold applies the EqualFold predicate on the "type" field.
+func TypeEqualFold(v string) predicate.Order {
+	return predicate.Order(sql.FieldEqualFold(FieldType, v))
+}
+
+// TypeContainsFold applies the ContainsFold predicate on the "type" field.
+func TypeContainsFold(v string) predicate.Order {
+	return predicate.Order(sql.FieldContainsFold(FieldType, v))
+}
+
+// IsClosedEQ applies the EQ predicate on the "is_closed" field.
+func IsClosedEQ(v bool) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldIsClosed, v))
+}
+
+// IsClosedNEQ applies the NEQ predicate on the "is_closed" field.
+func IsClosedNEQ(v bool) predicate.Order {
+	return predicate.Order(sql.FieldNEQ(FieldIsClosed, v))
+}
+
+// IsFinishedEQ applies the EQ predicate on the "is_finished" field.
+func IsFinishedEQ(v bool) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldIsFinished, v))
+}
+
+// IsFinishedNEQ applies the NEQ predicate on the "is_finished" field.
+func IsFinishedNEQ(v bool) predicate.Order {
+	return predicate.Order(sql.FieldNEQ(FieldIsFinished, v))
 }
 
 // EvaluationEQ applies the EQ predicate on the "evaluation" field.
@@ -363,16 +423,6 @@ func EvaluationLT(v float64) predicate.Order {
 // EvaluationLTE applies the LTE predicate on the "evaluation" field.
 func EvaluationLTE(v float64) predicate.Order {
 	return predicate.Order(sql.FieldLTE(FieldEvaluation, v))
-}
-
-// EvaluationIsNil applies the IsNil predicate on the "evaluation" field.
-func EvaluationIsNil() predicate.Order {
-	return predicate.Order(sql.FieldIsNull(FieldEvaluation))
-}
-
-// EvaluationNotNil applies the NotNil predicate on the "evaluation" field.
-func EvaluationNotNil() predicate.Order {
-	return predicate.Order(sql.FieldNotNull(FieldEvaluation))
 }
 
 // HopeAtEQ applies the EQ predicate on the "hope_at" field.

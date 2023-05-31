@@ -54,17 +54,61 @@ func init() {
 	// orderDescContact is the schema descriptor for contact field.
 	orderDescContact := orderFields[2].Descriptor()
 	// order.ContactValidator is a validator for the "contact" field. It is called by the builders before save.
-	order.ContactValidator = orderDescContact.Validators[0].(func(string) error)
+	order.ContactValidator = func() func(string) error {
+		validators := orderDescContact.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(contact string) error {
+			for _, fn := range fns {
+				if err := fn(contact); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// orderDescType is the schema descriptor for type field.
+	orderDescType := orderFields[3].Descriptor()
+	// order.DefaultType holds the default value on creation for the type field.
+	order.DefaultType = orderDescType.Default.(string)
+	// orderDescIsClosed is the schema descriptor for is_closed field.
+	orderDescIsClosed := orderFields[4].Descriptor()
+	// order.DefaultIsClosed holds the default value on creation for the is_closed field.
+	order.DefaultIsClosed = orderDescIsClosed.Default.(bool)
+	// orderDescIsFinished is the schema descriptor for is_finished field.
+	orderDescIsFinished := orderFields[5].Descriptor()
+	// order.DefaultIsFinished holds the default value on creation for the is_finished field.
+	order.DefaultIsFinished = orderDescIsFinished.Default.(bool)
+	// orderDescEvaluation is the schema descriptor for evaluation field.
+	orderDescEvaluation := orderFields[6].Descriptor()
+	// order.EvaluationValidator is a validator for the "evaluation" field. It is called by the builders before save.
+	order.EvaluationValidator = func() func(float64) error {
+		validators := orderDescEvaluation.Validators
+		fns := [...]func(float64) error{
+			validators[0].(func(float64) error),
+			validators[1].(func(float64) error),
+		}
+		return func(evaluation float64) error {
+			for _, fn := range fns {
+				if err := fn(evaluation); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// orderDescHopeAt is the schema descriptor for hope_at field.
-	orderDescHopeAt := orderFields[6].Descriptor()
+	orderDescHopeAt := orderFields[7].Descriptor()
 	// order.DefaultHopeAt holds the default value on creation for the hope_at field.
-	order.DefaultHopeAt = orderDescHopeAt.Default.(time.Time)
+	order.DefaultHopeAt = orderDescHopeAt.Default.(func() time.Time)
 	// orderDescCreatedAt is the schema descriptor for created_at field.
-	orderDescCreatedAt := orderFields[7].Descriptor()
+	orderDescCreatedAt := orderFields[8].Descriptor()
 	// order.DefaultCreatedAt holds the default value on creation for the created_at field.
 	order.DefaultCreatedAt = orderDescCreatedAt.Default.(func() time.Time)
 	// orderDescUpdatedAt is the schema descriptor for updated_at field.
-	orderDescUpdatedAt := orderFields[8].Descriptor()
+	orderDescUpdatedAt := orderFields[9].Descriptor()
 	// order.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	order.DefaultUpdatedAt = orderDescUpdatedAt.Default.(func() time.Time)
 	// order.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
@@ -117,12 +161,20 @@ func init() {
 	user.DefaultWechat = userDescWechat.Default.(string)
 	// user.WechatValidator is a validator for the "wechat" field. It is called by the builders before save.
 	user.WechatValidator = userDescWechat.Validators[0].(func(string) error)
+	// userDescIsAdmin is the schema descriptor for is_admin field.
+	userDescIsAdmin := userFields[4].Descriptor()
+	// user.DefaultIsAdmin holds the default value on creation for the is_admin field.
+	user.DefaultIsAdmin = userDescIsAdmin.Default.(bool)
+	// userDescIsActive is the schema descriptor for is_active field.
+	userDescIsActive := userFields[5].Descriptor()
+	// user.DefaultIsActive holds the default value on creation for the is_active field.
+	user.DefaultIsActive = userDescIsActive.Default.(bool)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[7].Descriptor()
+	userDescCreatedAt := userFields[6].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 	// userDescUpdatedAt is the schema descriptor for updated_at field.
-	userDescUpdatedAt := userFields[8].Descriptor()
+	userDescUpdatedAt := userFields[7].Descriptor()
 	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
 	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
