@@ -46,7 +46,10 @@ func SignHandler() gin.HandlerFunc {
 			if r.err == nil {
 				var token string
 				token, r.err = utils.GetToken(u.ID, u.IsAdmin)
-				r.Data = gin.H{"token": token}
+				r.Data = gin.H{"token": "Bearer " + token}
+				if r.err != nil {
+					c.Request.Header.Set("Authorization", "Bearer "+token)
+				}
 			}
 		} else {
 			r.err = errors.New("bad request")

@@ -11,12 +11,13 @@ func AuthHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		r := Response{}
 		tokenString := c.Request.Header.Get("Authorization")
-		if tokenString != "" {
+		if len(tokenString) != 0 {
+			tokenString = tokenString[7:]
 			claims, err := utils.ParseToken(tokenString)
 			if err == nil {
 				u, err := utils.Client.User.Get(c.Copy(), claims.UId)
 				//不接受用户数据修改前签发的token
-				if err != nil && u.IsActive == true && u.UpdatedAt.Before(claims.IssuedAt.Time) {
+				if err == nil && u.IsActive == true && u.UpdatedAt.Before(claims.IssuedAt.Time) {
 					c.Next()
 					return
 				}
