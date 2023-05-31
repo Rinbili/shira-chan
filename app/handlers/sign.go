@@ -28,15 +28,20 @@ func SignHandler() gin.HandlerFunc {
 			if r.err != nil {
 				r.err = nil
 				//试图注册
-				if data.UName != nil {
+				pwd, err := utils.GetPwd(*data.Passwd)
+				if err != nil {
+					r.Code = http.StatusInternalServerError
+					r.err = errors.New("internal server error")
+				} else if data.UName != nil {
 					u, r.err = utils.Client.User.Create().
 						SetUname(*data.UName).
 						SetPhone(*data.Phone).
-						SetPasswd(*data.Passwd).
+						SetPasswd(string(pwd)).
 						Save(c.Copy())
 				} else {
 					r.err = errors.New("bad request")
 				}
+
 			}
 			if r.err == nil {
 				var token string
