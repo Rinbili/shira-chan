@@ -25,12 +25,10 @@ type User struct {
 	Phone string `json:"phone,omitempty"`
 	// 微信号
 	Wechat string `json:"wechat,omitempty"`
-	// 系统用户类别
-	Level user.Level `json:"level,omitempty"`
-	// 部门
-	Dept user.Dept `json:"dept,omitempty"`
+	// 是否管理员
+	IsAdmin bool `json:"is_admin,omitempty"`
 	// 用户状态
-	State user.State `json:"state,omitempty"`
+	IsActive bool `json:"is_active,omitempty"`
 	// 创建时间
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// 更新时间
@@ -80,9 +78,11 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case user.FieldIsAdmin, user.FieldIsActive:
+			values[i] = new(sql.NullBool)
 		case user.FieldID:
 			values[i] = new(sql.NullInt64)
-		case user.FieldUname, user.FieldPasswd, user.FieldPhone, user.FieldWechat, user.FieldLevel, user.FieldDept, user.FieldState:
+		case user.FieldUname, user.FieldPasswd, user.FieldPhone, user.FieldWechat:
 			values[i] = new(sql.NullString)
 		case user.FieldCreatedAt, user.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -131,23 +131,17 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.Wechat = value.String
 			}
-		case user.FieldLevel:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field level", values[i])
+		case user.FieldIsAdmin:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_admin", values[i])
 			} else if value.Valid {
-				u.Level = user.Level(value.String)
+				u.IsAdmin = value.Bool
 			}
-		case user.FieldDept:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field dept", values[i])
+		case user.FieldIsActive:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_active", values[i])
 			} else if value.Valid {
-				u.Dept = user.Dept(value.String)
-			}
-		case user.FieldState:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field state", values[i])
-			} else if value.Valid {
-				u.State = user.State(value.String)
+				u.IsActive = value.Bool
 			}
 		case user.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -218,14 +212,11 @@ func (u *User) String() string {
 	builder.WriteString("wechat=")
 	builder.WriteString(u.Wechat)
 	builder.WriteString(", ")
-	builder.WriteString("level=")
-	builder.WriteString(fmt.Sprintf("%v", u.Level))
+	builder.WriteString("is_admin=")
+	builder.WriteString(fmt.Sprintf("%v", u.IsAdmin))
 	builder.WriteString(", ")
-	builder.WriteString("dept=")
-	builder.WriteString(fmt.Sprintf("%v", u.Dept))
-	builder.WriteString(", ")
-	builder.WriteString("state=")
-	builder.WriteString(fmt.Sprintf("%v", u.State))
+	builder.WriteString("is_active=")
+	builder.WriteString(fmt.Sprintf("%v", u.IsActive))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(u.CreatedAt.Format(time.ANSIC))

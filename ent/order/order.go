@@ -3,9 +3,6 @@
 package order
 
 import (
-	"fmt"
-	"io"
-	"strconv"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -25,8 +22,10 @@ const (
 	FieldContact = "contact"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
-	// FieldStatus holds the string denoting the status field in the database.
-	FieldStatus = "status"
+	// FieldIsClosed holds the string denoting the is_closed field in the database.
+	FieldIsClosed = "is_closed"
+	// FieldIsFinished holds the string denoting the is_finished field in the database.
+	FieldIsFinished = "is_finished"
 	// FieldEvaluation holds the string denoting the evaluation field in the database.
 	FieldEvaluation = "evaluation"
 	// FieldHopeAt holds the string denoting the hope_at field in the database.
@@ -62,7 +61,8 @@ var Columns = []string{
 	FieldContent,
 	FieldContact,
 	FieldType,
-	FieldStatus,
+	FieldIsClosed,
+	FieldIsFinished,
 	FieldEvaluation,
 	FieldHopeAt,
 	FieldCreatedAt,
@@ -103,8 +103,16 @@ var (
 	ContentValidator func(string) error
 	// ContactValidator is a validator for the "contact" field. It is called by the builders before save.
 	ContactValidator func(string) error
+	// DefaultType holds the default value on creation for the "type" field.
+	DefaultType string
+	// DefaultIsClosed holds the default value on creation for the "is_closed" field.
+	DefaultIsClosed bool
+	// DefaultIsFinished holds the default value on creation for the "is_finished" field.
+	DefaultIsFinished bool
+	// EvaluationValidator is a validator for the "evaluation" field. It is called by the builders before save.
+	EvaluationValidator func(float64) error
 	// DefaultHopeAt holds the default value on creation for the "hope_at" field.
-	DefaultHopeAt time.Time
+	DefaultHopeAt func() time.Time
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -112,62 +120,6 @@ var (
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
 )
-
-// Type defines the type for the "type" enum field.
-type Type string
-
-// TypeOTHER is the default value of the Type enum.
-const DefaultType = TypeOTHER
-
-// Type values.
-const (
-	TypeSOFTWARE Type = "software"
-	TypeHARDWARE Type = "hardware"
-	TypeUNKNOWN  Type = "unknown"
-	TypeOTHER    Type = "other"
-)
-
-func (_type Type) String() string {
-	return string(_type)
-}
-
-// TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
-func TypeValidator(_type Type) error {
-	switch _type {
-	case TypeSOFTWARE, TypeHARDWARE, TypeUNKNOWN, TypeOTHER:
-		return nil
-	default:
-		return fmt.Errorf("order: invalid enum value for type field: %q", _type)
-	}
-}
-
-// Status defines the type for the "status" enum field.
-type Status string
-
-// StatusREQUESTED is the default value of the Status enum.
-const DefaultStatus = StatusREQUESTED
-
-// Status values.
-const (
-	StatusREQUESTED Status = "requested"
-	StatusRECEIVED  Status = "received"
-	StatusFINISHED  Status = "finished"
-	StatusCLOSED    Status = "closed"
-)
-
-func (s Status) String() string {
-	return string(s)
-}
-
-// StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
-func StatusValidator(s Status) error {
-	switch s {
-	case StatusREQUESTED, StatusRECEIVED, StatusFINISHED, StatusCLOSED:
-		return nil
-	default:
-		return fmt.Errorf("order: invalid enum value for status field: %q", s)
-	}
-}
 
 // OrderOption defines the ordering options for the Order queries.
 type OrderOption func(*sql.Selector)
@@ -197,9 +149,14 @@ func ByType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldType, opts...).ToFunc()
 }
 
-// ByStatus orders the results by the status field.
-func ByStatus(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+// ByIsClosed orders the results by the is_closed field.
+func ByIsClosed(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsClosed, opts...).ToFunc()
+}
+
+// ByIsFinished orders the results by the is_finished field.
+func ByIsFinished(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsFinished, opts...).ToFunc()
 }
 
 // ByEvaluation orders the results by the evaluation field.
@@ -255,40 +212,4 @@ func newReceiverStep() *sqlgraph.Step {
 		sqlgraph.To(ReceiverInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, ReceiverTable, ReceiverPrimaryKey...),
 	)
-}
-
-// MarshalGQL implements graphql.Marshaler interface.
-func (e Type) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(e.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (e *Type) UnmarshalGQL(val interface{}) error {
-	str, ok := val.(string)
-	if !ok {
-		return fmt.Errorf("enum %T must be a string", val)
-	}
-	*e = Type(str)
-	if err := TypeValidator(*e); err != nil {
-		return fmt.Errorf("%s is not a valid Type", str)
-	}
-	return nil
-}
-
-// MarshalGQL implements graphql.Marshaler interface.
-func (e Status) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(e.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (e *Status) UnmarshalGQL(val interface{}) error {
-	str, ok := val.(string)
-	if !ok {
-		return fmt.Errorf("enum %T must be a string", val)
-	}
-	*e = Status(str)
-	if err := StatusValidator(*e); err != nil {
-		return fmt.Errorf("%s is not a valid Status", str)
-	}
-	return nil
 }

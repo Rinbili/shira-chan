@@ -61,44 +61,30 @@ func (uu *UserUpdate) SetNillableWechat(s *string) *UserUpdate {
 	return uu
 }
 
-// SetLevel sets the "level" field.
-func (uu *UserUpdate) SetLevel(u user.Level) *UserUpdate {
-	uu.mutation.SetLevel(u)
+// SetIsAdmin sets the "is_admin" field.
+func (uu *UserUpdate) SetIsAdmin(b bool) *UserUpdate {
+	uu.mutation.SetIsAdmin(b)
 	return uu
 }
 
-// SetNillableLevel sets the "level" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableLevel(u *user.Level) *UserUpdate {
-	if u != nil {
-		uu.SetLevel(*u)
+// SetNillableIsAdmin sets the "is_admin" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableIsAdmin(b *bool) *UserUpdate {
+	if b != nil {
+		uu.SetIsAdmin(*b)
 	}
 	return uu
 }
 
-// SetDept sets the "dept" field.
-func (uu *UserUpdate) SetDept(u user.Dept) *UserUpdate {
-	uu.mutation.SetDept(u)
+// SetIsActive sets the "is_active" field.
+func (uu *UserUpdate) SetIsActive(b bool) *UserUpdate {
+	uu.mutation.SetIsActive(b)
 	return uu
 }
 
-// SetNillableDept sets the "dept" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableDept(u *user.Dept) *UserUpdate {
-	if u != nil {
-		uu.SetDept(*u)
-	}
-	return uu
-}
-
-// SetState sets the "state" field.
-func (uu *UserUpdate) SetState(u user.State) *UserUpdate {
-	uu.mutation.SetState(u)
-	return uu
-}
-
-// SetNillableState sets the "state" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableState(u *user.State) *UserUpdate {
-	if u != nil {
-		uu.SetState(*u)
+// SetNillableIsActive sets the "is_active" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableIsActive(b *bool) *UserUpdate {
+	if b != nil {
+		uu.SetIsActive(*b)
 	}
 	return uu
 }
@@ -244,21 +230,6 @@ func (uu *UserUpdate) check() error {
 			return &ValidationError{Name: "wechat", err: fmt.Errorf(`ent: validator failed for field "User.wechat": %w`, err)}
 		}
 	}
-	if v, ok := uu.mutation.Level(); ok {
-		if err := user.LevelValidator(v); err != nil {
-			return &ValidationError{Name: "level", err: fmt.Errorf(`ent: validator failed for field "User.level": %w`, err)}
-		}
-	}
-	if v, ok := uu.mutation.Dept(); ok {
-		if err := user.DeptValidator(v); err != nil {
-			return &ValidationError{Name: "dept", err: fmt.Errorf(`ent: validator failed for field "User.dept": %w`, err)}
-		}
-	}
-	if v, ok := uu.mutation.State(); ok {
-		if err := user.StateValidator(v); err != nil {
-			return &ValidationError{Name: "state", err: fmt.Errorf(`ent: validator failed for field "User.state": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -286,14 +257,11 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.Wechat(); ok {
 		_spec.SetField(user.FieldWechat, field.TypeString, value)
 	}
-	if value, ok := uu.mutation.Level(); ok {
-		_spec.SetField(user.FieldLevel, field.TypeEnum, value)
+	if value, ok := uu.mutation.IsAdmin(); ok {
+		_spec.SetField(user.FieldIsAdmin, field.TypeBool, value)
 	}
-	if value, ok := uu.mutation.Dept(); ok {
-		_spec.SetField(user.FieldDept, field.TypeEnum, value)
-	}
-	if value, ok := uu.mutation.State(); ok {
-		_spec.SetField(user.FieldState, field.TypeEnum, value)
+	if value, ok := uu.mutation.IsActive(); ok {
+		_spec.SetField(user.FieldIsActive, field.TypeBool, value)
 	}
 	if value, ok := uu.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
@@ -440,44 +408,30 @@ func (uuo *UserUpdateOne) SetNillableWechat(s *string) *UserUpdateOne {
 	return uuo
 }
 
-// SetLevel sets the "level" field.
-func (uuo *UserUpdateOne) SetLevel(u user.Level) *UserUpdateOne {
-	uuo.mutation.SetLevel(u)
+// SetIsAdmin sets the "is_admin" field.
+func (uuo *UserUpdateOne) SetIsAdmin(b bool) *UserUpdateOne {
+	uuo.mutation.SetIsAdmin(b)
 	return uuo
 }
 
-// SetNillableLevel sets the "level" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableLevel(u *user.Level) *UserUpdateOne {
-	if u != nil {
-		uuo.SetLevel(*u)
+// SetNillableIsAdmin sets the "is_admin" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableIsAdmin(b *bool) *UserUpdateOne {
+	if b != nil {
+		uuo.SetIsAdmin(*b)
 	}
 	return uuo
 }
 
-// SetDept sets the "dept" field.
-func (uuo *UserUpdateOne) SetDept(u user.Dept) *UserUpdateOne {
-	uuo.mutation.SetDept(u)
+// SetIsActive sets the "is_active" field.
+func (uuo *UserUpdateOne) SetIsActive(b bool) *UserUpdateOne {
+	uuo.mutation.SetIsActive(b)
 	return uuo
 }
 
-// SetNillableDept sets the "dept" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableDept(u *user.Dept) *UserUpdateOne {
-	if u != nil {
-		uuo.SetDept(*u)
-	}
-	return uuo
-}
-
-// SetState sets the "state" field.
-func (uuo *UserUpdateOne) SetState(u user.State) *UserUpdateOne {
-	uuo.mutation.SetState(u)
-	return uuo
-}
-
-// SetNillableState sets the "state" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableState(u *user.State) *UserUpdateOne {
-	if u != nil {
-		uuo.SetState(*u)
+// SetNillableIsActive sets the "is_active" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableIsActive(b *bool) *UserUpdateOne {
+	if b != nil {
+		uuo.SetIsActive(*b)
 	}
 	return uuo
 }
@@ -636,21 +590,6 @@ func (uuo *UserUpdateOne) check() error {
 			return &ValidationError{Name: "wechat", err: fmt.Errorf(`ent: validator failed for field "User.wechat": %w`, err)}
 		}
 	}
-	if v, ok := uuo.mutation.Level(); ok {
-		if err := user.LevelValidator(v); err != nil {
-			return &ValidationError{Name: "level", err: fmt.Errorf(`ent: validator failed for field "User.level": %w`, err)}
-		}
-	}
-	if v, ok := uuo.mutation.Dept(); ok {
-		if err := user.DeptValidator(v); err != nil {
-			return &ValidationError{Name: "dept", err: fmt.Errorf(`ent: validator failed for field "User.dept": %w`, err)}
-		}
-	}
-	if v, ok := uuo.mutation.State(); ok {
-		if err := user.StateValidator(v); err != nil {
-			return &ValidationError{Name: "state", err: fmt.Errorf(`ent: validator failed for field "User.state": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -695,14 +634,11 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if value, ok := uuo.mutation.Wechat(); ok {
 		_spec.SetField(user.FieldWechat, field.TypeString, value)
 	}
-	if value, ok := uuo.mutation.Level(); ok {
-		_spec.SetField(user.FieldLevel, field.TypeEnum, value)
+	if value, ok := uuo.mutation.IsAdmin(); ok {
+		_spec.SetField(user.FieldIsAdmin, field.TypeBool, value)
 	}
-	if value, ok := uuo.mutation.Dept(); ok {
-		_spec.SetField(user.FieldDept, field.TypeEnum, value)
-	}
-	if value, ok := uuo.mutation.State(); ok {
-		_spec.SetField(user.FieldState, field.TypeEnum, value)
+	if value, ok := uuo.mutation.IsActive(); ok {
+		_spec.SetField(user.FieldIsActive, field.TypeBool, value)
 	}
 	if value, ok := uuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)

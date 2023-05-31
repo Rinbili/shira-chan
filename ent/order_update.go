@@ -48,29 +48,43 @@ func (ou *OrderUpdate) SetContact(s string) *OrderUpdate {
 }
 
 // SetType sets the "type" field.
-func (ou *OrderUpdate) SetType(o order.Type) *OrderUpdate {
-	ou.mutation.SetType(o)
+func (ou *OrderUpdate) SetType(s string) *OrderUpdate {
+	ou.mutation.SetType(s)
 	return ou
 }
 
 // SetNillableType sets the "type" field if the given value is not nil.
-func (ou *OrderUpdate) SetNillableType(o *order.Type) *OrderUpdate {
-	if o != nil {
-		ou.SetType(*o)
+func (ou *OrderUpdate) SetNillableType(s *string) *OrderUpdate {
+	if s != nil {
+		ou.SetType(*s)
 	}
 	return ou
 }
 
-// SetStatus sets the "status" field.
-func (ou *OrderUpdate) SetStatus(o order.Status) *OrderUpdate {
-	ou.mutation.SetStatus(o)
+// SetIsClosed sets the "is_closed" field.
+func (ou *OrderUpdate) SetIsClosed(b bool) *OrderUpdate {
+	ou.mutation.SetIsClosed(b)
 	return ou
 }
 
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (ou *OrderUpdate) SetNillableStatus(o *order.Status) *OrderUpdate {
-	if o != nil {
-		ou.SetStatus(*o)
+// SetNillableIsClosed sets the "is_closed" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableIsClosed(b *bool) *OrderUpdate {
+	if b != nil {
+		ou.SetIsClosed(*b)
+	}
+	return ou
+}
+
+// SetIsFinished sets the "is_finished" field.
+func (ou *OrderUpdate) SetIsFinished(b bool) *OrderUpdate {
+	ou.mutation.SetIsFinished(b)
+	return ou
+}
+
+// SetNillableIsFinished sets the "is_finished" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableIsFinished(b *bool) *OrderUpdate {
+	if b != nil {
+		ou.SetIsFinished(*b)
 	}
 	return ou
 }
@@ -82,23 +96,9 @@ func (ou *OrderUpdate) SetEvaluation(f float64) *OrderUpdate {
 	return ou
 }
 
-// SetNillableEvaluation sets the "evaluation" field if the given value is not nil.
-func (ou *OrderUpdate) SetNillableEvaluation(f *float64) *OrderUpdate {
-	if f != nil {
-		ou.SetEvaluation(*f)
-	}
-	return ou
-}
-
 // AddEvaluation adds f to the "evaluation" field.
 func (ou *OrderUpdate) AddEvaluation(f float64) *OrderUpdate {
 	ou.mutation.AddEvaluation(f)
-	return ou
-}
-
-// ClearEvaluation clears the value of the "evaluation" field.
-func (ou *OrderUpdate) ClearEvaluation() *OrderUpdate {
-	ou.mutation.ClearEvaluation()
 	return ou
 }
 
@@ -241,14 +241,9 @@ func (ou *OrderUpdate) check() error {
 			return &ValidationError{Name: "contact", err: fmt.Errorf(`ent: validator failed for field "Order.contact": %w`, err)}
 		}
 	}
-	if v, ok := ou.mutation.GetType(); ok {
-		if err := order.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Order.type": %w`, err)}
-		}
-	}
-	if v, ok := ou.mutation.Status(); ok {
-		if err := order.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Order.status": %w`, err)}
+	if v, ok := ou.mutation.Evaluation(); ok {
+		if err := order.EvaluationValidator(v); err != nil {
+			return &ValidationError{Name: "evaluation", err: fmt.Errorf(`ent: validator failed for field "Order.evaluation": %w`, err)}
 		}
 	}
 	return nil
@@ -276,19 +271,19 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.SetField(order.FieldContact, field.TypeString, value)
 	}
 	if value, ok := ou.mutation.GetType(); ok {
-		_spec.SetField(order.FieldType, field.TypeEnum, value)
+		_spec.SetField(order.FieldType, field.TypeString, value)
 	}
-	if value, ok := ou.mutation.Status(); ok {
-		_spec.SetField(order.FieldStatus, field.TypeEnum, value)
+	if value, ok := ou.mutation.IsClosed(); ok {
+		_spec.SetField(order.FieldIsClosed, field.TypeBool, value)
+	}
+	if value, ok := ou.mutation.IsFinished(); ok {
+		_spec.SetField(order.FieldIsFinished, field.TypeBool, value)
 	}
 	if value, ok := ou.mutation.Evaluation(); ok {
 		_spec.SetField(order.FieldEvaluation, field.TypeFloat64, value)
 	}
 	if value, ok := ou.mutation.AddedEvaluation(); ok {
 		_spec.AddField(order.FieldEvaluation, field.TypeFloat64, value)
-	}
-	if ou.mutation.EvaluationCleared() {
-		_spec.ClearField(order.FieldEvaluation, field.TypeFloat64)
 	}
 	if value, ok := ou.mutation.HopeAt(); ok {
 		_spec.SetField(order.FieldHopeAt, field.TypeTime, value)
@@ -409,29 +404,43 @@ func (ouo *OrderUpdateOne) SetContact(s string) *OrderUpdateOne {
 }
 
 // SetType sets the "type" field.
-func (ouo *OrderUpdateOne) SetType(o order.Type) *OrderUpdateOne {
-	ouo.mutation.SetType(o)
+func (ouo *OrderUpdateOne) SetType(s string) *OrderUpdateOne {
+	ouo.mutation.SetType(s)
 	return ouo
 }
 
 // SetNillableType sets the "type" field if the given value is not nil.
-func (ouo *OrderUpdateOne) SetNillableType(o *order.Type) *OrderUpdateOne {
-	if o != nil {
-		ouo.SetType(*o)
+func (ouo *OrderUpdateOne) SetNillableType(s *string) *OrderUpdateOne {
+	if s != nil {
+		ouo.SetType(*s)
 	}
 	return ouo
 }
 
-// SetStatus sets the "status" field.
-func (ouo *OrderUpdateOne) SetStatus(o order.Status) *OrderUpdateOne {
-	ouo.mutation.SetStatus(o)
+// SetIsClosed sets the "is_closed" field.
+func (ouo *OrderUpdateOne) SetIsClosed(b bool) *OrderUpdateOne {
+	ouo.mutation.SetIsClosed(b)
 	return ouo
 }
 
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (ouo *OrderUpdateOne) SetNillableStatus(o *order.Status) *OrderUpdateOne {
-	if o != nil {
-		ouo.SetStatus(*o)
+// SetNillableIsClosed sets the "is_closed" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableIsClosed(b *bool) *OrderUpdateOne {
+	if b != nil {
+		ouo.SetIsClosed(*b)
+	}
+	return ouo
+}
+
+// SetIsFinished sets the "is_finished" field.
+func (ouo *OrderUpdateOne) SetIsFinished(b bool) *OrderUpdateOne {
+	ouo.mutation.SetIsFinished(b)
+	return ouo
+}
+
+// SetNillableIsFinished sets the "is_finished" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableIsFinished(b *bool) *OrderUpdateOne {
+	if b != nil {
+		ouo.SetIsFinished(*b)
 	}
 	return ouo
 }
@@ -443,23 +452,9 @@ func (ouo *OrderUpdateOne) SetEvaluation(f float64) *OrderUpdateOne {
 	return ouo
 }
 
-// SetNillableEvaluation sets the "evaluation" field if the given value is not nil.
-func (ouo *OrderUpdateOne) SetNillableEvaluation(f *float64) *OrderUpdateOne {
-	if f != nil {
-		ouo.SetEvaluation(*f)
-	}
-	return ouo
-}
-
 // AddEvaluation adds f to the "evaluation" field.
 func (ouo *OrderUpdateOne) AddEvaluation(f float64) *OrderUpdateOne {
 	ouo.mutation.AddEvaluation(f)
-	return ouo
-}
-
-// ClearEvaluation clears the value of the "evaluation" field.
-func (ouo *OrderUpdateOne) ClearEvaluation() *OrderUpdateOne {
-	ouo.mutation.ClearEvaluation()
 	return ouo
 }
 
@@ -615,14 +610,9 @@ func (ouo *OrderUpdateOne) check() error {
 			return &ValidationError{Name: "contact", err: fmt.Errorf(`ent: validator failed for field "Order.contact": %w`, err)}
 		}
 	}
-	if v, ok := ouo.mutation.GetType(); ok {
-		if err := order.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Order.type": %w`, err)}
-		}
-	}
-	if v, ok := ouo.mutation.Status(); ok {
-		if err := order.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Order.status": %w`, err)}
+	if v, ok := ouo.mutation.Evaluation(); ok {
+		if err := order.EvaluationValidator(v); err != nil {
+			return &ValidationError{Name: "evaluation", err: fmt.Errorf(`ent: validator failed for field "Order.evaluation": %w`, err)}
 		}
 	}
 	return nil
@@ -667,19 +657,19 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 		_spec.SetField(order.FieldContact, field.TypeString, value)
 	}
 	if value, ok := ouo.mutation.GetType(); ok {
-		_spec.SetField(order.FieldType, field.TypeEnum, value)
+		_spec.SetField(order.FieldType, field.TypeString, value)
 	}
-	if value, ok := ouo.mutation.Status(); ok {
-		_spec.SetField(order.FieldStatus, field.TypeEnum, value)
+	if value, ok := ouo.mutation.IsClosed(); ok {
+		_spec.SetField(order.FieldIsClosed, field.TypeBool, value)
+	}
+	if value, ok := ouo.mutation.IsFinished(); ok {
+		_spec.SetField(order.FieldIsFinished, field.TypeBool, value)
 	}
 	if value, ok := ouo.mutation.Evaluation(); ok {
 		_spec.SetField(order.FieldEvaluation, field.TypeFloat64, value)
 	}
 	if value, ok := ouo.mutation.AddedEvaluation(); ok {
 		_spec.AddField(order.FieldEvaluation, field.TypeFloat64, value)
-	}
-	if ouo.mutation.EvaluationCleared() {
-		_spec.ClearField(order.FieldEvaluation, field.TypeFloat64)
 	}
 	if value, ok := ouo.mutation.HopeAt(); ok {
 		_spec.SetField(order.FieldHopeAt, field.TypeTime, value)

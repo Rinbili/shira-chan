@@ -3,8 +3,6 @@
 package ent
 
 import (
-	"shira-chan-dev/ent/order"
-	"shira-chan-dev/ent/user"
 	"time"
 )
 
@@ -13,9 +11,10 @@ type CreateOrderInput struct {
 	Title       string
 	Content     string
 	Contact     string
-	Type        *order.Type
-	Status      *order.Status
-	Evaluation  *float64
+	Type        *string
+	IsClosed    *bool
+	IsFinished  *bool
+	Evaluation  float64
 	HopeAt      *time.Time
 	CreatedAt   *time.Time
 	UpdatedAt   *time.Time
@@ -31,12 +30,13 @@ func (i *CreateOrderInput) Mutate(m *OrderMutation) {
 	if v := i.Type; v != nil {
 		m.SetType(*v)
 	}
-	if v := i.Status; v != nil {
-		m.SetStatus(*v)
+	if v := i.IsClosed; v != nil {
+		m.SetIsClosed(*v)
 	}
-	if v := i.Evaluation; v != nil {
-		m.SetEvaluation(*v)
+	if v := i.IsFinished; v != nil {
+		m.SetIsFinished(*v)
 	}
+	m.SetEvaluation(i.Evaluation)
 	if v := i.HopeAt; v != nil {
 		m.SetHopeAt(*v)
 	}
@@ -65,9 +65,9 @@ type UpdateOrderInput struct {
 	Title             *string
 	Content           *string
 	Contact           *string
-	Type              *order.Type
-	Status            *order.Status
-	ClearEvaluation   bool
+	Type              *string
+	IsClosed          *bool
+	IsFinished        *bool
 	Evaluation        *float64
 	HopeAt            *time.Time
 	UpdatedAt         *time.Time
@@ -92,11 +92,11 @@ func (i *UpdateOrderInput) Mutate(m *OrderMutation) {
 	if v := i.Type; v != nil {
 		m.SetType(*v)
 	}
-	if v := i.Status; v != nil {
-		m.SetStatus(*v)
+	if v := i.IsClosed; v != nil {
+		m.SetIsClosed(*v)
 	}
-	if i.ClearEvaluation {
-		m.ClearEvaluation()
+	if v := i.IsFinished; v != nil {
+		m.SetIsFinished(*v)
 	}
 	if v := i.Evaluation; v != nil {
 		m.SetEvaluation(*v)
@@ -142,9 +142,8 @@ type CreateUserInput struct {
 	Passwd       string
 	Phone        string
 	Wechat       *string
-	Level        *user.Level
-	Dept         *user.Dept
-	State        *user.State
+	IsAdmin      *bool
+	IsActive     *bool
 	CreatedAt    *time.Time
 	UpdatedAt    *time.Time
 	RequestedIDs []int
@@ -159,14 +158,11 @@ func (i *CreateUserInput) Mutate(m *UserMutation) {
 	if v := i.Wechat; v != nil {
 		m.SetWechat(*v)
 	}
-	if v := i.Level; v != nil {
-		m.SetLevel(*v)
+	if v := i.IsAdmin; v != nil {
+		m.SetIsAdmin(*v)
 	}
-	if v := i.Dept; v != nil {
-		m.SetDept(*v)
-	}
-	if v := i.State; v != nil {
-		m.SetState(*v)
+	if v := i.IsActive; v != nil {
+		m.SetIsActive(*v)
 	}
 	if v := i.CreatedAt; v != nil {
 		m.SetCreatedAt(*v)
@@ -194,9 +190,8 @@ type UpdateUserInput struct {
 	Passwd             *string
 	Phone              *string
 	Wechat             *string
-	Level              *user.Level
-	Dept               *user.Dept
-	State              *user.State
+	IsAdmin            *bool
+	IsActive           *bool
 	UpdatedAt          *time.Time
 	ClearRequested     bool
 	AddRequestedIDs    []int
@@ -220,14 +215,11 @@ func (i *UpdateUserInput) Mutate(m *UserMutation) {
 	if v := i.Wechat; v != nil {
 		m.SetWechat(*v)
 	}
-	if v := i.Level; v != nil {
-		m.SetLevel(*v)
+	if v := i.IsAdmin; v != nil {
+		m.SetIsAdmin(*v)
 	}
-	if v := i.Dept; v != nil {
-		m.SetDept(*v)
-	}
-	if v := i.State; v != nil {
-		m.SetState(*v)
+	if v := i.IsActive; v != nil {
+		m.SetIsActive(*v)
 	}
 	if v := i.UpdatedAt; v != nil {
 		m.SetUpdatedAt(*v)

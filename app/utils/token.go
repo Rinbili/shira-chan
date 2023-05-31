@@ -5,6 +5,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -13,20 +14,18 @@ const TokenExpireDuration = 24 * time.Hour
 var mySigningKey = []byte(os.Getenv("secret"))
 
 type JwtCustomClaims struct {
-	UId   int
-	Level string
-	UName string
+	UId     int
+	IsAdmin bool
 	jwt.RegisteredClaims
 }
 
-func GetToken(UId int, UName string, Level string) (string, error) {
+func GetToken(UId int, IsAdmin bool) (string, error) {
 	claims := JwtCustomClaims{
-		UId:   UId,
-		UName: UName,
-		Level: Level,
+		UId:     UId,
+		IsAdmin: IsAdmin,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "Kyaru",                                                 //签发者
-			Subject:   UName,                                                   //签发对象
+			Subject:   strconv.Itoa(UId),                                       //签发对象
 			Audience:  jwt.ClaimStrings{"web"},                                 //签发受众
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(TokenExpireDuration)), //过期日期
 			NotBefore: jwt.NewNumericDate(time.Now()),                          //启用日期
@@ -38,21 +37,16 @@ func GetToken(UId int, UName string, Level string) (string, error) {
 	return token, err
 }
 
-func TokenParse(tokenString string) (*JwtCustomClaims, error) {
+func ParseToken(tokenString string) (*JwtCustomClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &JwtCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return mySigningKey, nil
 	})
 	if err != nil {
 		return nil, err
 	}
-	if !token.Valid {
-		return nil, errors.New("claim invalid")
-	}
 
-	claims, ok := token.Claims.(*JwtCustomClaims)
-	if !ok {
-		return nil, errors.New("invalid claim type")
+	if claims, ok := token.Claims.(*JwtCustomClaims); ok && token.Valid {
+		return claims, nil
 	}
-
-	return claims, nil
+	return nil, errors.New("couldn't handle this token")
 }

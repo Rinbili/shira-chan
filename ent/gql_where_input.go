@@ -74,28 +74,37 @@ type OrderWhereInput struct {
 	ContactContainsFold *string  `json:"contactContainsFold,omitempty"`
 
 	// "type" field predicates.
-	Type      *order.Type  `json:"type,omitempty"`
-	TypeNEQ   *order.Type  `json:"typeNEQ,omitempty"`
-	TypeIn    []order.Type `json:"typeIn,omitempty"`
-	TypeNotIn []order.Type `json:"typeNotIn,omitempty"`
+	Type             *string  `json:"type,omitempty"`
+	TypeNEQ          *string  `json:"typeNEQ,omitempty"`
+	TypeIn           []string `json:"typeIn,omitempty"`
+	TypeNotIn        []string `json:"typeNotIn,omitempty"`
+	TypeGT           *string  `json:"typeGT,omitempty"`
+	TypeGTE          *string  `json:"typeGTE,omitempty"`
+	TypeLT           *string  `json:"typeLT,omitempty"`
+	TypeLTE          *string  `json:"typeLTE,omitempty"`
+	TypeContains     *string  `json:"typeContains,omitempty"`
+	TypeHasPrefix    *string  `json:"typeHasPrefix,omitempty"`
+	TypeHasSuffix    *string  `json:"typeHasSuffix,omitempty"`
+	TypeEqualFold    *string  `json:"typeEqualFold,omitempty"`
+	TypeContainsFold *string  `json:"typeContainsFold,omitempty"`
 
-	// "status" field predicates.
-	Status      *order.Status  `json:"status,omitempty"`
-	StatusNEQ   *order.Status  `json:"statusNEQ,omitempty"`
-	StatusIn    []order.Status `json:"statusIn,omitempty"`
-	StatusNotIn []order.Status `json:"statusNotIn,omitempty"`
+	// "is_closed" field predicates.
+	IsClosed    *bool `json:"isClosed,omitempty"`
+	IsClosedNEQ *bool `json:"isClosedNEQ,omitempty"`
+
+	// "is_finished" field predicates.
+	IsFinished    *bool `json:"isFinished,omitempty"`
+	IsFinishedNEQ *bool `json:"isFinishedNEQ,omitempty"`
 
 	// "evaluation" field predicates.
-	Evaluation       *float64  `json:"evaluation,omitempty"`
-	EvaluationNEQ    *float64  `json:"evaluationNEQ,omitempty"`
-	EvaluationIn     []float64 `json:"evaluationIn,omitempty"`
-	EvaluationNotIn  []float64 `json:"evaluationNotIn,omitempty"`
-	EvaluationGT     *float64  `json:"evaluationGT,omitempty"`
-	EvaluationGTE    *float64  `json:"evaluationGTE,omitempty"`
-	EvaluationLT     *float64  `json:"evaluationLT,omitempty"`
-	EvaluationLTE    *float64  `json:"evaluationLTE,omitempty"`
-	EvaluationIsNil  bool      `json:"evaluationIsNil,omitempty"`
-	EvaluationNotNil bool      `json:"evaluationNotNil,omitempty"`
+	Evaluation      *float64  `json:"evaluation,omitempty"`
+	EvaluationNEQ   *float64  `json:"evaluationNEQ,omitempty"`
+	EvaluationIn    []float64 `json:"evaluationIn,omitempty"`
+	EvaluationNotIn []float64 `json:"evaluationNotIn,omitempty"`
+	EvaluationGT    *float64  `json:"evaluationGT,omitempty"`
+	EvaluationGTE   *float64  `json:"evaluationGTE,omitempty"`
+	EvaluationLT    *float64  `json:"evaluationLT,omitempty"`
+	EvaluationLTE   *float64  `json:"evaluationLTE,omitempty"`
 
 	// "hope_at" field predicates.
 	HopeAt      *time.Time  `json:"hopeAt,omitempty"`
@@ -360,17 +369,44 @@ func (i *OrderWhereInput) P() (predicate.Order, error) {
 	if len(i.TypeNotIn) > 0 {
 		predicates = append(predicates, order.TypeNotIn(i.TypeNotIn...))
 	}
-	if i.Status != nil {
-		predicates = append(predicates, order.StatusEQ(*i.Status))
+	if i.TypeGT != nil {
+		predicates = append(predicates, order.TypeGT(*i.TypeGT))
 	}
-	if i.StatusNEQ != nil {
-		predicates = append(predicates, order.StatusNEQ(*i.StatusNEQ))
+	if i.TypeGTE != nil {
+		predicates = append(predicates, order.TypeGTE(*i.TypeGTE))
 	}
-	if len(i.StatusIn) > 0 {
-		predicates = append(predicates, order.StatusIn(i.StatusIn...))
+	if i.TypeLT != nil {
+		predicates = append(predicates, order.TypeLT(*i.TypeLT))
 	}
-	if len(i.StatusNotIn) > 0 {
-		predicates = append(predicates, order.StatusNotIn(i.StatusNotIn...))
+	if i.TypeLTE != nil {
+		predicates = append(predicates, order.TypeLTE(*i.TypeLTE))
+	}
+	if i.TypeContains != nil {
+		predicates = append(predicates, order.TypeContains(*i.TypeContains))
+	}
+	if i.TypeHasPrefix != nil {
+		predicates = append(predicates, order.TypeHasPrefix(*i.TypeHasPrefix))
+	}
+	if i.TypeHasSuffix != nil {
+		predicates = append(predicates, order.TypeHasSuffix(*i.TypeHasSuffix))
+	}
+	if i.TypeEqualFold != nil {
+		predicates = append(predicates, order.TypeEqualFold(*i.TypeEqualFold))
+	}
+	if i.TypeContainsFold != nil {
+		predicates = append(predicates, order.TypeContainsFold(*i.TypeContainsFold))
+	}
+	if i.IsClosed != nil {
+		predicates = append(predicates, order.IsClosedEQ(*i.IsClosed))
+	}
+	if i.IsClosedNEQ != nil {
+		predicates = append(predicates, order.IsClosedNEQ(*i.IsClosedNEQ))
+	}
+	if i.IsFinished != nil {
+		predicates = append(predicates, order.IsFinishedEQ(*i.IsFinished))
+	}
+	if i.IsFinishedNEQ != nil {
+		predicates = append(predicates, order.IsFinishedNEQ(*i.IsFinishedNEQ))
 	}
 	if i.Evaluation != nil {
 		predicates = append(predicates, order.EvaluationEQ(*i.Evaluation))
@@ -395,12 +431,6 @@ func (i *OrderWhereInput) P() (predicate.Order, error) {
 	}
 	if i.EvaluationLTE != nil {
 		predicates = append(predicates, order.EvaluationLTE(*i.EvaluationLTE))
-	}
-	if i.EvaluationIsNil {
-		predicates = append(predicates, order.EvaluationIsNil())
-	}
-	if i.EvaluationNotNil {
-		predicates = append(predicates, order.EvaluationNotNil())
 	}
 	if i.HopeAt != nil {
 		predicates = append(predicates, order.HopeAtEQ(*i.HopeAt))
@@ -598,23 +628,13 @@ type UserWhereInput struct {
 	WechatEqualFold    *string  `json:"wechatEqualFold,omitempty"`
 	WechatContainsFold *string  `json:"wechatContainsFold,omitempty"`
 
-	// "level" field predicates.
-	Level      *user.Level  `json:"level,omitempty"`
-	LevelNEQ   *user.Level  `json:"levelNEQ,omitempty"`
-	LevelIn    []user.Level `json:"levelIn,omitempty"`
-	LevelNotIn []user.Level `json:"levelNotIn,omitempty"`
+	// "is_admin" field predicates.
+	IsAdmin    *bool `json:"isAdmin,omitempty"`
+	IsAdminNEQ *bool `json:"isAdminNEQ,omitempty"`
 
-	// "dept" field predicates.
-	Dept      *user.Dept  `json:"dept,omitempty"`
-	DeptNEQ   *user.Dept  `json:"deptNEQ,omitempty"`
-	DeptIn    []user.Dept `json:"deptIn,omitempty"`
-	DeptNotIn []user.Dept `json:"deptNotIn,omitempty"`
-
-	// "state" field predicates.
-	State      *user.State  `json:"state,omitempty"`
-	StateNEQ   *user.State  `json:"stateNEQ,omitempty"`
-	StateIn    []user.State `json:"stateIn,omitempty"`
-	StateNotIn []user.State `json:"stateNotIn,omitempty"`
+	// "is_active" field predicates.
+	IsActive    *bool `json:"isActive,omitempty"`
+	IsActiveNEQ *bool `json:"isActiveNEQ,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -896,41 +916,17 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 	if i.WechatContainsFold != nil {
 		predicates = append(predicates, user.WechatContainsFold(*i.WechatContainsFold))
 	}
-	if i.Level != nil {
-		predicates = append(predicates, user.LevelEQ(*i.Level))
+	if i.IsAdmin != nil {
+		predicates = append(predicates, user.IsAdminEQ(*i.IsAdmin))
 	}
-	if i.LevelNEQ != nil {
-		predicates = append(predicates, user.LevelNEQ(*i.LevelNEQ))
+	if i.IsAdminNEQ != nil {
+		predicates = append(predicates, user.IsAdminNEQ(*i.IsAdminNEQ))
 	}
-	if len(i.LevelIn) > 0 {
-		predicates = append(predicates, user.LevelIn(i.LevelIn...))
+	if i.IsActive != nil {
+		predicates = append(predicates, user.IsActiveEQ(*i.IsActive))
 	}
-	if len(i.LevelNotIn) > 0 {
-		predicates = append(predicates, user.LevelNotIn(i.LevelNotIn...))
-	}
-	if i.Dept != nil {
-		predicates = append(predicates, user.DeptEQ(*i.Dept))
-	}
-	if i.DeptNEQ != nil {
-		predicates = append(predicates, user.DeptNEQ(*i.DeptNEQ))
-	}
-	if len(i.DeptIn) > 0 {
-		predicates = append(predicates, user.DeptIn(i.DeptIn...))
-	}
-	if len(i.DeptNotIn) > 0 {
-		predicates = append(predicates, user.DeptNotIn(i.DeptNotIn...))
-	}
-	if i.State != nil {
-		predicates = append(predicates, user.StateEQ(*i.State))
-	}
-	if i.StateNEQ != nil {
-		predicates = append(predicates, user.StateNEQ(*i.StateNEQ))
-	}
-	if len(i.StateIn) > 0 {
-		predicates = append(predicates, user.StateIn(i.StateIn...))
-	}
-	if len(i.StateNotIn) > 0 {
-		predicates = append(predicates, user.StateNotIn(i.StateNotIn...))
+	if i.IsActiveNEQ != nil {
+		predicates = append(predicates, user.IsActiveNEQ(*i.IsActiveNEQ))
 	}
 	if i.CreatedAt != nil {
 		predicates = append(predicates, user.CreatedAtEQ(*i.CreatedAt))

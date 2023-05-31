@@ -46,33 +46,32 @@ func (Order) Fields() []ent.Field {
 			NotEmpty(),
 		field.Text("contact").
 			MaxLen(20).
-			Comment("联系方式"),
-		field.Enum("type").
-			NamedValues("SOFTWARE", "software",
-				"HARDWARE", "hardware",
-				"UNKNOWN", "unknown",
-				"OTHER", "other").
+			Comment("联系方式").
+			NotEmpty(),
+		field.Text("type").
 			Default("other").
 			Annotations(
 				entgql.OrderField("TYPE")).
 			Comment("故障类别"),
-		field.Enum("status").
-			NamedValues("REQUESTED", "requested",
-				"RECEIVED", "received",
-				"FINISHED", "finished",
-				"CLOSED", "closed").
+		field.Bool("is_closed").
+			Default(false).
 			Annotations(
-				entgql.OrderField("STATUS")).
-			Default("requested").
-			Comment("工单状态"),
+				entgql.OrderField("IS_CLOSED")).
+			Comment("是否被关闭"),
+		field.Bool("is_finished").
+			Default(false).
+			Annotations(
+				entgql.OrderField("IS_FINISHED")).
+			Comment("是否完成"),
 		field.Float("evaluation").
 			Annotations(
 				entgql.OrderField("EVALUATION")).
 			Nillable().
-			Optional().
-			Comment("工单状态"),
+			Max(5).
+			Min(1).
+			Comment("评分"),
 		field.Time("hope_at").
-			Default(time.Now()).
+			Default(time.Now).
 			Annotations(
 				entgql.OrderField("HOPE_AT")).
 			Comment("期望时间").

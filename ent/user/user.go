@@ -3,9 +3,6 @@
 package user
 
 import (
-	"fmt"
-	"io"
-	"strconv"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -25,12 +22,10 @@ const (
 	FieldPhone = "phone"
 	// FieldWechat holds the string denoting the wechat field in the database.
 	FieldWechat = "wechat"
-	// FieldLevel holds the string denoting the level field in the database.
-	FieldLevel = "level"
-	// FieldDept holds the string denoting the dept field in the database.
-	FieldDept = "dept"
-	// FieldState holds the string denoting the state field in the database.
-	FieldState = "state"
+	// FieldIsAdmin holds the string denoting the is_admin field in the database.
+	FieldIsAdmin = "is_admin"
+	// FieldIsActive holds the string denoting the is_active field in the database.
+	FieldIsActive = "is_active"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -62,9 +57,8 @@ var Columns = []string{
 	FieldPasswd,
 	FieldPhone,
 	FieldWechat,
-	FieldLevel,
-	FieldDept,
-	FieldState,
+	FieldIsAdmin,
+	FieldIsActive,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -96,6 +90,10 @@ var (
 	DefaultWechat string
 	// WechatValidator is a validator for the "wechat" field. It is called by the builders before save.
 	WechatValidator func(string) error
+	// DefaultIsAdmin holds the default value on creation for the "is_admin" field.
+	DefaultIsAdmin bool
+	// DefaultIsActive holds the default value on creation for the "is_active" field.
+	DefaultIsActive bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -103,88 +101,6 @@ var (
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
 )
-
-// Level defines the type for the "level" enum field.
-type Level string
-
-// LevelUSER is the default value of the Level enum.
-const DefaultLevel = LevelUSER
-
-// Level values.
-const (
-	LevelROOT      Level = "root"
-	LevelADMIN     Level = "admin"
-	LevelPRESIDENT Level = "president"
-	LevelMINISTER  Level = "minister"
-	LevelMEMBER    Level = "member"
-	LevelUSER      Level = "user"
-	LevelBANNED    Level = "banned"
-)
-
-func (l Level) String() string {
-	return string(l)
-}
-
-// LevelValidator is a validator for the "level" field enum values. It is called by the builders before save.
-func LevelValidator(l Level) error {
-	switch l {
-	case LevelROOT, LevelADMIN, LevelPRESIDENT, LevelMINISTER, LevelMEMBER, LevelUSER, LevelBANNED:
-		return nil
-	default:
-		return fmt.Errorf("user: invalid enum value for level field: %q", l)
-	}
-}
-
-// Dept defines the type for the "dept" enum field.
-type Dept string
-
-// DeptNONE is the default value of the Dept enum.
-const DefaultDept = DeptNONE
-
-// Dept values.
-const (
-	DeptNONE Dept = "none"
-)
-
-func (d Dept) String() string {
-	return string(d)
-}
-
-// DeptValidator is a validator for the "dept" field enum values. It is called by the builders before save.
-func DeptValidator(d Dept) error {
-	switch d {
-	case DeptNONE:
-		return nil
-	default:
-		return fmt.Errorf("user: invalid enum value for dept field: %q", d)
-	}
-}
-
-// State defines the type for the "state" enum field.
-type State string
-
-// StateON is the default value of the State enum.
-const DefaultState = StateON
-
-// State values.
-const (
-	StateON  State = "on"
-	StateOFF State = "off"
-)
-
-func (s State) String() string {
-	return string(s)
-}
-
-// StateValidator is a validator for the "state" field enum values. It is called by the builders before save.
-func StateValidator(s State) error {
-	switch s {
-	case StateON, StateOFF:
-		return nil
-	default:
-		return fmt.Errorf("user: invalid enum value for state field: %q", s)
-	}
-}
 
 // OrderOption defines the ordering options for the User queries.
 type OrderOption func(*sql.Selector)
@@ -214,19 +130,14 @@ func ByWechat(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldWechat, opts...).ToFunc()
 }
 
-// ByLevel orders the results by the level field.
-func ByLevel(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLevel, opts...).ToFunc()
+// ByIsAdmin orders the results by the is_admin field.
+func ByIsAdmin(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsAdmin, opts...).ToFunc()
 }
 
-// ByDept orders the results by the dept field.
-func ByDept(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDept, opts...).ToFunc()
-}
-
-// ByState orders the results by the state field.
-func ByState(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldState, opts...).ToFunc()
+// ByIsActive orders the results by the is_active field.
+func ByIsActive(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsActive, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.
@@ -279,58 +190,4 @@ func newReceivedStep() *sqlgraph.Step {
 		sqlgraph.To(ReceivedInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, true, ReceivedTable, ReceivedPrimaryKey...),
 	)
-}
-
-// MarshalGQL implements graphql.Marshaler interface.
-func (e Level) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(e.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (e *Level) UnmarshalGQL(val interface{}) error {
-	str, ok := val.(string)
-	if !ok {
-		return fmt.Errorf("enum %T must be a string", val)
-	}
-	*e = Level(str)
-	if err := LevelValidator(*e); err != nil {
-		return fmt.Errorf("%s is not a valid Level", str)
-	}
-	return nil
-}
-
-// MarshalGQL implements graphql.Marshaler interface.
-func (e Dept) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(e.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (e *Dept) UnmarshalGQL(val interface{}) error {
-	str, ok := val.(string)
-	if !ok {
-		return fmt.Errorf("enum %T must be a string", val)
-	}
-	*e = Dept(str)
-	if err := DeptValidator(*e); err != nil {
-		return fmt.Errorf("%s is not a valid Dept", str)
-	}
-	return nil
-}
-
-// MarshalGQL implements graphql.Marshaler interface.
-func (e State) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(e.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (e *State) UnmarshalGQL(val interface{}) error {
-	str, ok := val.(string)
-	if !ok {
-		return fmt.Errorf("enum %T must be a string", val)
-	}
-	*e = State(str)
-	if err := StateValidator(*e); err != nil {
-		return fmt.Errorf("%s is not a valid State", str)
-	}
-	return nil
 }

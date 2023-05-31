@@ -25,10 +25,12 @@ type Order struct {
 	// 联系方式
 	Contact string `json:"contact,omitempty"`
 	// 故障类别
-	Type order.Type `json:"type,omitempty"`
-	// 工单状态
-	Status order.Status `json:"status,omitempty"`
-	// 工单状态
+	Type string `json:"type,omitempty"`
+	// 是否被关闭
+	IsClosed bool `json:"is_closed,omitempty"`
+	// 是否完成
+	IsFinished bool `json:"is_finished,omitempty"`
+	// 评分
 	Evaluation *float64 `json:"evaluation,omitempty"`
 	// 期望时间
 	HopeAt time.Time `json:"hope_at,omitempty"`
@@ -85,11 +87,13 @@ func (*Order) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case order.FieldIsClosed, order.FieldIsFinished:
+			values[i] = new(sql.NullBool)
 		case order.FieldEvaluation:
 			values[i] = new(sql.NullFloat64)
 		case order.FieldID:
 			values[i] = new(sql.NullInt64)
-		case order.FieldTitle, order.FieldContent, order.FieldContact, order.FieldType, order.FieldStatus:
+		case order.FieldTitle, order.FieldContent, order.FieldContact, order.FieldType:
 			values[i] = new(sql.NullString)
 		case order.FieldHopeAt, order.FieldCreatedAt, order.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -138,13 +142,19 @@ func (o *Order) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
 			} else if value.Valid {
-				o.Type = order.Type(value.String)
+				o.Type = value.String
 			}
-		case order.FieldStatus:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field status", values[i])
+		case order.FieldIsClosed:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_closed", values[i])
 			} else if value.Valid {
-				o.Status = order.Status(value.String)
+				o.IsClosed = value.Bool
+			}
+		case order.FieldIsFinished:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_finished", values[i])
+			} else if value.Valid {
+				o.IsFinished = value.Bool
 			}
 		case order.FieldEvaluation:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
@@ -234,10 +244,13 @@ func (o *Order) String() string {
 	builder.WriteString(o.Contact)
 	builder.WriteString(", ")
 	builder.WriteString("type=")
-	builder.WriteString(fmt.Sprintf("%v", o.Type))
+	builder.WriteString(o.Type)
 	builder.WriteString(", ")
-	builder.WriteString("status=")
-	builder.WriteString(fmt.Sprintf("%v", o.Status))
+	builder.WriteString("is_closed=")
+	builder.WriteString(fmt.Sprintf("%v", o.IsClosed))
+	builder.WriteString(", ")
+	builder.WriteString("is_finished=")
+	builder.WriteString(fmt.Sprintf("%v", o.IsFinished))
 	builder.WriteString(", ")
 	if v := o.Evaluation; v != nil {
 		builder.WriteString("evaluation=")

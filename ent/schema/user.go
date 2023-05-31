@@ -49,27 +49,13 @@ func (User) Fields() []ent.Field {
 			MaxLen(30).
 			Default("").
 			Comment("微信号"),
-		field.Enum("level").
-			NamedValues("ROOT", "root",
-				"ADMIN", "admin",
-				"PRESIDENT", "president",
-				"MINISTER", "minister",
-				"MEMBER", "member",
-				"USER", "user",
-				"BANNED", "banned").
-			Default("user").
+		field.Bool("is_admin").
+			Default(false).
 			Annotations(
-				entgql.OrderField("LEVEL")).
-			Comment("系统用户类别"),
-		field.Enum("dept").
-			NamedValues("NONE", "none").
-			Default("none").
-			Annotations(
-				entgql.OrderField("DEPT")).
-			Comment("部门"),
-		field.Enum("state").
-			NamedValues("ON", "on", "OFF", "off").
-			Default("on").
+				entgql.OrderField("IS_ADMIN")).
+			Comment("是否管理员"),
+		field.Bool("is_active").
+			Default(true).
 			Annotations(
 				entgql.OrderField("STATE")).
 			Comment("用户状态"),

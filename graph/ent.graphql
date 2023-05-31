@@ -12,11 +12,13 @@ input CreateOrderInput {
   """联系方式"""
   contact: String!
   """故障类别"""
-  type: OrderType
-  """工单状态"""
-  status: OrderStatus
-  """工单状态"""
-  evaluation: Float
+  type: String
+  """是否被关闭"""
+  isClosed: Boolean
+  """是否完成"""
+  isFinished: Boolean
+  """评分"""
+  evaluation: Float!
   """期望时间"""
   hopeAt: Time
   """创建时间"""
@@ -39,12 +41,10 @@ input CreateUserInput {
   phone: String!
   """微信号"""
   wechat: String
-  """系统用户类别"""
-  level: UserLevel
-  """部门"""
-  dept: UserDept
+  """是否管理员"""
+  isAdmin: Boolean
   """用户状态"""
-  state: UserState
+  isActive: Boolean
   """创建时间"""
   createdAt: Time
   """更新时间"""
@@ -74,11 +74,13 @@ type Order implements Node {
   """联系方式"""
   contact: String!
   """故障类别"""
-  type: OrderType!
-  """工单状态"""
-  status: OrderStatus!
-  """工单状态"""
-  evaluation: Float
+  type: String!
+  """是否被关闭"""
+  isClosed: Boolean!
+  """是否完成"""
+  isFinished: Boolean!
+  """评分"""
+  evaluation: Float!
   """期望时间"""
   hopeAt: Time!
   """创建时间"""
@@ -141,26 +143,13 @@ input OrderOrder {
 enum OrderOrderField {
   TITLE
   TYPE
-  STATUS
+  IS_CLOSED
+  IS_FINISHED
   EVALUATION
   HOPE_AT
   CREAT_AT
   UPDATED_AT
   RECEIVER_COUNT
-}
-"""OrderStatus is enum for the field status"""
-enum OrderStatus @goModel(model: "shira-chan-dev/ent/order.Status") {
-  requested
-  received
-  finished
-  closed
-}
-"""OrderType is enum for the field type"""
-enum OrderType @goModel(model: "shira-chan-dev/ent/order.Type") {
-  software
-  hardware
-  unknown
-  other
 }
 """
 OrderWhereInput is used for filtering Order objects.
@@ -222,15 +211,25 @@ input OrderWhereInput {
   contactEqualFold: String
   contactContainsFold: String
   """type field predicates"""
-  type: OrderType
-  typeNEQ: OrderType
-  typeIn: [OrderType!]
-  typeNotIn: [OrderType!]
-  """status field predicates"""
-  status: OrderStatus
-  statusNEQ: OrderStatus
-  statusIn: [OrderStatus!]
-  statusNotIn: [OrderStatus!]
+  type: String
+  typeNEQ: String
+  typeIn: [String!]
+  typeNotIn: [String!]
+  typeGT: String
+  typeGTE: String
+  typeLT: String
+  typeLTE: String
+  typeContains: String
+  typeHasPrefix: String
+  typeHasSuffix: String
+  typeEqualFold: String
+  typeContainsFold: String
+  """is_closed field predicates"""
+  isClosed: Boolean
+  isClosedNEQ: Boolean
+  """is_finished field predicates"""
+  isFinished: Boolean
+  isFinishedNEQ: Boolean
   """evaluation field predicates"""
   evaluation: Float
   evaluationNEQ: Float
@@ -240,8 +239,6 @@ input OrderWhereInput {
   evaluationGTE: Float
   evaluationLT: Float
   evaluationLTE: Float
-  evaluationIsNil: Boolean
-  evaluationNotNil: Boolean
   """hope_at field predicates"""
   hopeAt: Time
   hopeAtNEQ: Time
@@ -354,12 +351,13 @@ input UpdateOrderInput {
   """联系方式"""
   contact: String
   """故障类别"""
-  type: OrderType
-  """工单状态"""
-  status: OrderStatus
-  """工单状态"""
+  type: String
+  """是否被关闭"""
+  isClosed: Boolean
+  """是否完成"""
+  isFinished: Boolean
+  """评分"""
   evaluation: Float
-  clearEvaluation: Boolean
   """期望时间"""
   hopeAt: Time
   """更新时间"""
@@ -383,12 +381,10 @@ input UpdateUserInput {
   phone: String
   """微信号"""
   wechat: String
-  """系统用户类别"""
-  level: UserLevel
-  """部门"""
-  dept: UserDept
+  """是否管理员"""
+  isAdmin: Boolean
   """用户状态"""
-  state: UserState
+  isActive: Boolean
   """更新时间"""
   updatedAt: Time
   addRequestedIDs: [ID!]
@@ -406,12 +402,10 @@ type User implements Node {
   phone: String!
   """微信号"""
   wechat: String!
-  """系统用户类别"""
-  level: UserLevel!
-  """部门"""
-  dept: UserDept!
+  """是否管理员"""
+  isAdmin: Boolean!
   """用户状态"""
-  state: UserState!
+  isActive: Boolean!
   """创建时间"""
   createdAt: Time!
   """更新时间"""
@@ -464,26 +458,12 @@ type UserConnection {
   """Identifies the total count of items in the connection."""
   totalCount: Int!
 }
-"""UserDept is enum for the field dept"""
-enum UserDept @goModel(model: "shira-chan-dev/ent/user.Dept") {
-  none
-}
 """An edge in a connection."""
 type UserEdge {
   """The item at the end of the edge."""
   node: User
   """A cursor for use in pagination."""
   cursor: Cursor!
-}
-"""UserLevel is enum for the field level"""
-enum UserLevel @goModel(model: "shira-chan-dev/ent/user.Level") {
-  root
-  admin
-  president
-  minister
-  member
-  user
-  banned
 }
 """Ordering options for User connections"""
 input UserOrder {
@@ -495,18 +475,12 @@ input UserOrder {
 """Properties by which User connections can be ordered."""
 enum UserOrderField {
   UNAME
-  LEVEL
-  DEPT
+  IS_ADMIN
   STATE
   CREAT_AT
   UPDATED_AT
   REQUESTED_COUNT
   RECEIVED_COUNT
-}
-"""UserState is enum for the field state"""
-enum UserState @goModel(model: "shira-chan-dev/ent/user.State") {
-  on
-  off
 }
 """
 UserWhereInput is used for filtering User objects.
@@ -567,21 +541,12 @@ input UserWhereInput {
   wechatHasSuffix: String
   wechatEqualFold: String
   wechatContainsFold: String
-  """level field predicates"""
-  level: UserLevel
-  levelNEQ: UserLevel
-  levelIn: [UserLevel!]
-  levelNotIn: [UserLevel!]
-  """dept field predicates"""
-  dept: UserDept
-  deptNEQ: UserDept
-  deptIn: [UserDept!]
-  deptNotIn: [UserDept!]
-  """state field predicates"""
-  state: UserState
-  stateNEQ: UserState
-  stateIn: [UserState!]
-  stateNotIn: [UserState!]
+  """is_admin field predicates"""
+  isAdmin: Boolean
+  isAdminNEQ: Boolean
+  """is_active field predicates"""
+  isActive: Boolean
+  isActiveNEQ: Boolean
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time

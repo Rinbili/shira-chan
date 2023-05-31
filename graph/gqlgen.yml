@@ -23,6 +23,9 @@ models:
   ID:
     model:
       - github.com/99designs/gqlgen/graphql.IntID
+  Uint8:
+    model:
+      - github.com/99designs/gqlgen/graphql.Uint8
   Node:
     model:
       - shira-chan-dev/ent.Noder
