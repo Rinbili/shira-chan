@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"shira-chan-dev/app/utils"
 )
 
 func AuthHandler() gin.HandlerFunc {
@@ -11,13 +12,15 @@ func AuthHandler() gin.HandlerFunc {
 		r := Response{}
 		tokenString := c.Request.Header.Get("Authorization")
 		if tokenString != "" {
-			//claims, err := utils.ParseToken(tokenString)
-			//if err == nil {
-			//	c.Request.Header.Set("uid", strconv.Itoa(claims.UId))
-			//	c.Request.Header.Set("is_admin", strconv.FormatBool(claims.IsAdmin))
-			//	c.Next()
-			//}
-			c.Next()
+			claims, err := utils.ParseToken(tokenString)
+			if err == nil {
+				u, err := utils.Client.User.Get(c.Copy(), claims.UId)
+				//不接受用户数据修改前签发的token
+				if err != nil && u.IsActive == true && u.UpdatedAt.Before(claims.IssuedAt.Time) {
+					c.Next()
+					return
+				}
+			}
 		}
 		r.Code = http.StatusUnauthorized
 		r.err = errors.New("unauthorized")
