@@ -17,5 +17,5 @@ func InitRouter(r *gin.Engine) {
 	//
 	r.POST("/query", handlers.AuthHandler(), handlers.GraphqlHandler())
 	r.POST("/auth", handlers.SignHandler())
-	//r.GET("/graphql", handlers.PlaygroundHandler())
+	r.GET("/graphql", handlers.PlaygroundHandler())
 }

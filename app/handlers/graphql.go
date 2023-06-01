@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"entgo.io/contrib/entgql"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gin-gonic/gin"
 	"shira-chan-dev/app/utils"
 	"shira-chan-dev/graph"
@@ -22,9 +23,9 @@ func GraphqlHandler() gin.HandlerFunc {
 	}
 }
 
-//func PlaygroundHandler() gin.HandlerFunc {
-//	h := playground.Handler("GraphQL", "/query")
-//	return func(c *gin.Context) {
-//		h.ServeHTTP(c.Writer, c.Request)
-//	}
-//}
+func PlaygroundHandler() gin.HandlerFunc {
+	h := playground.Handler("GraphQL", "/query")
+	return func(c *gin.Context) {
+		h.ServeHTTP(c.Writer, c.Request)
+	}
+}
