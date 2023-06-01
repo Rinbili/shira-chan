@@ -42,14 +42,18 @@ func SignHandler() gin.HandlerFunc {
 					r.err = errors.New("bad request")
 				}
 
+			} else {
+				if !utils.ComparePwd(u.Passwd, *data.Passwd) {
+					r.err = errors.New("bad passwd")
+				}
 			}
 			if r.err == nil {
 				var token string
 				token, r.err = utils.GetToken(u.ID, u.IsAdmin)
-				r.Data = gin.H{"token": "Bearer " + token}
-				if r.err != nil {
-					c.Request.Header.Set("Authorization", "Bearer "+token)
-				}
+				r.Data = gin.H{"token": token}
+				//if r.err != nil {
+				//	c.Request.Header.Set("Authorization", "Bearer "+token)
+				//}
 			}
 		} else {
 			r.err = errors.New("bad request")

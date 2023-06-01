@@ -6,35 +6,81 @@ package graph
 
 import (
 	"context"
+	"errors"
+	"shira-chan-dev/app/utils"
 	"shira-chan-dev/ent"
+	"shira-chan-dev/ent/user"
 )
+
+// Sign is the resolver for the sign field.
+func (r *mutationResolver) Sign(ctx context.Context, input SignInput) (*Token, error) {
+	u, err := r.client.User.Query().
+		Where(user.PhoneEQ(input.Phone)).
+		Only(ctx)
+	if u == nil {
+		//试图注册
+		pwd, err := utils.GetPwd(input.Passwd)
+		if err == nil && input.Uname != nil {
+			u, err = utils.Client.User.Create().
+				SetUname(*input.Uname).
+				SetPhone(input.Phone).
+				SetPasswd(string(pwd)).
+				Save(ctx)
+		}
+	} else {
+		if !utils.ComparePwd(u.Passwd, input.Passwd) {
+			return nil, errors.New("bad passwd")
+		}
+	}
+	if u != nil {
+		if !u.IsActive {
+			return nil, errors.New("banned user")
+		} else {
+			var token string
+			token, err = utils.GetToken(u.ID, u.IsAdmin)
+			return &Token{Token: &token}, err
+		}
+	}
+	return nil, errors.New("bad request")
+}
+
+// CreateUser is the resolver for the createUser field.
+func (r *mutationResolver) CreateUser(ctx context.Context, input ent.CreateUserInput) (*ent.User, error) {
+	if IsAdmin(ctx) {
+		client := ent.FromContext(ctx)
+		return client.User.Create().SetInput(input).Save(ctx)
+	}
+	return nil, errors.New("permission denied")
+}
 
 // CreateOrder is the resolver for the createOrder field.
 func (r *mutationResolver) CreateOrder(ctx context.Context, input ent.CreateOrderInput) (*ent.Order, error) {
-	client := ent.FromContext(ctx)
-	return client.Order.Create().SetInput(input).Save(ctx)
+	if IsAuthed(ctx) {
+		client := ent.FromContext(ctx)
+		return client.Order.Create().SetInput(input).Save(ctx)
+	}
+	return nil, errors.New("permission denied")
 }
 
 // UpdateUser is the resolver for the updateUser field.
 func (r *mutationResolver) UpdateUser(ctx context.Context, id int, input ent.UpdateUserInput) (*ent.User, error) {
-	client := ent.FromContext(ctx)
-	return client.User.UpdateOneID(id).SetInput(input).Save(ctx)
+	if IsAuthed(ctx) {
+		client := ent.FromContext(ctx)
+		return client.User.UpdateOneID(id).SetInput(input).Save(ctx)
+	}
+	return nil, errors.New("permission denied")
 }
 
 // UpdateOrder is the resolver for the updateOrder field.
 func (r *mutationResolver) UpdateOrder(ctx context.Context, id int, input ent.UpdateOrderInput) (*ent.Order, error) {
-	client := ent.FromContext(ctx)
-	return client.Order.UpdateOneID(id).SetInput(input).Save(ctx)
+	if IsAdmin(ctx) {
+		client := ent.FromContext(ctx)
+		return client.Order.UpdateOneID(id).SetInput(input).Save(ctx)
+	}
+	return nil, errors.New("permission denied")
 }
 
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
 type mutationResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.

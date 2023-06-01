@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"entgo.io/contrib/entgql"
 	"github.com/gin-gonic/gin"
 	"shira-chan-dev/app/utils"
@@ -14,6 +15,9 @@ func GraphqlHandler() gin.HandlerFunc {
 	h := handler.NewDefaultServer(graph.NewSchema(utils.Client))
 	h.Use(entgql.Transactioner{TxOpener: utils.Client})
 	return func(c *gin.Context) {
+		//保留token解析
+		ctx := context.WithValue(c.Request.Context(), "GinContextKey", c)
+		c.Request = c.Request.WithContext(ctx)
 		h.ServeHTTP(c.Writer, c.Request)
 	}
 }
