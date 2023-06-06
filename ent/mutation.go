@@ -10,7 +10,6 @@ import (
 	"shira-chan-dev/ent/predicate"
 	"shira-chan-dev/ent/user"
 	"sync"
-	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -43,9 +42,12 @@ type OrderMutation struct {
 	is_finished      *bool
 	evaluation       *float64
 	addevaluation    *float64
-	hope_at          *time.Time
-	created_at       *time.Time
-	updated_at       *time.Time
+	hope_at          *int64
+	addhope_at       *int64
+	created_at       *int64
+	addcreated_at    *int64
+	updated_at       *int64
+	addupdated_at    *int64
 	clearedFields    map[string]struct{}
 	requester        *int
 	clearedrequester bool
@@ -421,19 +423,34 @@ func (m *OrderMutation) AddedEvaluation() (r float64, exists bool) {
 	return *v, true
 }
 
+// ClearEvaluation clears the value of the "evaluation" field.
+func (m *OrderMutation) ClearEvaluation() {
+	m.evaluation = nil
+	m.addevaluation = nil
+	m.clearedFields[order.FieldEvaluation] = struct{}{}
+}
+
+// EvaluationCleared returns if the "evaluation" field was cleared in this mutation.
+func (m *OrderMutation) EvaluationCleared() bool {
+	_, ok := m.clearedFields[order.FieldEvaluation]
+	return ok
+}
+
 // ResetEvaluation resets all changes to the "evaluation" field.
 func (m *OrderMutation) ResetEvaluation() {
 	m.evaluation = nil
 	m.addevaluation = nil
+	delete(m.clearedFields, order.FieldEvaluation)
 }
 
 // SetHopeAt sets the "hope_at" field.
-func (m *OrderMutation) SetHopeAt(t time.Time) {
-	m.hope_at = &t
+func (m *OrderMutation) SetHopeAt(i int64) {
+	m.hope_at = &i
+	m.addhope_at = nil
 }
 
 // HopeAt returns the value of the "hope_at" field in the mutation.
-func (m *OrderMutation) HopeAt() (r time.Time, exists bool) {
+func (m *OrderMutation) HopeAt() (r int64, exists bool) {
 	v := m.hope_at
 	if v == nil {
 		return
@@ -444,7 +461,7 @@ func (m *OrderMutation) HopeAt() (r time.Time, exists bool) {
 // OldHopeAt returns the old "hope_at" field's value of the Order entity.
 // If the Order object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OrderMutation) OldHopeAt(ctx context.Context) (v time.Time, err error) {
+func (m *OrderMutation) OldHopeAt(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldHopeAt is only allowed on UpdateOne operations")
 	}
@@ -458,18 +475,38 @@ func (m *OrderMutation) OldHopeAt(ctx context.Context) (v time.Time, err error) 
 	return oldValue.HopeAt, nil
 }
 
+// AddHopeAt adds i to the "hope_at" field.
+func (m *OrderMutation) AddHopeAt(i int64) {
+	if m.addhope_at != nil {
+		*m.addhope_at += i
+	} else {
+		m.addhope_at = &i
+	}
+}
+
+// AddedHopeAt returns the value that was added to the "hope_at" field in this mutation.
+func (m *OrderMutation) AddedHopeAt() (r int64, exists bool) {
+	v := m.addhope_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
 // ResetHopeAt resets all changes to the "hope_at" field.
 func (m *OrderMutation) ResetHopeAt() {
 	m.hope_at = nil
+	m.addhope_at = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (m *OrderMutation) SetCreatedAt(t time.Time) {
-	m.created_at = &t
+func (m *OrderMutation) SetCreatedAt(i int64) {
+	m.created_at = &i
+	m.addcreated_at = nil
 }
 
 // CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *OrderMutation) CreatedAt() (r time.Time, exists bool) {
+func (m *OrderMutation) CreatedAt() (r int64, exists bool) {
 	v := m.created_at
 	if v == nil {
 		return
@@ -480,7 +517,7 @@ func (m *OrderMutation) CreatedAt() (r time.Time, exists bool) {
 // OldCreatedAt returns the old "created_at" field's value of the Order entity.
 // If the Order object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OrderMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *OrderMutation) OldCreatedAt(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
 	}
@@ -494,18 +531,38 @@ func (m *OrderMutation) OldCreatedAt(ctx context.Context) (v time.Time, err erro
 	return oldValue.CreatedAt, nil
 }
 
+// AddCreatedAt adds i to the "created_at" field.
+func (m *OrderMutation) AddCreatedAt(i int64) {
+	if m.addcreated_at != nil {
+		*m.addcreated_at += i
+	} else {
+		m.addcreated_at = &i
+	}
+}
+
+// AddedCreatedAt returns the value that was added to the "created_at" field in this mutation.
+func (m *OrderMutation) AddedCreatedAt() (r int64, exists bool) {
+	v := m.addcreated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
 // ResetCreatedAt resets all changes to the "created_at" field.
 func (m *OrderMutation) ResetCreatedAt() {
 	m.created_at = nil
+	m.addcreated_at = nil
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (m *OrderMutation) SetUpdatedAt(t time.Time) {
-	m.updated_at = &t
+func (m *OrderMutation) SetUpdatedAt(i int64) {
+	m.updated_at = &i
+	m.addupdated_at = nil
 }
 
 // UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *OrderMutation) UpdatedAt() (r time.Time, exists bool) {
+func (m *OrderMutation) UpdatedAt() (r int64, exists bool) {
 	v := m.updated_at
 	if v == nil {
 		return
@@ -516,7 +573,7 @@ func (m *OrderMutation) UpdatedAt() (r time.Time, exists bool) {
 // OldUpdatedAt returns the old "updated_at" field's value of the Order entity.
 // If the Order object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OrderMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *OrderMutation) OldUpdatedAt(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
 	}
@@ -530,9 +587,28 @@ func (m *OrderMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err erro
 	return oldValue.UpdatedAt, nil
 }
 
+// AddUpdatedAt adds i to the "updated_at" field.
+func (m *OrderMutation) AddUpdatedAt(i int64) {
+	if m.addupdated_at != nil {
+		*m.addupdated_at += i
+	} else {
+		m.addupdated_at = &i
+	}
+}
+
+// AddedUpdatedAt returns the value that was added to the "updated_at" field in this mutation.
+func (m *OrderMutation) AddedUpdatedAt() (r int64, exists bool) {
+	v := m.addupdated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
 // ResetUpdatedAt resets all changes to the "updated_at" field.
 func (m *OrderMutation) ResetUpdatedAt() {
 	m.updated_at = nil
+	m.addupdated_at = nil
 }
 
 // SetRequesterID sets the "requester" edge to the User entity by id.
@@ -809,21 +885,21 @@ func (m *OrderMutation) SetField(name string, value ent.Value) error {
 		m.SetEvaluation(v)
 		return nil
 	case order.FieldHopeAt:
-		v, ok := value.(time.Time)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetHopeAt(v)
 		return nil
 	case order.FieldCreatedAt:
-		v, ok := value.(time.Time)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
 		return nil
 	case order.FieldUpdatedAt:
-		v, ok := value.(time.Time)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -840,6 +916,15 @@ func (m *OrderMutation) AddedFields() []string {
 	if m.addevaluation != nil {
 		fields = append(fields, order.FieldEvaluation)
 	}
+	if m.addhope_at != nil {
+		fields = append(fields, order.FieldHopeAt)
+	}
+	if m.addcreated_at != nil {
+		fields = append(fields, order.FieldCreatedAt)
+	}
+	if m.addupdated_at != nil {
+		fields = append(fields, order.FieldUpdatedAt)
+	}
 	return fields
 }
 
@@ -850,6 +935,12 @@ func (m *OrderMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case order.FieldEvaluation:
 		return m.AddedEvaluation()
+	case order.FieldHopeAt:
+		return m.AddedHopeAt()
+	case order.FieldCreatedAt:
+		return m.AddedCreatedAt()
+	case order.FieldUpdatedAt:
+		return m.AddedUpdatedAt()
 	}
 	return nil, false
 }
@@ -866,6 +957,27 @@ func (m *OrderMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddEvaluation(v)
 		return nil
+	case order.FieldHopeAt:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddHopeAt(v)
+		return nil
+	case order.FieldCreatedAt:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedAt(v)
+		return nil
+	case order.FieldUpdatedAt:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdatedAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Order numeric field %s", name)
 }
@@ -873,7 +985,11 @@ func (m *OrderMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *OrderMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(order.FieldEvaluation) {
+		fields = append(fields, order.FieldEvaluation)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -886,6 +1002,11 @@ func (m *OrderMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *OrderMutation) ClearField(name string) error {
+	switch name {
+	case order.FieldEvaluation:
+		m.ClearEvaluation()
+		return nil
+	}
 	return fmt.Errorf("unknown Order nullable field %s", name)
 }
 
@@ -1038,11 +1159,12 @@ type UserMutation struct {
 	uname            *string
 	passwd           *string
 	phone            *string
-	wechat           *string
 	is_admin         *bool
 	is_active        *bool
-	created_at       *time.Time
-	updated_at       *time.Time
+	created_at       *int64
+	addcreated_at    *int64
+	updated_at       *int64
+	addupdated_at    *int64
 	clearedFields    map[string]struct{}
 	requested        map[int]struct{}
 	removedrequested map[int]struct{}
@@ -1261,42 +1383,6 @@ func (m *UserMutation) ResetPhone() {
 	m.phone = nil
 }
 
-// SetWechat sets the "wechat" field.
-func (m *UserMutation) SetWechat(s string) {
-	m.wechat = &s
-}
-
-// Wechat returns the value of the "wechat" field in the mutation.
-func (m *UserMutation) Wechat() (r string, exists bool) {
-	v := m.wechat
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldWechat returns the old "wechat" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldWechat(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldWechat is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldWechat requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldWechat: %w", err)
-	}
-	return oldValue.Wechat, nil
-}
-
-// ResetWechat resets all changes to the "wechat" field.
-func (m *UserMutation) ResetWechat() {
-	m.wechat = nil
-}
-
 // SetIsAdmin sets the "is_admin" field.
 func (m *UserMutation) SetIsAdmin(b bool) {
 	m.is_admin = &b
@@ -1370,12 +1456,13 @@ func (m *UserMutation) ResetIsActive() {
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (m *UserMutation) SetCreatedAt(t time.Time) {
-	m.created_at = &t
+func (m *UserMutation) SetCreatedAt(i int64) {
+	m.created_at = &i
+	m.addcreated_at = nil
 }
 
 // CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *UserMutation) CreatedAt() (r time.Time, exists bool) {
+func (m *UserMutation) CreatedAt() (r int64, exists bool) {
 	v := m.created_at
 	if v == nil {
 		return
@@ -1386,7 +1473,7 @@ func (m *UserMutation) CreatedAt() (r time.Time, exists bool) {
 // OldCreatedAt returns the old "created_at" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *UserMutation) OldCreatedAt(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
 	}
@@ -1400,18 +1487,38 @@ func (m *UserMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error
 	return oldValue.CreatedAt, nil
 }
 
+// AddCreatedAt adds i to the "created_at" field.
+func (m *UserMutation) AddCreatedAt(i int64) {
+	if m.addcreated_at != nil {
+		*m.addcreated_at += i
+	} else {
+		m.addcreated_at = &i
+	}
+}
+
+// AddedCreatedAt returns the value that was added to the "created_at" field in this mutation.
+func (m *UserMutation) AddedCreatedAt() (r int64, exists bool) {
+	v := m.addcreated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
 // ResetCreatedAt resets all changes to the "created_at" field.
 func (m *UserMutation) ResetCreatedAt() {
 	m.created_at = nil
+	m.addcreated_at = nil
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (m *UserMutation) SetUpdatedAt(t time.Time) {
-	m.updated_at = &t
+func (m *UserMutation) SetUpdatedAt(i int64) {
+	m.updated_at = &i
+	m.addupdated_at = nil
 }
 
 // UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *UserMutation) UpdatedAt() (r time.Time, exists bool) {
+func (m *UserMutation) UpdatedAt() (r int64, exists bool) {
 	v := m.updated_at
 	if v == nil {
 		return
@@ -1422,7 +1529,7 @@ func (m *UserMutation) UpdatedAt() (r time.Time, exists bool) {
 // OldUpdatedAt returns the old "updated_at" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *UserMutation) OldUpdatedAt(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
 	}
@@ -1436,9 +1543,28 @@ func (m *UserMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error
 	return oldValue.UpdatedAt, nil
 }
 
+// AddUpdatedAt adds i to the "updated_at" field.
+func (m *UserMutation) AddUpdatedAt(i int64) {
+	if m.addupdated_at != nil {
+		*m.addupdated_at += i
+	} else {
+		m.addupdated_at = &i
+	}
+}
+
+// AddedUpdatedAt returns the value that was added to the "updated_at" field in this mutation.
+func (m *UserMutation) AddedUpdatedAt() (r int64, exists bool) {
+	v := m.addupdated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
 // ResetUpdatedAt resets all changes to the "updated_at" field.
 func (m *UserMutation) ResetUpdatedAt() {
 	m.updated_at = nil
+	m.addupdated_at = nil
 }
 
 // AddRequestedIDs adds the "requested" edge to the Order entity by ids.
@@ -1583,7 +1709,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 7)
 	if m.uname != nil {
 		fields = append(fields, user.FieldUname)
 	}
@@ -1592,9 +1718,6 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.phone != nil {
 		fields = append(fields, user.FieldPhone)
-	}
-	if m.wechat != nil {
-		fields = append(fields, user.FieldWechat)
 	}
 	if m.is_admin != nil {
 		fields = append(fields, user.FieldIsAdmin)
@@ -1622,8 +1745,6 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Passwd()
 	case user.FieldPhone:
 		return m.Phone()
-	case user.FieldWechat:
-		return m.Wechat()
 	case user.FieldIsAdmin:
 		return m.IsAdmin()
 	case user.FieldIsActive:
@@ -1647,8 +1768,6 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldPasswd(ctx)
 	case user.FieldPhone:
 		return m.OldPhone(ctx)
-	case user.FieldWechat:
-		return m.OldWechat(ctx)
 	case user.FieldIsAdmin:
 		return m.OldIsAdmin(ctx)
 	case user.FieldIsActive:
@@ -1687,13 +1806,6 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPhone(v)
 		return nil
-	case user.FieldWechat:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetWechat(v)
-		return nil
 	case user.FieldIsAdmin:
 		v, ok := value.(bool)
 		if !ok {
@@ -1709,14 +1821,14 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		m.SetIsActive(v)
 		return nil
 	case user.FieldCreatedAt:
-		v, ok := value.(time.Time)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
 		return nil
 	case user.FieldUpdatedAt:
-		v, ok := value.(time.Time)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1729,13 +1841,26 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *UserMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addcreated_at != nil {
+		fields = append(fields, user.FieldCreatedAt)
+	}
+	if m.addupdated_at != nil {
+		fields = append(fields, user.FieldUpdatedAt)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case user.FieldCreatedAt:
+		return m.AddedCreatedAt()
+	case user.FieldUpdatedAt:
+		return m.AddedUpdatedAt()
+	}
 	return nil, false
 }
 
@@ -1744,6 +1869,20 @@ func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *UserMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case user.FieldCreatedAt:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedAt(v)
+		return nil
+	case user.FieldUpdatedAt:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdatedAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown User numeric field %s", name)
 }
@@ -1779,9 +1918,6 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldPhone:
 		m.ResetPhone()
-		return nil
-	case user.FieldWechat:
-		m.ResetWechat()
 		return nil
 	case user.FieldIsAdmin:
 		m.ResetIsAdmin()

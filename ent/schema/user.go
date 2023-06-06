@@ -3,7 +3,6 @@ package schema
 import (
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
-	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
@@ -45,10 +44,6 @@ func (User) Fields() []ent.Field {
 			MaxLen(15).
 			Unique().
 			Comment("手机号码"),
-		field.Text("wechat").
-			MaxLen(30).
-			Default("").
-			Comment("微信号"),
 		field.Bool("is_admin").
 			Default(false).
 			Annotations(
@@ -59,24 +54,20 @@ func (User) Fields() []ent.Field {
 			Annotations(
 				entgql.OrderField("STATE")).
 			Comment("用户状态"),
-		field.Time("created_at").
-			Default(time.Now).
+		field.Int64("created_at").
+			DefaultFunc(func() int64 { return time.Now().Unix() }).
 			Annotations(
-				entgql.OrderField("CREAT_AT")).
+				entgql.OrderField("CREAT_AT"),
+				entgql.Type("Int64")).
 			Comment("创建时间").
-			Immutable().
-			SchemaType(map[string]string{
-				dialect.MySQL: "datetime",
-			}),
-		field.Time("updated_at").
-			Default(time.Now).
+			Immutable(),
+		field.Int64("updated_at").
+			DefaultFunc(func() int64 { return time.Now().Unix() }).
+			UpdateDefault(func() int64 { return time.Now().Unix() }).
 			Annotations(
-				entgql.OrderField("UPDATED_AT")).
-			UpdateDefault(time.Now).
-			Comment("更新时间").
-			SchemaType(map[string]string{
-				dialect.MySQL: "datetime",
-			}),
+				entgql.OrderField("UPDATED_AT"),
+				entgql.Type("Int64")).
+			Comment("更新时间"),
 	}
 }
 

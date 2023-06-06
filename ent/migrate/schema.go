@@ -18,10 +18,10 @@ var (
 		{Name: "type", Type: field.TypeString, Size: 2147483647, Default: "other"},
 		{Name: "is_closed", Type: field.TypeBool, Default: false},
 		{Name: "is_finished", Type: field.TypeBool, Default: false},
-		{Name: "evaluation", Type: field.TypeFloat64},
-		{Name: "hope_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
-		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
-		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
+		{Name: "evaluation", Type: field.TypeFloat64, Nullable: true},
+		{Name: "hope_at", Type: field.TypeInt64},
+		{Name: "created_at", Type: field.TypeInt64},
+		{Name: "updated_at", Type: field.TypeInt64},
 		{Name: "user_requested", Type: field.TypeInt, Nullable: true},
 	}
 	// OrdersTable holds the schema information for the "Orders" table.
@@ -44,11 +44,10 @@ var (
 		{Name: "uname", Type: field.TypeString, Size: 30},
 		{Name: "passwd", Type: field.TypeString, Size: 2147483647},
 		{Name: "phone", Type: field.TypeString, Unique: true, Size: 15},
-		{Name: "wechat", Type: field.TypeString, Size: 30, Default: ""},
 		{Name: "is_admin", Type: field.TypeBool, Default: false},
 		{Name: "is_active", Type: field.TypeBool, Default: true},
-		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
-		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
+		{Name: "created_at", Type: field.TypeInt64},
+		{Name: "updated_at", Type: field.TypeInt64},
 	}
 	// UsersTable holds the schema information for the "Users" table.
 	UsersTable = &schema.Table{

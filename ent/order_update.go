@@ -9,7 +9,6 @@ import (
 	"shira-chan-dev/ent/order"
 	"shira-chan-dev/ent/predicate"
 	"shira-chan-dev/ent/user"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -96,29 +95,57 @@ func (ou *OrderUpdate) SetEvaluation(f float64) *OrderUpdate {
 	return ou
 }
 
+// SetNillableEvaluation sets the "evaluation" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableEvaluation(f *float64) *OrderUpdate {
+	if f != nil {
+		ou.SetEvaluation(*f)
+	}
+	return ou
+}
+
 // AddEvaluation adds f to the "evaluation" field.
 func (ou *OrderUpdate) AddEvaluation(f float64) *OrderUpdate {
 	ou.mutation.AddEvaluation(f)
 	return ou
 }
 
+// ClearEvaluation clears the value of the "evaluation" field.
+func (ou *OrderUpdate) ClearEvaluation() *OrderUpdate {
+	ou.mutation.ClearEvaluation()
+	return ou
+}
+
 // SetHopeAt sets the "hope_at" field.
-func (ou *OrderUpdate) SetHopeAt(t time.Time) *OrderUpdate {
-	ou.mutation.SetHopeAt(t)
+func (ou *OrderUpdate) SetHopeAt(i int64) *OrderUpdate {
+	ou.mutation.ResetHopeAt()
+	ou.mutation.SetHopeAt(i)
 	return ou
 }
 
 // SetNillableHopeAt sets the "hope_at" field if the given value is not nil.
-func (ou *OrderUpdate) SetNillableHopeAt(t *time.Time) *OrderUpdate {
-	if t != nil {
-		ou.SetHopeAt(*t)
+func (ou *OrderUpdate) SetNillableHopeAt(i *int64) *OrderUpdate {
+	if i != nil {
+		ou.SetHopeAt(*i)
 	}
 	return ou
 }
 
+// AddHopeAt adds i to the "hope_at" field.
+func (ou *OrderUpdate) AddHopeAt(i int64) *OrderUpdate {
+	ou.mutation.AddHopeAt(i)
+	return ou
+}
+
 // SetUpdatedAt sets the "updated_at" field.
-func (ou *OrderUpdate) SetUpdatedAt(t time.Time) *OrderUpdate {
-	ou.mutation.SetUpdatedAt(t)
+func (ou *OrderUpdate) SetUpdatedAt(i int64) *OrderUpdate {
+	ou.mutation.ResetUpdatedAt()
+	ou.mutation.SetUpdatedAt(i)
+	return ou
+}
+
+// AddUpdatedAt adds i to the "updated_at" field.
+func (ou *OrderUpdate) AddUpdatedAt(i int64) *OrderUpdate {
+	ou.mutation.AddUpdatedAt(i)
 	return ou
 }
 
@@ -285,11 +312,20 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := ou.mutation.AddedEvaluation(); ok {
 		_spec.AddField(order.FieldEvaluation, field.TypeFloat64, value)
 	}
+	if ou.mutation.EvaluationCleared() {
+		_spec.ClearField(order.FieldEvaluation, field.TypeFloat64)
+	}
 	if value, ok := ou.mutation.HopeAt(); ok {
-		_spec.SetField(order.FieldHopeAt, field.TypeTime, value)
+		_spec.SetField(order.FieldHopeAt, field.TypeInt64, value)
+	}
+	if value, ok := ou.mutation.AddedHopeAt(); ok {
+		_spec.AddField(order.FieldHopeAt, field.TypeInt64, value)
 	}
 	if value, ok := ou.mutation.UpdatedAt(); ok {
-		_spec.SetField(order.FieldUpdatedAt, field.TypeTime, value)
+		_spec.SetField(order.FieldUpdatedAt, field.TypeInt64, value)
+	}
+	if value, ok := ou.mutation.AddedUpdatedAt(); ok {
+		_spec.AddField(order.FieldUpdatedAt, field.TypeInt64, value)
 	}
 	if ou.mutation.RequesterCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -452,29 +488,57 @@ func (ouo *OrderUpdateOne) SetEvaluation(f float64) *OrderUpdateOne {
 	return ouo
 }
 
+// SetNillableEvaluation sets the "evaluation" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableEvaluation(f *float64) *OrderUpdateOne {
+	if f != nil {
+		ouo.SetEvaluation(*f)
+	}
+	return ouo
+}
+
 // AddEvaluation adds f to the "evaluation" field.
 func (ouo *OrderUpdateOne) AddEvaluation(f float64) *OrderUpdateOne {
 	ouo.mutation.AddEvaluation(f)
 	return ouo
 }
 
+// ClearEvaluation clears the value of the "evaluation" field.
+func (ouo *OrderUpdateOne) ClearEvaluation() *OrderUpdateOne {
+	ouo.mutation.ClearEvaluation()
+	return ouo
+}
+
 // SetHopeAt sets the "hope_at" field.
-func (ouo *OrderUpdateOne) SetHopeAt(t time.Time) *OrderUpdateOne {
-	ouo.mutation.SetHopeAt(t)
+func (ouo *OrderUpdateOne) SetHopeAt(i int64) *OrderUpdateOne {
+	ouo.mutation.ResetHopeAt()
+	ouo.mutation.SetHopeAt(i)
 	return ouo
 }
 
 // SetNillableHopeAt sets the "hope_at" field if the given value is not nil.
-func (ouo *OrderUpdateOne) SetNillableHopeAt(t *time.Time) *OrderUpdateOne {
-	if t != nil {
-		ouo.SetHopeAt(*t)
+func (ouo *OrderUpdateOne) SetNillableHopeAt(i *int64) *OrderUpdateOne {
+	if i != nil {
+		ouo.SetHopeAt(*i)
 	}
 	return ouo
 }
 
+// AddHopeAt adds i to the "hope_at" field.
+func (ouo *OrderUpdateOne) AddHopeAt(i int64) *OrderUpdateOne {
+	ouo.mutation.AddHopeAt(i)
+	return ouo
+}
+
 // SetUpdatedAt sets the "updated_at" field.
-func (ouo *OrderUpdateOne) SetUpdatedAt(t time.Time) *OrderUpdateOne {
-	ouo.mutation.SetUpdatedAt(t)
+func (ouo *OrderUpdateOne) SetUpdatedAt(i int64) *OrderUpdateOne {
+	ouo.mutation.ResetUpdatedAt()
+	ouo.mutation.SetUpdatedAt(i)
+	return ouo
+}
+
+// AddUpdatedAt adds i to the "updated_at" field.
+func (ouo *OrderUpdateOne) AddUpdatedAt(i int64) *OrderUpdateOne {
+	ouo.mutation.AddUpdatedAt(i)
 	return ouo
 }
 
@@ -671,11 +735,20 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 	if value, ok := ouo.mutation.AddedEvaluation(); ok {
 		_spec.AddField(order.FieldEvaluation, field.TypeFloat64, value)
 	}
+	if ouo.mutation.EvaluationCleared() {
+		_spec.ClearField(order.FieldEvaluation, field.TypeFloat64)
+	}
 	if value, ok := ouo.mutation.HopeAt(); ok {
-		_spec.SetField(order.FieldHopeAt, field.TypeTime, value)
+		_spec.SetField(order.FieldHopeAt, field.TypeInt64, value)
+	}
+	if value, ok := ouo.mutation.AddedHopeAt(); ok {
+		_spec.AddField(order.FieldHopeAt, field.TypeInt64, value)
 	}
 	if value, ok := ouo.mutation.UpdatedAt(); ok {
-		_spec.SetField(order.FieldUpdatedAt, field.TypeTime, value)
+		_spec.SetField(order.FieldUpdatedAt, field.TypeInt64, value)
+	}
+	if value, ok := ouo.mutation.AddedUpdatedAt(); ok {
+		_spec.AddField(order.FieldUpdatedAt, field.TypeInt64, value)
 	}
 	if ouo.mutation.RequesterCleared() {
 		edge := &sqlgraph.EdgeSpec{

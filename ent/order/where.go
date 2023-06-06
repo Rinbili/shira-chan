@@ -4,7 +4,6 @@ package order
 
 import (
 	"shira-chan-dev/ent/predicate"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -91,17 +90,17 @@ func Evaluation(v float64) predicate.Order {
 }
 
 // HopeAt applies equality check predicate on the "hope_at" field. It's identical to HopeAtEQ.
-func HopeAt(v time.Time) predicate.Order {
+func HopeAt(v int64) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldHopeAt, v))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
-func CreatedAt(v time.Time) predicate.Order {
+func CreatedAt(v int64) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
-func UpdatedAt(v time.Time) predicate.Order {
+func UpdatedAt(v int64) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
@@ -425,123 +424,133 @@ func EvaluationLTE(v float64) predicate.Order {
 	return predicate.Order(sql.FieldLTE(FieldEvaluation, v))
 }
 
+// EvaluationIsNil applies the IsNil predicate on the "evaluation" field.
+func EvaluationIsNil() predicate.Order {
+	return predicate.Order(sql.FieldIsNull(FieldEvaluation))
+}
+
+// EvaluationNotNil applies the NotNil predicate on the "evaluation" field.
+func EvaluationNotNil() predicate.Order {
+	return predicate.Order(sql.FieldNotNull(FieldEvaluation))
+}
+
 // HopeAtEQ applies the EQ predicate on the "hope_at" field.
-func HopeAtEQ(v time.Time) predicate.Order {
+func HopeAtEQ(v int64) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldHopeAt, v))
 }
 
 // HopeAtNEQ applies the NEQ predicate on the "hope_at" field.
-func HopeAtNEQ(v time.Time) predicate.Order {
+func HopeAtNEQ(v int64) predicate.Order {
 	return predicate.Order(sql.FieldNEQ(FieldHopeAt, v))
 }
 
 // HopeAtIn applies the In predicate on the "hope_at" field.
-func HopeAtIn(vs ...time.Time) predicate.Order {
+func HopeAtIn(vs ...int64) predicate.Order {
 	return predicate.Order(sql.FieldIn(FieldHopeAt, vs...))
 }
 
 // HopeAtNotIn applies the NotIn predicate on the "hope_at" field.
-func HopeAtNotIn(vs ...time.Time) predicate.Order {
+func HopeAtNotIn(vs ...int64) predicate.Order {
 	return predicate.Order(sql.FieldNotIn(FieldHopeAt, vs...))
 }
 
 // HopeAtGT applies the GT predicate on the "hope_at" field.
-func HopeAtGT(v time.Time) predicate.Order {
+func HopeAtGT(v int64) predicate.Order {
 	return predicate.Order(sql.FieldGT(FieldHopeAt, v))
 }
 
 // HopeAtGTE applies the GTE predicate on the "hope_at" field.
-func HopeAtGTE(v time.Time) predicate.Order {
+func HopeAtGTE(v int64) predicate.Order {
 	return predicate.Order(sql.FieldGTE(FieldHopeAt, v))
 }
 
 // HopeAtLT applies the LT predicate on the "hope_at" field.
-func HopeAtLT(v time.Time) predicate.Order {
+func HopeAtLT(v int64) predicate.Order {
 	return predicate.Order(sql.FieldLT(FieldHopeAt, v))
 }
 
 // HopeAtLTE applies the LTE predicate on the "hope_at" field.
-func HopeAtLTE(v time.Time) predicate.Order {
+func HopeAtLTE(v int64) predicate.Order {
 	return predicate.Order(sql.FieldLTE(FieldHopeAt, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
-func CreatedAtEQ(v time.Time) predicate.Order {
+func CreatedAtEQ(v int64) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
-func CreatedAtNEQ(v time.Time) predicate.Order {
+func CreatedAtNEQ(v int64) predicate.Order {
 	return predicate.Order(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
-func CreatedAtIn(vs ...time.Time) predicate.Order {
+func CreatedAtIn(vs ...int64) predicate.Order {
 	return predicate.Order(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
-func CreatedAtNotIn(vs ...time.Time) predicate.Order {
+func CreatedAtNotIn(vs ...int64) predicate.Order {
 	return predicate.Order(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
-func CreatedAtGT(v time.Time) predicate.Order {
+func CreatedAtGT(v int64) predicate.Order {
 	return predicate.Order(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
-func CreatedAtGTE(v time.Time) predicate.Order {
+func CreatedAtGTE(v int64) predicate.Order {
 	return predicate.Order(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
-func CreatedAtLT(v time.Time) predicate.Order {
+func CreatedAtLT(v int64) predicate.Order {
 	return predicate.Order(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
-func CreatedAtLTE(v time.Time) predicate.Order {
+func CreatedAtLTE(v int64) predicate.Order {
 	return predicate.Order(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
-func UpdatedAtEQ(v time.Time) predicate.Order {
+func UpdatedAtEQ(v int64) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
-func UpdatedAtNEQ(v time.Time) predicate.Order {
+func UpdatedAtNEQ(v int64) predicate.Order {
 	return predicate.Order(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
-func UpdatedAtIn(vs ...time.Time) predicate.Order {
+func UpdatedAtIn(vs ...int64) predicate.Order {
 	return predicate.Order(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
-func UpdatedAtNotIn(vs ...time.Time) predicate.Order {
+func UpdatedAtNotIn(vs ...int64) predicate.Order {
 	return predicate.Order(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
-func UpdatedAtGT(v time.Time) predicate.Order {
+func UpdatedAtGT(v int64) predicate.Order {
 	return predicate.Order(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
-func UpdatedAtGTE(v time.Time) predicate.Order {
+func UpdatedAtGTE(v int64) predicate.Order {
 	return predicate.Order(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
-func UpdatedAtLT(v time.Time) predicate.Order {
+func UpdatedAtLT(v int64) predicate.Order {
 	return predicate.Order(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
-func UpdatedAtLTE(v time.Time) predicate.Order {
+func UpdatedAtLTE(v int64) predicate.Order {
 	return predicate.Order(sql.FieldLTE(FieldUpdatedAt, v))
 }
 

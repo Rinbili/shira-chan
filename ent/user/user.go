@@ -3,8 +3,6 @@
 package user
 
 import (
-	"time"
-
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -20,8 +18,6 @@ const (
 	FieldPasswd = "passwd"
 	// FieldPhone holds the string denoting the phone field in the database.
 	FieldPhone = "phone"
-	// FieldWechat holds the string denoting the wechat field in the database.
-	FieldWechat = "wechat"
 	// FieldIsAdmin holds the string denoting the is_admin field in the database.
 	FieldIsAdmin = "is_admin"
 	// FieldIsActive holds the string denoting the is_active field in the database.
@@ -56,7 +52,6 @@ var Columns = []string{
 	FieldUname,
 	FieldPasswd,
 	FieldPhone,
-	FieldWechat,
 	FieldIsAdmin,
 	FieldIsActive,
 	FieldCreatedAt,
@@ -86,20 +81,16 @@ var (
 	PasswdValidator func(string) error
 	// PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
 	PhoneValidator func(string) error
-	// DefaultWechat holds the default value on creation for the "wechat" field.
-	DefaultWechat string
-	// WechatValidator is a validator for the "wechat" field. It is called by the builders before save.
-	WechatValidator func(string) error
 	// DefaultIsAdmin holds the default value on creation for the "is_admin" field.
 	DefaultIsAdmin bool
 	// DefaultIsActive holds the default value on creation for the "is_active" field.
 	DefaultIsActive bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
-	DefaultCreatedAt func() time.Time
+	DefaultCreatedAt func() int64
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
-	DefaultUpdatedAt func() time.Time
+	DefaultUpdatedAt func() int64
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
-	UpdateDefaultUpdatedAt func() time.Time
+	UpdateDefaultUpdatedAt func() int64
 )
 
 // OrderOption defines the ordering options for the User queries.
@@ -123,11 +114,6 @@ func ByPasswd(opts ...sql.OrderTermOption) OrderOption {
 // ByPhone orders the results by the phone field.
 func ByPhone(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPhone, opts...).ToFunc()
-}
-
-// ByWechat orders the results by the wechat field.
-func ByWechat(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldWechat, opts...).ToFunc()
 }
 
 // ByIsAdmin orders the results by the is_admin field.

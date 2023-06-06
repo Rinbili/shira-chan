@@ -7,7 +7,6 @@ import (
 	"shira-chan-dev/ent/order"
 	"shira-chan-dev/ent/user"
 	"strings"
-	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -33,11 +32,11 @@ type Order struct {
 	// 评分
 	Evaluation *float64 `json:"evaluation,omitempty"`
 	// 期望时间
-	HopeAt time.Time `json:"hope_at,omitempty"`
+	HopeAt int64 `json:"hope_at,omitempty"`
 	// 创建时间
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt int64 `json:"created_at,omitempty"`
 	// 更新时间
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt int64 `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrderQuery when eager-loading is set.
 	Edges          OrderEdges `json:"edges"`
@@ -91,12 +90,10 @@ func (*Order) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case order.FieldEvaluation:
 			values[i] = new(sql.NullFloat64)
-		case order.FieldID:
+		case order.FieldID, order.FieldHopeAt, order.FieldCreatedAt, order.FieldUpdatedAt:
 			values[i] = new(sql.NullInt64)
 		case order.FieldTitle, order.FieldContent, order.FieldContact, order.FieldType:
 			values[i] = new(sql.NullString)
-		case order.FieldHopeAt, order.FieldCreatedAt, order.FieldUpdatedAt:
-			values[i] = new(sql.NullTime)
 		case order.ForeignKeys[0]: // user_requested
 			values[i] = new(sql.NullInt64)
 		default:
@@ -164,22 +161,22 @@ func (o *Order) assignValues(columns []string, values []any) error {
 				*o.Evaluation = value.Float64
 			}
 		case order.FieldHopeAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field hope_at", values[i])
 			} else if value.Valid {
-				o.HopeAt = value.Time
+				o.HopeAt = value.Int64
 			}
 		case order.FieldCreatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				o.CreatedAt = value.Time
+				o.CreatedAt = value.Int64
 			}
 		case order.FieldUpdatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				o.UpdatedAt = value.Time
+				o.UpdatedAt = value.Int64
 			}
 		case order.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -258,13 +255,13 @@ func (o *Order) String() string {
 	}
 	builder.WriteString(", ")
 	builder.WriteString("hope_at=")
-	builder.WriteString(o.HopeAt.Format(time.ANSIC))
+	builder.WriteString(fmt.Sprintf("%v", o.HopeAt))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
-	builder.WriteString(o.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(fmt.Sprintf("%v", o.CreatedAt))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(o.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(fmt.Sprintf("%v", o.UpdatedAt))
 	builder.WriteByte(')')
 	return builder.String()
 }

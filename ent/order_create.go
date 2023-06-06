@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"shira-chan-dev/ent/order"
 	"shira-chan-dev/ent/user"
-	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -87,44 +86,52 @@ func (oc *OrderCreate) SetEvaluation(f float64) *OrderCreate {
 	return oc
 }
 
+// SetNillableEvaluation sets the "evaluation" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableEvaluation(f *float64) *OrderCreate {
+	if f != nil {
+		oc.SetEvaluation(*f)
+	}
+	return oc
+}
+
 // SetHopeAt sets the "hope_at" field.
-func (oc *OrderCreate) SetHopeAt(t time.Time) *OrderCreate {
-	oc.mutation.SetHopeAt(t)
+func (oc *OrderCreate) SetHopeAt(i int64) *OrderCreate {
+	oc.mutation.SetHopeAt(i)
 	return oc
 }
 
 // SetNillableHopeAt sets the "hope_at" field if the given value is not nil.
-func (oc *OrderCreate) SetNillableHopeAt(t *time.Time) *OrderCreate {
-	if t != nil {
-		oc.SetHopeAt(*t)
+func (oc *OrderCreate) SetNillableHopeAt(i *int64) *OrderCreate {
+	if i != nil {
+		oc.SetHopeAt(*i)
 	}
 	return oc
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (oc *OrderCreate) SetCreatedAt(t time.Time) *OrderCreate {
-	oc.mutation.SetCreatedAt(t)
+func (oc *OrderCreate) SetCreatedAt(i int64) *OrderCreate {
+	oc.mutation.SetCreatedAt(i)
 	return oc
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (oc *OrderCreate) SetNillableCreatedAt(t *time.Time) *OrderCreate {
-	if t != nil {
-		oc.SetCreatedAt(*t)
+func (oc *OrderCreate) SetNillableCreatedAt(i *int64) *OrderCreate {
+	if i != nil {
+		oc.SetCreatedAt(*i)
 	}
 	return oc
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (oc *OrderCreate) SetUpdatedAt(t time.Time) *OrderCreate {
-	oc.mutation.SetUpdatedAt(t)
+func (oc *OrderCreate) SetUpdatedAt(i int64) *OrderCreate {
+	oc.mutation.SetUpdatedAt(i)
 	return oc
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (oc *OrderCreate) SetNillableUpdatedAt(t *time.Time) *OrderCreate {
-	if t != nil {
-		oc.SetUpdatedAt(*t)
+func (oc *OrderCreate) SetNillableUpdatedAt(i *int64) *OrderCreate {
+	if i != nil {
+		oc.SetUpdatedAt(*i)
 	}
 	return oc
 }
@@ -259,9 +266,6 @@ func (oc *OrderCreate) check() error {
 	if _, ok := oc.mutation.IsFinished(); !ok {
 		return &ValidationError{Name: "is_finished", err: errors.New(`ent: missing required field "Order.is_finished"`)}
 	}
-	if _, ok := oc.mutation.Evaluation(); !ok {
-		return &ValidationError{Name: "evaluation", err: errors.New(`ent: missing required field "Order.evaluation"`)}
-	}
 	if v, ok := oc.mutation.Evaluation(); ok {
 		if err := order.EvaluationValidator(v); err != nil {
 			return &ValidationError{Name: "evaluation", err: fmt.Errorf(`ent: validator failed for field "Order.evaluation": %w`, err)}
@@ -331,15 +335,15 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 		_node.Evaluation = &value
 	}
 	if value, ok := oc.mutation.HopeAt(); ok {
-		_spec.SetField(order.FieldHopeAt, field.TypeTime, value)
+		_spec.SetField(order.FieldHopeAt, field.TypeInt64, value)
 		_node.HopeAt = value
 	}
 	if value, ok := oc.mutation.CreatedAt(); ok {
-		_spec.SetField(order.FieldCreatedAt, field.TypeTime, value)
+		_spec.SetField(order.FieldCreatedAt, field.TypeInt64, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := oc.mutation.UpdatedAt(); ok {
-		_spec.SetField(order.FieldUpdatedAt, field.TypeTime, value)
+		_spec.SetField(order.FieldUpdatedAt, field.TypeInt64, value)
 		_node.UpdatedAt = value
 	}
 	if nodes := oc.mutation.RequesterIDs(); len(nodes) > 0 {

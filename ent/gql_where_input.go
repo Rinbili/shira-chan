@@ -8,7 +8,6 @@ import (
 	"shira-chan-dev/ent/order"
 	"shira-chan-dev/ent/predicate"
 	"shira-chan-dev/ent/user"
-	"time"
 )
 
 // OrderWhereInput represents a where input for filtering Order queries.
@@ -97,44 +96,46 @@ type OrderWhereInput struct {
 	IsFinishedNEQ *bool `json:"isFinishedNEQ,omitempty"`
 
 	// "evaluation" field predicates.
-	Evaluation      *float64  `json:"evaluation,omitempty"`
-	EvaluationNEQ   *float64  `json:"evaluationNEQ,omitempty"`
-	EvaluationIn    []float64 `json:"evaluationIn,omitempty"`
-	EvaluationNotIn []float64 `json:"evaluationNotIn,omitempty"`
-	EvaluationGT    *float64  `json:"evaluationGT,omitempty"`
-	EvaluationGTE   *float64  `json:"evaluationGTE,omitempty"`
-	EvaluationLT    *float64  `json:"evaluationLT,omitempty"`
-	EvaluationLTE   *float64  `json:"evaluationLTE,omitempty"`
+	Evaluation       *float64  `json:"evaluation,omitempty"`
+	EvaluationNEQ    *float64  `json:"evaluationNEQ,omitempty"`
+	EvaluationIn     []float64 `json:"evaluationIn,omitempty"`
+	EvaluationNotIn  []float64 `json:"evaluationNotIn,omitempty"`
+	EvaluationGT     *float64  `json:"evaluationGT,omitempty"`
+	EvaluationGTE    *float64  `json:"evaluationGTE,omitempty"`
+	EvaluationLT     *float64  `json:"evaluationLT,omitempty"`
+	EvaluationLTE    *float64  `json:"evaluationLTE,omitempty"`
+	EvaluationIsNil  bool      `json:"evaluationIsNil,omitempty"`
+	EvaluationNotNil bool      `json:"evaluationNotNil,omitempty"`
 
 	// "hope_at" field predicates.
-	HopeAt      *time.Time  `json:"hopeAt,omitempty"`
-	HopeAtNEQ   *time.Time  `json:"hopeAtNEQ,omitempty"`
-	HopeAtIn    []time.Time `json:"hopeAtIn,omitempty"`
-	HopeAtNotIn []time.Time `json:"hopeAtNotIn,omitempty"`
-	HopeAtGT    *time.Time  `json:"hopeAtGT,omitempty"`
-	HopeAtGTE   *time.Time  `json:"hopeAtGTE,omitempty"`
-	HopeAtLT    *time.Time  `json:"hopeAtLT,omitempty"`
-	HopeAtLTE   *time.Time  `json:"hopeAtLTE,omitempty"`
+	HopeAt      *int64  `json:"hopeAt,omitempty"`
+	HopeAtNEQ   *int64  `json:"hopeAtNEQ,omitempty"`
+	HopeAtIn    []int64 `json:"hopeAtIn,omitempty"`
+	HopeAtNotIn []int64 `json:"hopeAtNotIn,omitempty"`
+	HopeAtGT    *int64  `json:"hopeAtGT,omitempty"`
+	HopeAtGTE   *int64  `json:"hopeAtGTE,omitempty"`
+	HopeAtLT    *int64  `json:"hopeAtLT,omitempty"`
+	HopeAtLTE   *int64  `json:"hopeAtLTE,omitempty"`
 
 	// "created_at" field predicates.
-	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
-	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
-	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
-	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
-	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
-	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
-	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
-	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+	CreatedAt      *int64  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *int64  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []int64 `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []int64 `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *int64  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *int64  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *int64  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *int64  `json:"createdAtLTE,omitempty"`
 
 	// "updated_at" field predicates.
-	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
-	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
-	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
-	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
-	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
-	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
-	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
-	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+	UpdatedAt      *int64  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *int64  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []int64 `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []int64 `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *int64  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *int64  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *int64  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *int64  `json:"updatedAtLTE,omitempty"`
 
 	// "requester" edge predicates.
 	HasRequester     *bool             `json:"hasRequester,omitempty"`
@@ -432,6 +433,12 @@ func (i *OrderWhereInput) P() (predicate.Order, error) {
 	if i.EvaluationLTE != nil {
 		predicates = append(predicates, order.EvaluationLTE(*i.EvaluationLTE))
 	}
+	if i.EvaluationIsNil {
+		predicates = append(predicates, order.EvaluationIsNil())
+	}
+	if i.EvaluationNotNil {
+		predicates = append(predicates, order.EvaluationNotNil())
+	}
 	if i.HopeAt != nil {
 		predicates = append(predicates, order.HopeAtEQ(*i.HopeAt))
 	}
@@ -613,21 +620,6 @@ type UserWhereInput struct {
 	PhoneEqualFold    *string  `json:"phoneEqualFold,omitempty"`
 	PhoneContainsFold *string  `json:"phoneContainsFold,omitempty"`
 
-	// "wechat" field predicates.
-	Wechat             *string  `json:"wechat,omitempty"`
-	WechatNEQ          *string  `json:"wechatNEQ,omitempty"`
-	WechatIn           []string `json:"wechatIn,omitempty"`
-	WechatNotIn        []string `json:"wechatNotIn,omitempty"`
-	WechatGT           *string  `json:"wechatGT,omitempty"`
-	WechatGTE          *string  `json:"wechatGTE,omitempty"`
-	WechatLT           *string  `json:"wechatLT,omitempty"`
-	WechatLTE          *string  `json:"wechatLTE,omitempty"`
-	WechatContains     *string  `json:"wechatContains,omitempty"`
-	WechatHasPrefix    *string  `json:"wechatHasPrefix,omitempty"`
-	WechatHasSuffix    *string  `json:"wechatHasSuffix,omitempty"`
-	WechatEqualFold    *string  `json:"wechatEqualFold,omitempty"`
-	WechatContainsFold *string  `json:"wechatContainsFold,omitempty"`
-
 	// "is_admin" field predicates.
 	IsAdmin    *bool `json:"isAdmin,omitempty"`
 	IsAdminNEQ *bool `json:"isAdminNEQ,omitempty"`
@@ -637,24 +629,24 @@ type UserWhereInput struct {
 	IsActiveNEQ *bool `json:"isActiveNEQ,omitempty"`
 
 	// "created_at" field predicates.
-	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
-	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
-	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
-	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
-	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
-	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
-	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
-	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+	CreatedAt      *int64  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *int64  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []int64 `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []int64 `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *int64  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *int64  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *int64  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *int64  `json:"createdAtLTE,omitempty"`
 
 	// "updated_at" field predicates.
-	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
-	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
-	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
-	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
-	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
-	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
-	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
-	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+	UpdatedAt      *int64  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *int64  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []int64 `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []int64 `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *int64  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *int64  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *int64  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *int64  `json:"updatedAtLTE,omitempty"`
 
 	// "requested" edge predicates.
 	HasRequested     *bool              `json:"hasRequested,omitempty"`
@@ -876,45 +868,6 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 	}
 	if i.PhoneContainsFold != nil {
 		predicates = append(predicates, user.PhoneContainsFold(*i.PhoneContainsFold))
-	}
-	if i.Wechat != nil {
-		predicates = append(predicates, user.WechatEQ(*i.Wechat))
-	}
-	if i.WechatNEQ != nil {
-		predicates = append(predicates, user.WechatNEQ(*i.WechatNEQ))
-	}
-	if len(i.WechatIn) > 0 {
-		predicates = append(predicates, user.WechatIn(i.WechatIn...))
-	}
-	if len(i.WechatNotIn) > 0 {
-		predicates = append(predicates, user.WechatNotIn(i.WechatNotIn...))
-	}
-	if i.WechatGT != nil {
-		predicates = append(predicates, user.WechatGT(*i.WechatGT))
-	}
-	if i.WechatGTE != nil {
-		predicates = append(predicates, user.WechatGTE(*i.WechatGTE))
-	}
-	if i.WechatLT != nil {
-		predicates = append(predicates, user.WechatLT(*i.WechatLT))
-	}
-	if i.WechatLTE != nil {
-		predicates = append(predicates, user.WechatLTE(*i.WechatLTE))
-	}
-	if i.WechatContains != nil {
-		predicates = append(predicates, user.WechatContains(*i.WechatContains))
-	}
-	if i.WechatHasPrefix != nil {
-		predicates = append(predicates, user.WechatHasPrefix(*i.WechatHasPrefix))
-	}
-	if i.WechatHasSuffix != nil {
-		predicates = append(predicates, user.WechatHasSuffix(*i.WechatHasSuffix))
-	}
-	if i.WechatEqualFold != nil {
-		predicates = append(predicates, user.WechatEqualFold(*i.WechatEqualFold))
-	}
-	if i.WechatContainsFold != nil {
-		predicates = append(predicates, user.WechatContainsFold(*i.WechatContainsFold))
 	}
 	if i.IsAdmin != nil {
 		predicates = append(predicates, user.IsAdminEQ(*i.IsAdmin))

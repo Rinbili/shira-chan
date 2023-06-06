@@ -9,7 +9,6 @@ import (
 	"shira-chan-dev/ent/order"
 	"shira-chan-dev/ent/predicate"
 	"shira-chan-dev/ent/user"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -47,20 +46,6 @@ func (uu *UserUpdate) SetPhone(s string) *UserUpdate {
 	return uu
 }
 
-// SetWechat sets the "wechat" field.
-func (uu *UserUpdate) SetWechat(s string) *UserUpdate {
-	uu.mutation.SetWechat(s)
-	return uu
-}
-
-// SetNillableWechat sets the "wechat" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableWechat(s *string) *UserUpdate {
-	if s != nil {
-		uu.SetWechat(*s)
-	}
-	return uu
-}
-
 // SetIsAdmin sets the "is_admin" field.
 func (uu *UserUpdate) SetIsAdmin(b bool) *UserUpdate {
 	uu.mutation.SetIsAdmin(b)
@@ -90,8 +75,15 @@ func (uu *UserUpdate) SetNillableIsActive(b *bool) *UserUpdate {
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (uu *UserUpdate) SetUpdatedAt(t time.Time) *UserUpdate {
-	uu.mutation.SetUpdatedAt(t)
+func (uu *UserUpdate) SetUpdatedAt(i int64) *UserUpdate {
+	uu.mutation.ResetUpdatedAt()
+	uu.mutation.SetUpdatedAt(i)
+	return uu
+}
+
+// AddUpdatedAt adds i to the "updated_at" field.
+func (uu *UserUpdate) AddUpdatedAt(i int64) *UserUpdate {
+	uu.mutation.AddUpdatedAt(i)
 	return uu
 }
 
@@ -225,11 +217,6 @@ func (uu *UserUpdate) check() error {
 			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "User.phone": %w`, err)}
 		}
 	}
-	if v, ok := uu.mutation.Wechat(); ok {
-		if err := user.WechatValidator(v); err != nil {
-			return &ValidationError{Name: "wechat", err: fmt.Errorf(`ent: validator failed for field "User.wechat": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -254,9 +241,6 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.Phone(); ok {
 		_spec.SetField(user.FieldPhone, field.TypeString, value)
 	}
-	if value, ok := uu.mutation.Wechat(); ok {
-		_spec.SetField(user.FieldWechat, field.TypeString, value)
-	}
 	if value, ok := uu.mutation.IsAdmin(); ok {
 		_spec.SetField(user.FieldIsAdmin, field.TypeBool, value)
 	}
@@ -264,7 +248,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.SetField(user.FieldIsActive, field.TypeBool, value)
 	}
 	if value, ok := uu.mutation.UpdatedAt(); ok {
-		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
+		_spec.SetField(user.FieldUpdatedAt, field.TypeInt64, value)
+	}
+	if value, ok := uu.mutation.AddedUpdatedAt(); ok {
+		_spec.AddField(user.FieldUpdatedAt, field.TypeInt64, value)
 	}
 	if uu.mutation.RequestedCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -394,20 +381,6 @@ func (uuo *UserUpdateOne) SetPhone(s string) *UserUpdateOne {
 	return uuo
 }
 
-// SetWechat sets the "wechat" field.
-func (uuo *UserUpdateOne) SetWechat(s string) *UserUpdateOne {
-	uuo.mutation.SetWechat(s)
-	return uuo
-}
-
-// SetNillableWechat sets the "wechat" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableWechat(s *string) *UserUpdateOne {
-	if s != nil {
-		uuo.SetWechat(*s)
-	}
-	return uuo
-}
-
 // SetIsAdmin sets the "is_admin" field.
 func (uuo *UserUpdateOne) SetIsAdmin(b bool) *UserUpdateOne {
 	uuo.mutation.SetIsAdmin(b)
@@ -437,8 +410,15 @@ func (uuo *UserUpdateOne) SetNillableIsActive(b *bool) *UserUpdateOne {
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (uuo *UserUpdateOne) SetUpdatedAt(t time.Time) *UserUpdateOne {
-	uuo.mutation.SetUpdatedAt(t)
+func (uuo *UserUpdateOne) SetUpdatedAt(i int64) *UserUpdateOne {
+	uuo.mutation.ResetUpdatedAt()
+	uuo.mutation.SetUpdatedAt(i)
+	return uuo
+}
+
+// AddUpdatedAt adds i to the "updated_at" field.
+func (uuo *UserUpdateOne) AddUpdatedAt(i int64) *UserUpdateOne {
+	uuo.mutation.AddUpdatedAt(i)
 	return uuo
 }
 
@@ -585,11 +565,6 @@ func (uuo *UserUpdateOne) check() error {
 			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "User.phone": %w`, err)}
 		}
 	}
-	if v, ok := uuo.mutation.Wechat(); ok {
-		if err := user.WechatValidator(v); err != nil {
-			return &ValidationError{Name: "wechat", err: fmt.Errorf(`ent: validator failed for field "User.wechat": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -631,9 +606,6 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if value, ok := uuo.mutation.Phone(); ok {
 		_spec.SetField(user.FieldPhone, field.TypeString, value)
 	}
-	if value, ok := uuo.mutation.Wechat(); ok {
-		_spec.SetField(user.FieldWechat, field.TypeString, value)
-	}
 	if value, ok := uuo.mutation.IsAdmin(); ok {
 		_spec.SetField(user.FieldIsAdmin, field.TypeBool, value)
 	}
@@ -641,7 +613,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		_spec.SetField(user.FieldIsActive, field.TypeBool, value)
 	}
 	if value, ok := uuo.mutation.UpdatedAt(); ok {
-		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
+		_spec.SetField(user.FieldUpdatedAt, field.TypeInt64, value)
+	}
+	if value, ok := uuo.mutation.AddedUpdatedAt(); ok {
+		_spec.AddField(user.FieldUpdatedAt, field.TypeInt64, value)
 	}
 	if uuo.mutation.RequestedCleared() {
 		edge := &sqlgraph.EdgeSpec{

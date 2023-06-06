@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"shira-chan-dev/ent/user"
 	"strings"
-	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -23,16 +22,14 @@ type User struct {
 	Passwd string `json:"-"`
 	// 手机号码
 	Phone string `json:"phone,omitempty"`
-	// 微信号
-	Wechat string `json:"wechat,omitempty"`
 	// 是否管理员
 	IsAdmin bool `json:"is_admin,omitempty"`
 	// 用户状态
 	IsActive bool `json:"is_active,omitempty"`
 	// 创建时间
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt int64 `json:"created_at,omitempty"`
 	// 更新时间
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt int64 `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges        UserEdges `json:"edges"`
@@ -80,12 +77,10 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldIsAdmin, user.FieldIsActive:
 			values[i] = new(sql.NullBool)
-		case user.FieldID:
+		case user.FieldID, user.FieldCreatedAt, user.FieldUpdatedAt:
 			values[i] = new(sql.NullInt64)
-		case user.FieldUname, user.FieldPasswd, user.FieldPhone, user.FieldWechat:
+		case user.FieldUname, user.FieldPasswd, user.FieldPhone:
 			values[i] = new(sql.NullString)
-		case user.FieldCreatedAt, user.FieldUpdatedAt:
-			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -125,12 +120,6 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.Phone = value.String
 			}
-		case user.FieldWechat:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field wechat", values[i])
-			} else if value.Valid {
-				u.Wechat = value.String
-			}
 		case user.FieldIsAdmin:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field is_admin", values[i])
@@ -144,16 +133,16 @@ func (u *User) assignValues(columns []string, values []any) error {
 				u.IsActive = value.Bool
 			}
 		case user.FieldCreatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				u.CreatedAt = value.Time
+				u.CreatedAt = value.Int64
 			}
 		case user.FieldUpdatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				u.UpdatedAt = value.Time
+				u.UpdatedAt = value.Int64
 			}
 		default:
 			u.selectValues.Set(columns[i], values[i])
@@ -209,9 +198,6 @@ func (u *User) String() string {
 	builder.WriteString("phone=")
 	builder.WriteString(u.Phone)
 	builder.WriteString(", ")
-	builder.WriteString("wechat=")
-	builder.WriteString(u.Wechat)
-	builder.WriteString(", ")
 	builder.WriteString("is_admin=")
 	builder.WriteString(fmt.Sprintf("%v", u.IsAdmin))
 	builder.WriteString(", ")
@@ -219,10 +205,10 @@ func (u *User) String() string {
 	builder.WriteString(fmt.Sprintf("%v", u.IsActive))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
-	builder.WriteString(u.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(fmt.Sprintf("%v", u.CreatedAt))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(u.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(fmt.Sprintf("%v", u.UpdatedAt))
 	builder.WriteByte(')')
 	return builder.String()
 }

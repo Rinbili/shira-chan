@@ -2,10 +2,6 @@
 
 package ent
 
-import (
-	"time"
-)
-
 // CreateOrderInput represents a mutation input for creating orders.
 type CreateOrderInput struct {
 	Title       string
@@ -14,10 +10,10 @@ type CreateOrderInput struct {
 	Type        *string
 	IsClosed    *bool
 	IsFinished  *bool
-	Evaluation  float64
-	HopeAt      *time.Time
-	CreatedAt   *time.Time
-	UpdatedAt   *time.Time
+	Evaluation  *float64
+	HopeAt      *int64
+	CreatedAt   *int64
+	UpdatedAt   *int64
 	RequesterID *int
 	ReceiverIDs []int
 }
@@ -36,7 +32,9 @@ func (i *CreateOrderInput) Mutate(m *OrderMutation) {
 	if v := i.IsFinished; v != nil {
 		m.SetIsFinished(*v)
 	}
-	m.SetEvaluation(i.Evaluation)
+	if v := i.Evaluation; v != nil {
+		m.SetEvaluation(*v)
+	}
 	if v := i.HopeAt; v != nil {
 		m.SetHopeAt(*v)
 	}
@@ -68,9 +66,10 @@ type UpdateOrderInput struct {
 	Type              *string
 	IsClosed          *bool
 	IsFinished        *bool
+	ClearEvaluation   bool
 	Evaluation        *float64
-	HopeAt            *time.Time
-	UpdatedAt         *time.Time
+	HopeAt            *int64
+	UpdatedAt         *int64
 	ClearRequester    bool
 	RequesterID       *int
 	ClearReceiver     bool
@@ -97,6 +96,9 @@ func (i *UpdateOrderInput) Mutate(m *OrderMutation) {
 	}
 	if v := i.IsFinished; v != nil {
 		m.SetIsFinished(*v)
+	}
+	if i.ClearEvaluation {
+		m.ClearEvaluation()
 	}
 	if v := i.Evaluation; v != nil {
 		m.SetEvaluation(*v)
@@ -141,11 +143,10 @@ type CreateUserInput struct {
 	Uname        string
 	Passwd       string
 	Phone        string
-	Wechat       *string
 	IsAdmin      *bool
 	IsActive     *bool
-	CreatedAt    *time.Time
-	UpdatedAt    *time.Time
+	CreatedAt    *int64
+	UpdatedAt    *int64
 	RequestedIDs []int
 	ReceivedIDs  []int
 }
@@ -155,9 +156,6 @@ func (i *CreateUserInput) Mutate(m *UserMutation) {
 	m.SetUname(i.Uname)
 	m.SetPasswd(i.Passwd)
 	m.SetPhone(i.Phone)
-	if v := i.Wechat; v != nil {
-		m.SetWechat(*v)
-	}
 	if v := i.IsAdmin; v != nil {
 		m.SetIsAdmin(*v)
 	}
@@ -189,10 +187,9 @@ type UpdateUserInput struct {
 	Uname              *string
 	Passwd             *string
 	Phone              *string
-	Wechat             *string
 	IsAdmin            *bool
 	IsActive           *bool
-	UpdatedAt          *time.Time
+	UpdatedAt          *int64
 	ClearRequested     bool
 	AddRequestedIDs    []int
 	RemoveRequestedIDs []int
@@ -211,9 +208,6 @@ func (i *UpdateUserInput) Mutate(m *UserMutation) {
 	}
 	if v := i.Phone; v != nil {
 		m.SetPhone(*v)
-	}
-	if v := i.Wechat; v != nil {
-		m.SetWechat(*v)
 	}
 	if v := i.IsAdmin; v != nil {
 		m.SetIsAdmin(*v)

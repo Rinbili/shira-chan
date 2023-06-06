@@ -3,7 +3,6 @@ package schema
 import (
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
-	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
@@ -66,36 +65,31 @@ func (Order) Fields() []ent.Field {
 		field.Float("evaluation").
 			Annotations(
 				entgql.OrderField("EVALUATION")).
-			Nillable().
-			Max(5).
+			Optional().
 			Min(1).
-			Comment("评分"),
-		field.Time("hope_at").
-			Default(time.Now).
+			Max(5).
+			Comment("评分").
+			Nillable(),
+		field.Int64("hope_at").
+			DefaultFunc(time.Now().Unix).
 			Annotations(
-				entgql.OrderField("HOPE_AT")).
-			Comment("期望时间").
-			SchemaType(map[string]string{
-				dialect.MySQL: "datetime",
-			}),
-		field.Time("created_at").
-			Default(time.Now).
+				entgql.OrderField("HOPE_AT"),
+				entgql.Type("Int64")).
+			Comment("期望时间"),
+		field.Int64("created_at").
+			DefaultFunc(func() int64 { return time.Now().Unix() }).
 			Annotations(
-				entgql.OrderField("CREAT_AT")).
+				entgql.OrderField("CREAT_AT"),
+				entgql.Type("Int64")).
 			Comment("创建时间").
-			Immutable().
-			SchemaType(map[string]string{
-				dialect.MySQL: "datetime",
-			}),
-		field.Time("updated_at").
-			Default(time.Now).
-			UpdateDefault(time.Now).
+			Immutable(),
+		field.Int64("updated_at").
+			DefaultFunc(func() int64 { return time.Now().Unix() }).
+			UpdateDefault(func() int64 { return time.Now().Unix() }).
 			Annotations(
-				entgql.OrderField("UPDATED_AT")).
-			Comment("更新时间").
-			SchemaType(map[string]string{
-				dialect.MySQL: "datetime",
-			}),
+				entgql.OrderField("UPDATED_AT"),
+				entgql.Type("Int64")).
+			Comment("更新时间"),
 	}
 }
 

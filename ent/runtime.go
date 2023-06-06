@@ -6,7 +6,6 @@ import (
 	"shira-chan-dev/ent/order"
 	"shira-chan-dev/ent/schema"
 	"shira-chan-dev/ent/user"
-	"time"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -102,17 +101,17 @@ func init() {
 	// orderDescHopeAt is the schema descriptor for hope_at field.
 	orderDescHopeAt := orderFields[7].Descriptor()
 	// order.DefaultHopeAt holds the default value on creation for the hope_at field.
-	order.DefaultHopeAt = orderDescHopeAt.Default.(func() time.Time)
+	order.DefaultHopeAt = orderDescHopeAt.Default.(func() int64)
 	// orderDescCreatedAt is the schema descriptor for created_at field.
 	orderDescCreatedAt := orderFields[8].Descriptor()
 	// order.DefaultCreatedAt holds the default value on creation for the created_at field.
-	order.DefaultCreatedAt = orderDescCreatedAt.Default.(func() time.Time)
+	order.DefaultCreatedAt = orderDescCreatedAt.Default.(func() int64)
 	// orderDescUpdatedAt is the schema descriptor for updated_at field.
 	orderDescUpdatedAt := orderFields[9].Descriptor()
 	// order.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	order.DefaultUpdatedAt = orderDescUpdatedAt.Default.(func() time.Time)
+	order.DefaultUpdatedAt = orderDescUpdatedAt.Default.(func() int64)
 	// order.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	order.UpdateDefaultUpdatedAt = orderDescUpdatedAt.UpdateDefault.(func() time.Time)
+	order.UpdateDefaultUpdatedAt = orderDescUpdatedAt.UpdateDefault.(func() int64)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescUname is the schema descriptor for uname field.
@@ -155,28 +154,22 @@ func init() {
 			return nil
 		}
 	}()
-	// userDescWechat is the schema descriptor for wechat field.
-	userDescWechat := userFields[3].Descriptor()
-	// user.DefaultWechat holds the default value on creation for the wechat field.
-	user.DefaultWechat = userDescWechat.Default.(string)
-	// user.WechatValidator is a validator for the "wechat" field. It is called by the builders before save.
-	user.WechatValidator = userDescWechat.Validators[0].(func(string) error)
 	// userDescIsAdmin is the schema descriptor for is_admin field.
-	userDescIsAdmin := userFields[4].Descriptor()
+	userDescIsAdmin := userFields[3].Descriptor()
 	// user.DefaultIsAdmin holds the default value on creation for the is_admin field.
 	user.DefaultIsAdmin = userDescIsAdmin.Default.(bool)
 	// userDescIsActive is the schema descriptor for is_active field.
-	userDescIsActive := userFields[5].Descriptor()
+	userDescIsActive := userFields[4].Descriptor()
 	// user.DefaultIsActive holds the default value on creation for the is_active field.
 	user.DefaultIsActive = userDescIsActive.Default.(bool)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[6].Descriptor()
+	userDescCreatedAt := userFields[5].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
-	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
+	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() int64)
 	// userDescUpdatedAt is the schema descriptor for updated_at field.
-	userDescUpdatedAt := userFields[7].Descriptor()
+	userDescUpdatedAt := userFields[6].Descriptor()
 	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
+	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() int64)
 	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	user.UpdateDefaultUpdatedAt = userDescUpdatedAt.UpdateDefault.(func() time.Time)
+	user.UpdateDefaultUpdatedAt = userDescUpdatedAt.UpdateDefault.(func() int64)
 }

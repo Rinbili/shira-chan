@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"shira-chan-dev/ent/order"
 	"shira-chan-dev/ent/user"
-	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -36,20 +35,6 @@ func (uc *UserCreate) SetPasswd(s string) *UserCreate {
 // SetPhone sets the "phone" field.
 func (uc *UserCreate) SetPhone(s string) *UserCreate {
 	uc.mutation.SetPhone(s)
-	return uc
-}
-
-// SetWechat sets the "wechat" field.
-func (uc *UserCreate) SetWechat(s string) *UserCreate {
-	uc.mutation.SetWechat(s)
-	return uc
-}
-
-// SetNillableWechat sets the "wechat" field if the given value is not nil.
-func (uc *UserCreate) SetNillableWechat(s *string) *UserCreate {
-	if s != nil {
-		uc.SetWechat(*s)
-	}
 	return uc
 }
 
@@ -82,29 +67,29 @@ func (uc *UserCreate) SetNillableIsActive(b *bool) *UserCreate {
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (uc *UserCreate) SetCreatedAt(t time.Time) *UserCreate {
-	uc.mutation.SetCreatedAt(t)
+func (uc *UserCreate) SetCreatedAt(i int64) *UserCreate {
+	uc.mutation.SetCreatedAt(i)
 	return uc
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (uc *UserCreate) SetNillableCreatedAt(t *time.Time) *UserCreate {
-	if t != nil {
-		uc.SetCreatedAt(*t)
+func (uc *UserCreate) SetNillableCreatedAt(i *int64) *UserCreate {
+	if i != nil {
+		uc.SetCreatedAt(*i)
 	}
 	return uc
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (uc *UserCreate) SetUpdatedAt(t time.Time) *UserCreate {
-	uc.mutation.SetUpdatedAt(t)
+func (uc *UserCreate) SetUpdatedAt(i int64) *UserCreate {
+	uc.mutation.SetUpdatedAt(i)
 	return uc
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (uc *UserCreate) SetNillableUpdatedAt(t *time.Time) *UserCreate {
-	if t != nil {
-		uc.SetUpdatedAt(*t)
+func (uc *UserCreate) SetNillableUpdatedAt(i *int64) *UserCreate {
+	if i != nil {
+		uc.SetUpdatedAt(*i)
 	}
 	return uc
 }
@@ -174,10 +159,6 @@ func (uc *UserCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (uc *UserCreate) defaults() {
-	if _, ok := uc.mutation.Wechat(); !ok {
-		v := user.DefaultWechat
-		uc.mutation.SetWechat(v)
-	}
 	if _, ok := uc.mutation.IsAdmin(); !ok {
 		v := user.DefaultIsAdmin
 		uc.mutation.SetIsAdmin(v)
@@ -220,14 +201,6 @@ func (uc *UserCreate) check() error {
 	if v, ok := uc.mutation.Phone(); ok {
 		if err := user.PhoneValidator(v); err != nil {
 			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "User.phone": %w`, err)}
-		}
-	}
-	if _, ok := uc.mutation.Wechat(); !ok {
-		return &ValidationError{Name: "wechat", err: errors.New(`ent: missing required field "User.wechat"`)}
-	}
-	if v, ok := uc.mutation.Wechat(); ok {
-		if err := user.WechatValidator(v); err != nil {
-			return &ValidationError{Name: "wechat", err: fmt.Errorf(`ent: validator failed for field "User.wechat": %w`, err)}
 		}
 	}
 	if _, ok := uc.mutation.IsAdmin(); !ok {
@@ -280,10 +253,6 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldPhone, field.TypeString, value)
 		_node.Phone = value
 	}
-	if value, ok := uc.mutation.Wechat(); ok {
-		_spec.SetField(user.FieldWechat, field.TypeString, value)
-		_node.Wechat = value
-	}
 	if value, ok := uc.mutation.IsAdmin(); ok {
 		_spec.SetField(user.FieldIsAdmin, field.TypeBool, value)
 		_node.IsAdmin = value
@@ -293,11 +262,11 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_node.IsActive = value
 	}
 	if value, ok := uc.mutation.CreatedAt(); ok {
-		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
+		_spec.SetField(user.FieldCreatedAt, field.TypeInt64, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := uc.mutation.UpdatedAt(); ok {
-		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
+		_spec.SetField(user.FieldUpdatedAt, field.TypeInt64, value)
 		_node.UpdatedAt = value
 	}
 	if nodes := uc.mutation.RequestedIDs(); len(nodes) > 0 {

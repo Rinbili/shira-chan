@@ -449,11 +449,6 @@ func (u *UserQuery) collectField(ctx context.Context, opCtx *graphql.OperationCo
 				selectedFields = append(selectedFields, user.FieldPhone)
 				fieldSeen[user.FieldPhone] = struct{}{}
 			}
-		case "wechat":
-			if _, ok := fieldSeen[user.FieldWechat]; !ok {
-				selectedFields = append(selectedFields, user.FieldWechat)
-				fieldSeen[user.FieldWechat] = struct{}{}
-			}
 		case "isAdmin":
 			if _, ok := fieldSeen[user.FieldIsAdmin]; !ok {
 				selectedFields = append(selectedFields, user.FieldIsAdmin)
