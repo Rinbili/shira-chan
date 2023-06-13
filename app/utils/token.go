@@ -19,6 +19,12 @@ type JwtCustomClaims struct {
 	jwt.RegisteredClaims
 }
 
+// GetToken
+// @Description: token生成函数
+// @param UId: 用户ID
+// @param IsAdmin: 用户是否为Admin
+// @return string: token
+// @return error: err
 func GetToken(UId int, IsAdmin bool) (string, error) {
 	claims := JwtCustomClaims{
 		UId:     UId,
@@ -37,6 +43,11 @@ func GetToken(UId int, IsAdmin bool) (string, error) {
 	return token, err
 }
 
+// ParseToken
+// @Description: 解析token
+// @param tokenString: token
+// @return *JwtCustomClaims: 自定义jwt结构体
+// @return error: err
 func ParseToken(tokenString string) (*JwtCustomClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &JwtCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return mySigningKey, nil

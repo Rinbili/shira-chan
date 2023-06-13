@@ -8,8 +8,12 @@ import (
 	"shira-chan-dev/ent/migrate"
 )
 
+// Client 全局数据库连接
 var Client = InitEntClient()
 
+// InitEntClient
+// @Description: 初始化数据库连接
+// @return *ent.Client
 func InitEntClient() *ent.Client {
 	// Create ent.Client and run the schema migration.
 	dsn := os.Getenv("sql_user") + ":" +

@@ -1,5 +1,6 @@
 package utils
 
+// From https://juejin.cn/post/7107997489029971981
 import "golang.org/x/crypto/bcrypt"
 
 // GetPwd 给密码加密

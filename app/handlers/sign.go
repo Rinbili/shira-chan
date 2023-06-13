@@ -9,6 +9,10 @@ import (
 	"shira-chan-dev/ent/user"
 )
 
+// SignHandler
+// @Description: 登录/注册中间件
+// @return gin.HandlerFunc
+// Deprecated: GraphQL中mutation->sign已取代此中间件
 func SignHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		r := Response{Code: http.StatusBadRequest}

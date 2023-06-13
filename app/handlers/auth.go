@@ -5,6 +5,9 @@ import (
 	"shira-chan-dev/app/utils"
 )
 
+// AuthHandler
+// @Description: 中间件：验证token
+// @return gin.HandlerFunc:
 func AuthHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//r := Response{}

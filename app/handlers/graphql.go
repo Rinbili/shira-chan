@@ -11,6 +11,9 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 )
 
+// GraphqlHandler
+// @Description: GraphQL接口中间件
+// @return gin.HandlerFunc
 func GraphqlHandler() gin.HandlerFunc {
 	// Resolver is in the resolver.go file
 	h := handler.NewDefaultServer(graph.NewSchema(utils.Client))
@@ -23,6 +26,9 @@ func GraphqlHandler() gin.HandlerFunc {
 	}
 }
 
+// PlaygroundHandler
+// @Description: GraphQLPlayground中间件
+// @return gin.HandlerFunc
 func PlaygroundHandler() gin.HandlerFunc {
 	h := playground.Handler("GraphQL", "/query")
 	return func(c *gin.Context) {

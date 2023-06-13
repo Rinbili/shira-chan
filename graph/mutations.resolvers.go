@@ -14,11 +14,12 @@ import (
 
 // Sign is the resolver for the sign field.
 func (r *mutationResolver) Sign(ctx context.Context, input SignInput) (*Token, error) {
+	// 通过手机号查找用户
 	u, err := r.client.User.Query().
 		Where(user.PhoneEQ(input.Phone)).
 		Only(ctx)
 	if u == nil {
-		//试图注册
+		// 用户不存在，试图注册
 		pwd, err := utils.GetPwd(input.Passwd)
 		if err == nil && input.Uname != nil {
 			u, err = utils.Client.User.Create().
@@ -28,11 +29,13 @@ func (r *mutationResolver) Sign(ctx context.Context, input SignInput) (*Token, e
 				Save(ctx)
 		}
 	} else {
+		// 存在，比较密码
 		if !utils.ComparePwd(u.Passwd, input.Passwd) {
 			return nil, errors.New("bad passwd")
 		}
 	}
 	if u != nil {
+		// 生成token
 		if !u.IsActive {
 			return nil, errors.New("banned user")
 		} else {

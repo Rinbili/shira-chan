@@ -8,7 +8,9 @@ import (
 
 func main() {
 	r := gin.Default()
+	// 初始化路由
 	routers.InitRouter(r)
+	// 运行
 	err := r.Run()
 	if err != nil {
 		panic(err)
