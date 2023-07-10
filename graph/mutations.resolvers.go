@@ -36,7 +36,7 @@ func (r *mutationResolver) Sign(ctx context.Context, input SignInput) (*Token, e
 		}
 	} else {
 		// 登录
-		if u != nil {
+		if u == nil {
 			return nil, errors.New("user does not exists")
 		} else {
 			if !utils.ComparePwd(u.Passwd, input.Passwd) {
