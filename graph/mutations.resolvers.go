@@ -18,26 +18,36 @@ func (r *mutationResolver) Sign(ctx context.Context, input SignInput) (*Token, e
 	u, err := r.client.User.Query().
 		Where(user.PhoneEQ(input.Phone)).
 		Only(ctx)
-	if u == nil {
-		// 用户不存在，试图注册
-		pwd, err := utils.GetPwd(input.Passwd)
-		if err == nil && input.Uname != nil {
-			u, err = utils.Client.User.Create().
-				SetUname(*input.Uname).
-				SetPhone(input.Phone).
-				SetPasswd(string(pwd)).
-				Save(ctx)
+	if input.Uname != nil {
+		// 注册
+		if u != nil {
+			pwd, err := utils.GetPwd(input.Passwd)
+			if err == nil {
+				u, err = utils.Client.User.Create().
+					SetUname(*input.Uname).
+					SetPhone(input.Phone).
+					SetPasswd(string(pwd)).
+					Save(ctx)
+			} else {
+				return nil, err
+			}
+		} else {
+			return nil, errors.New("user already exists")
 		}
 	} else {
-		// 存在，比较密码
-		if !utils.ComparePwd(u.Passwd, input.Passwd) {
-			return nil, errors.New("bad passwd")
+		// 登录
+		if u != nil {
+			return nil, errors.New("user does not exists")
+		} else {
+			if !utils.ComparePwd(u.Passwd, input.Passwd) {
+				return nil, errors.New("password incorrect")
+			}
 		}
 	}
 	if u != nil {
 		// 生成token
 		if !u.IsActive {
-			return nil, errors.New("banned user")
+			return nil, errors.New("banned")
 		} else {
 			var token string
 			token, err = utils.GetToken(u.ID, u.IsAdmin)
@@ -45,6 +55,33 @@ func (r *mutationResolver) Sign(ctx context.Context, input SignInput) (*Token, e
 		}
 	}
 	return nil, errors.New("bad request")
+	//if u == nil {
+	//	// 用户不存在，试图注册
+	//	pwd, err := utils.GetPwd(input.Passwd)
+	//	if err == nil && input.Uname != nil {
+	//		u, err = utils.Client.User.Create().
+	//			SetUname(*input.Uname).
+	//			SetPhone(input.Phone).
+	//			SetPasswd(string(pwd)).
+	//			Save(ctx)
+	//	}
+	//} else {
+	//	// 存在，比较密码
+	//	if !utils.ComparePwd(u.Passwd, input.Passwd) {
+	//		return nil, errors.New("bad passwd")
+	//	}
+	//}
+	//if u != nil {
+	//	// 生成token
+	//	if !u.IsActive {
+	//		return nil, errors.New("banned user")
+	//	} else {
+	//		var token string
+	//		token, err = utils.GetToken(u.ID, u.IsAdmin)
+	//		return &Token{Token: &token}, err
+	//	}
+	//}
+	//return nil, errors.New("bad request")
 }
 
 // CreateUser is the resolver for the createUser field.
