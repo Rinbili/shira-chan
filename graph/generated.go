@@ -49,6 +49,7 @@ type ComplexityRoot struct {
 	Mutation struct {
 		CreateOrder func(childComplexity int, input ent.CreateOrderInput) int
 		CreateUser  func(childComplexity int, input ent.CreateUserInput) int
+		Receive     func(childComplexity int, input *ReceiveInput) int
 		Sign        func(childComplexity int, input SignInput) int
 		UpdateOrder func(childComplexity int, id int, input ent.UpdateOrderInput) int
 		UpdateUser  func(childComplexity int, id int, input ent.UpdateUserInput) int
@@ -125,6 +126,7 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	Sign(ctx context.Context, input SignInput) (*Token, error)
+	Receive(ctx context.Context, input *ReceiveInput) (*bool, error)
 	CreateUser(ctx context.Context, input ent.CreateUserInput) (*ent.User, error)
 	CreateOrder(ctx context.Context, input ent.CreateOrderInput) (*ent.Order, error)
 	UpdateUser(ctx context.Context, id int, input ent.UpdateUserInput) (*ent.User, error)
@@ -175,6 +177,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateUser(childComplexity, args["input"].(ent.CreateUserInput)), true
+
+	case "Mutation.receive":
+		if e.complexity.Mutation.Receive == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_receive_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.Receive(childComplexity, args["input"].(*ReceiveInput)), true
 
 	case "Mutation.sign":
 		if e.complexity.Mutation.Sign == nil {
@@ -546,6 +560,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputCreateUserInput,
 		ec.unmarshalInputOrderOrder,
 		ec.unmarshalInputOrderWhereInput,
+		ec.unmarshalInputReceiveInput,
 		ec.unmarshalInputSignInput,
 		ec.unmarshalInputUpdateOrderInput,
 		ec.unmarshalInputUpdateUserInput,
@@ -653,6 +668,21 @@ func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, 
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNCreateUserInput2shiraᚑchanᚑdevᚋentᚐCreateUserInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_receive_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ReceiveInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalOReceiveInput2ᚖshiraᚑchanᚑdevᚋgraphᚐReceiveInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1157,6 +1187,58 @@ func (ec *executionContext) fieldContext_Mutation_sign(ctx context.Context, fiel
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_sign_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_receive(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_receive(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().Receive(rctx, fc.Args["input"].(*ReceiveInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_receive(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_receive_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -6596,6 +6678,44 @@ func (ec *executionContext) unmarshalInputOrderWhereInput(ctx context.Context, o
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputReceiveInput(ctx context.Context, obj interface{}) (ReceiveInput, error) {
+	var it ReceiveInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"uid", "oid"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "uid":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("uid"))
+			data, err := ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UID = data
+		case "oid":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("oid"))
+			data, err := ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Oid = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputSignInput(ctx context.Context, obj interface{}) (SignInput, error) {
 	var it SignInput
 	asMap := map[string]interface{}{}
@@ -7587,6 +7707,12 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_sign(ctx, field)
+			})
+
+		case "receive":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_receive(ctx, field)
 			})
 
 		case "createUser":
@@ -9372,6 +9498,14 @@ func (ec *executionContext) unmarshalOOrderWhereInput2ᚖshiraᚑchanᚑdevᚋen
 		return nil, nil
 	}
 	res, err := ec.unmarshalInputOrderWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOReceiveInput2ᚖshiraᚑchanᚑdevᚋgraphᚐReceiveInput(ctx context.Context, v interface{}) (*ReceiveInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputReceiveInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 

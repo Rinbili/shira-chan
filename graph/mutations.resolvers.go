@@ -84,6 +84,26 @@ func (r *mutationResolver) Sign(ctx context.Context, input SignInput) (*Token, e
 	//return nil, errors.New("bad request")
 }
 
+// Receive is the resolver for the receive field.
+func (r *mutationResolver) Receive(ctx context.Context, input *ReceiveInput) (*bool, error) {
+	client := ent.FromContext(ctx)
+	receiver, err := client.User.Get(ctx, input.UID)
+	if err != nil {
+		return nil, errors.New("user not found")
+	}
+	order, err := client.Order.Get(ctx, input.Oid)
+	if err != nil {
+		return nil, errors.New("order not found")
+	}
+	b := false
+	_, err = client.Order.UpdateOne(order).AddReceiver(receiver).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	b = true
+	return &b, nil
+}
+
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input ent.CreateUserInput) (*ent.User, error) {
 	if IsAdmin(ctx) {
