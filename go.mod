@@ -12,6 +12,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/google/uuid v1.3.0
 	github.com/hashicorp/go-multierror v1.1.1
+	github.com/kataras/hcaptcha v0.0.2
 	github.com/vektah/gqlparser/v2 v2.5.1
 	golang.org/x/crypto v0.9.0
 	golang.org/x/sync v0.2.0
