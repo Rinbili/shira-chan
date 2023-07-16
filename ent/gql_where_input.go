@@ -624,6 +624,10 @@ type UserWhereInput struct {
 	IsAdmin    *bool `json:"isAdmin,omitempty"`
 	IsAdminNEQ *bool `json:"isAdminNEQ,omitempty"`
 
+	// "is_secretary" field predicates.
+	IsSecretary    *bool `json:"isSecretary,omitempty"`
+	IsSecretaryNEQ *bool `json:"isSecretaryNEQ,omitempty"`
+
 	// "is_active" field predicates.
 	IsActive    *bool `json:"isActive,omitempty"`
 	IsActiveNEQ *bool `json:"isActiveNEQ,omitempty"`
@@ -874,6 +878,12 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 	}
 	if i.IsAdminNEQ != nil {
 		predicates = append(predicates, user.IsAdminNEQ(*i.IsAdminNEQ))
+	}
+	if i.IsSecretary != nil {
+		predicates = append(predicates, user.IsSecretaryEQ(*i.IsSecretary))
+	}
+	if i.IsSecretaryNEQ != nil {
+		predicates = append(predicates, user.IsSecretaryNEQ(*i.IsSecretaryNEQ))
 	}
 	if i.IsActive != nil {
 		predicates = append(predicates, user.IsActiveEQ(*i.IsActive))

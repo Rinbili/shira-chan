@@ -74,6 +74,11 @@ func IsAdmin(v bool) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldIsAdmin, v))
 }
 
+// IsSecretary applies equality check predicate on the "is_secretary" field. It's identical to IsSecretaryEQ.
+func IsSecretary(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsSecretary, v))
+}
+
 // IsActive applies equality check predicate on the "is_active" field. It's identical to IsActiveEQ.
 func IsActive(v bool) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldIsActive, v))
@@ -292,6 +297,16 @@ func IsAdminEQ(v bool) predicate.User {
 // IsAdminNEQ applies the NEQ predicate on the "is_admin" field.
 func IsAdminNEQ(v bool) predicate.User {
 	return predicate.User(sql.FieldNEQ(FieldIsAdmin, v))
+}
+
+// IsSecretaryEQ applies the EQ predicate on the "is_secretary" field.
+func IsSecretaryEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsSecretary, v))
+}
+
+// IsSecretaryNEQ applies the NEQ predicate on the "is_secretary" field.
+func IsSecretaryNEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldIsSecretary, v))
 }
 
 // IsActiveEQ applies the EQ predicate on the "is_active" field.

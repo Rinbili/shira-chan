@@ -45,6 +45,7 @@ var (
 		{Name: "passwd", Type: field.TypeString, Size: 2147483647},
 		{Name: "phone", Type: field.TypeString, Unique: true, Size: 15},
 		{Name: "is_admin", Type: field.TypeBool, Default: false},
+		{Name: "is_secretary", Type: field.TypeBool, Default: false},
 		{Name: "is_active", Type: field.TypeBool, Default: true},
 		{Name: "created_at", Type: field.TypeInt64},
 		{Name: "updated_at", Type: field.TypeInt64},

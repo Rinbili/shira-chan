@@ -24,6 +24,8 @@ type User struct {
 	Phone string `json:"phone,omitempty"`
 	// 是否管理员
 	IsAdmin bool `json:"is_admin,omitempty"`
+	// 是否部员
+	IsSecretary bool `json:"is_secretary,omitempty"`
 	// 用户状态
 	IsActive bool `json:"is_active,omitempty"`
 	// 创建时间
@@ -75,7 +77,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldIsAdmin, user.FieldIsActive:
+		case user.FieldIsAdmin, user.FieldIsSecretary, user.FieldIsActive:
 			values[i] = new(sql.NullBool)
 		case user.FieldID, user.FieldCreatedAt, user.FieldUpdatedAt:
 			values[i] = new(sql.NullInt64)
@@ -125,6 +127,12 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field is_admin", values[i])
 			} else if value.Valid {
 				u.IsAdmin = value.Bool
+			}
+		case user.FieldIsSecretary:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_secretary", values[i])
+			} else if value.Valid {
+				u.IsSecretary = value.Bool
 			}
 		case user.FieldIsActive:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -200,6 +208,9 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_admin=")
 	builder.WriteString(fmt.Sprintf("%v", u.IsAdmin))
+	builder.WriteString(", ")
+	builder.WriteString("is_secretary=")
+	builder.WriteString(fmt.Sprintf("%v", u.IsSecretary))
 	builder.WriteString(", ")
 	builder.WriteString("is_active=")
 	builder.WriteString(fmt.Sprintf("%v", u.IsActive))

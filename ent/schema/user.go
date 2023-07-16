@@ -49,6 +49,11 @@ func (User) Fields() []ent.Field {
 			Annotations(
 				entgql.OrderField("IS_ADMIN")).
 			Comment("是否管理员"),
+		field.Bool("is_secretary").
+			Default(false).
+			Annotations(
+				entgql.OrderField("IS_SECRETARY")).
+			Comment("是否部员"),
 		field.Bool("is_active").
 			Default(true).
 			Annotations(

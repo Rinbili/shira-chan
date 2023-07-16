@@ -60,6 +60,20 @@ func (uu *UserUpdate) SetNillableIsAdmin(b *bool) *UserUpdate {
 	return uu
 }
 
+// SetIsSecretary sets the "is_secretary" field.
+func (uu *UserUpdate) SetIsSecretary(b bool) *UserUpdate {
+	uu.mutation.SetIsSecretary(b)
+	return uu
+}
+
+// SetNillableIsSecretary sets the "is_secretary" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableIsSecretary(b *bool) *UserUpdate {
+	if b != nil {
+		uu.SetIsSecretary(*b)
+	}
+	return uu
+}
+
 // SetIsActive sets the "is_active" field.
 func (uu *UserUpdate) SetIsActive(b bool) *UserUpdate {
 	uu.mutation.SetIsActive(b)
@@ -244,6 +258,9 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.IsAdmin(); ok {
 		_spec.SetField(user.FieldIsAdmin, field.TypeBool, value)
 	}
+	if value, ok := uu.mutation.IsSecretary(); ok {
+		_spec.SetField(user.FieldIsSecretary, field.TypeBool, value)
+	}
 	if value, ok := uu.mutation.IsActive(); ok {
 		_spec.SetField(user.FieldIsActive, field.TypeBool, value)
 	}
@@ -391,6 +408,20 @@ func (uuo *UserUpdateOne) SetIsAdmin(b bool) *UserUpdateOne {
 func (uuo *UserUpdateOne) SetNillableIsAdmin(b *bool) *UserUpdateOne {
 	if b != nil {
 		uuo.SetIsAdmin(*b)
+	}
+	return uuo
+}
+
+// SetIsSecretary sets the "is_secretary" field.
+func (uuo *UserUpdateOne) SetIsSecretary(b bool) *UserUpdateOne {
+	uuo.mutation.SetIsSecretary(b)
+	return uuo
+}
+
+// SetNillableIsSecretary sets the "is_secretary" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableIsSecretary(b *bool) *UserUpdateOne {
+	if b != nil {
+		uuo.SetIsSecretary(*b)
 	}
 	return uuo
 }
@@ -608,6 +639,9 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.IsAdmin(); ok {
 		_spec.SetField(user.FieldIsAdmin, field.TypeBool, value)
+	}
+	if value, ok := uuo.mutation.IsSecretary(); ok {
+		_spec.SetField(user.FieldIsSecretary, field.TypeBool, value)
 	}
 	if value, ok := uuo.mutation.IsActive(); ok {
 		_spec.SetField(user.FieldIsActive, field.TypeBool, value)

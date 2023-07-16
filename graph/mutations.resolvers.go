@@ -51,37 +51,10 @@ func (r *mutationResolver) Sign(ctx context.Context, input SignInput) (*Token, e
 		} else {
 			var token string
 			token, err = utils.GetToken(u.ID, u.IsAdmin)
-			return &Token{Token: &token}, err
+			return &Token{Token: &token, IsAdmin: &u.IsAdmin, IsSecretary: &u.IsSecretary}, err
 		}
 	}
 	return nil, errors.New("bad request")
-	//if u == nil {
-	//	// 用户不存在，试图注册
-	//	pwd, err := utils.GetPwd(input.Passwd)
-	//	if err == nil && input.Uname != nil {
-	//		u, err = utils.Client.User.Create().
-	//			SetUname(*input.Uname).
-	//			SetPhone(input.Phone).
-	//			SetPasswd(string(pwd)).
-	//			Save(ctx)
-	//	}
-	//} else {
-	//	// 存在，比较密码
-	//	if !utils.ComparePwd(u.Passwd, input.Passwd) {
-	//		return nil, errors.New("bad passwd")
-	//	}
-	//}
-	//if u != nil {
-	//	// 生成token
-	//	if !u.IsActive {
-	//		return nil, errors.New("banned user")
-	//	} else {
-	//		var token string
-	//		token, err = utils.GetToken(u.ID, u.IsAdmin)
-	//		return &Token{Token: &token}, err
-	//	}
-	//}
-	//return nil, errors.New("bad request")
 }
 
 // Receive is the resolver for the receive field.

@@ -797,6 +797,20 @@ var (
 			}
 		},
 	}
+	// UserOrderFieldIsSecretary orders User by is_secretary.
+	UserOrderFieldIsSecretary = &UserOrderField{
+		Value: func(u *User) (ent.Value, error) {
+			return u.IsSecretary, nil
+		},
+		column: user.FieldIsSecretary,
+		toTerm: user.ByIsSecretary,
+		toCursor: func(u *User) Cursor {
+			return Cursor{
+				ID:    u.ID,
+				Value: u.IsSecretary,
+			}
+		},
+	}
 	// UserOrderFieldIsActive orders User by is_active.
 	UserOrderFieldIsActive = &UserOrderField{
 		Value: func(u *User) (ent.Value, error) {
@@ -887,6 +901,8 @@ func (f UserOrderField) String() string {
 		str = "UNAME"
 	case UserOrderFieldIsAdmin.column:
 		str = "IS_ADMIN"
+	case UserOrderFieldIsSecretary.column:
+		str = "IS_SECRETARY"
 	case UserOrderFieldIsActive.column:
 		str = "STATE"
 	case UserOrderFieldCreatedAt.column:
@@ -917,6 +933,8 @@ func (f *UserOrderField) UnmarshalGQL(v interface{}) error {
 		*f = *UserOrderFieldUname
 	case "IS_ADMIN":
 		*f = *UserOrderFieldIsAdmin
+	case "IS_SECRETARY":
+		*f = *UserOrderFieldIsSecretary
 	case "STATE":
 		*f = *UserOrderFieldIsActive
 	case "CREAT_AT":

@@ -23,7 +23,9 @@ type SignInput struct {
 }
 
 type Token struct {
-	Token *string `json:"token,omitempty"`
+	Token       *string `json:"token,omitempty"`
+	IsAdmin     *bool   `json:"is_admin,omitempty"`
+	IsSecretary *bool   `json:"is_secretary,omitempty"`
 }
 
 type Role string

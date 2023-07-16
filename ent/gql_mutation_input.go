@@ -144,6 +144,7 @@ type CreateUserInput struct {
 	Passwd       string
 	Phone        string
 	IsAdmin      *bool
+	IsSecretary  *bool
 	IsActive     *bool
 	CreatedAt    *int64
 	UpdatedAt    *int64
@@ -158,6 +159,9 @@ func (i *CreateUserInput) Mutate(m *UserMutation) {
 	m.SetPhone(i.Phone)
 	if v := i.IsAdmin; v != nil {
 		m.SetIsAdmin(*v)
+	}
+	if v := i.IsSecretary; v != nil {
+		m.SetIsSecretary(*v)
 	}
 	if v := i.IsActive; v != nil {
 		m.SetIsActive(*v)
@@ -188,6 +192,7 @@ type UpdateUserInput struct {
 	Passwd             *string
 	Phone              *string
 	IsAdmin            *bool
+	IsSecretary        *bool
 	IsActive           *bool
 	UpdatedAt          *int64
 	ClearRequested     bool
@@ -211,6 +216,9 @@ func (i *UpdateUserInput) Mutate(m *UserMutation) {
 	}
 	if v := i.IsAdmin; v != nil {
 		m.SetIsAdmin(*v)
+	}
+	if v := i.IsSecretary; v != nil {
+		m.SetIsSecretary(*v)
 	}
 	if v := i.IsActive; v != nil {
 		m.SetIsActive(*v)

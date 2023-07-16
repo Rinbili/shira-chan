@@ -98,19 +98,22 @@ type ComplexityRoot struct {
 	}
 
 	Token struct {
-		Token func(childComplexity int) int
+		IsAdmin     func(childComplexity int) int
+		IsSecretary func(childComplexity int) int
+		Token       func(childComplexity int) int
 	}
 
 	User struct {
-		CreatedAt func(childComplexity int) int
-		ID        func(childComplexity int) int
-		IsActive  func(childComplexity int) int
-		IsAdmin   func(childComplexity int) int
-		Phone     func(childComplexity int) int
-		Received  func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.OrderOrder, where *ent.OrderWhereInput) int
-		Requested func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.OrderOrder, where *ent.OrderWhereInput) int
-		Uname     func(childComplexity int) int
-		UpdatedAt func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		ID          func(childComplexity int) int
+		IsActive    func(childComplexity int) int
+		IsAdmin     func(childComplexity int) int
+		IsSecretary func(childComplexity int) int
+		Phone       func(childComplexity int) int
+		Received    func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.OrderOrder, where *ent.OrderWhereInput) int
+		Requested   func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.OrderOrder, where *ent.OrderWhereInput) int
+		Uname       func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
 	}
 
 	UserConnection struct {
@@ -434,6 +437,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Users(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["orderBy"].(*ent.UserOrder), args["where"].(*ent.UserWhereInput)), true
 
+	case "Token.is_admin":
+		if e.complexity.Token.IsAdmin == nil {
+			break
+		}
+
+		return e.complexity.Token.IsAdmin(childComplexity), true
+
+	case "Token.is_secretary":
+		if e.complexity.Token.IsSecretary == nil {
+			break
+		}
+
+		return e.complexity.Token.IsSecretary(childComplexity), true
+
 	case "Token.token":
 		if e.complexity.Token.Token == nil {
 			break
@@ -468,6 +485,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.User.IsAdmin(childComplexity), true
+
+	case "User.isSecretary":
+		if e.complexity.User.IsSecretary == nil {
+			break
+		}
+
+		return e.complexity.User.IsSecretary(childComplexity), true
 
 	case "User.phone":
 		if e.complexity.User.Phone == nil {
@@ -1191,6 +1215,10 @@ func (ec *executionContext) fieldContext_Mutation_sign(ctx context.Context, fiel
 			switch field.Name {
 			case "token":
 				return ec.fieldContext_Token_token(ctx, field)
+			case "is_admin":
+				return ec.fieldContext_Token_is_admin(ctx, field)
+			case "is_secretary":
+				return ec.fieldContext_Token_is_secretary(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Token", field.Name)
 		},
@@ -1222,8 +1250,32 @@ func (ec *executionContext) _Mutation_receive(ctx context.Context, field graphql
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().Receive(rctx, fc.Args["input"].(*ReceiveInput))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().Receive(rctx, fc.Args["input"].(*ReceiveInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2shiraᚑchanᚑdevᚋgraphᚐRole(ctx, "SECRETARY")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasPermission == nil {
+				return nil, errors.New("directive hasPermission is not implemented")
+			}
+			return ec.directives.HasPermission(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1329,6 +1381,8 @@ func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context
 				return ec.fieldContext_User_phone(ctx, field)
 			case "isAdmin":
 				return ec.fieldContext_User_isAdmin(ctx, field)
+			case "isSecretary":
+				return ec.fieldContext_User_isSecretary(ctx, field)
 			case "isActive":
 				return ec.fieldContext_User_isActive(ctx, field)
 			case "createdAt":
@@ -1479,7 +1533,7 @@ func (ec *executionContext) _Mutation_updateUser(ctx context.Context, field grap
 			return ec.resolvers.Mutation().UpdateUser(rctx, fc.Args["id"].(int), fc.Args["input"].(ent.UpdateUserInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2shiraᚑchanᚑdevᚋgraphᚐRole(ctx, "USER")
+			role, err := ec.unmarshalNRole2shiraᚑchanᚑdevᚋgraphᚐRole(ctx, "SECRETARY")
 			if err != nil {
 				return nil, err
 			}
@@ -1529,6 +1583,8 @@ func (ec *executionContext) fieldContext_Mutation_updateUser(ctx context.Context
 				return ec.fieldContext_User_phone(ctx, field)
 			case "isAdmin":
 				return ec.fieldContext_User_isAdmin(ctx, field)
+			case "isSecretary":
+				return ec.fieldContext_User_isSecretary(ctx, field)
 			case "isActive":
 				return ec.fieldContext_User_isActive(ctx, field)
 			case "createdAt":
@@ -1575,7 +1631,7 @@ func (ec *executionContext) _Mutation_updateOrder(ctx context.Context, field gra
 			return ec.resolvers.Mutation().UpdateOrder(rctx, fc.Args["id"].(int), fc.Args["input"].(ent.UpdateOrderInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2shiraᚑchanᚑdevᚋgraphᚐRole(ctx, "USER")
+			role, err := ec.unmarshalNRole2shiraᚑchanᚑdevᚋgraphᚐRole(ctx, "SECRETARY")
 			if err != nil {
 				return nil, err
 			}
@@ -2186,6 +2242,8 @@ func (ec *executionContext) fieldContext_Order_requester(ctx context.Context, fi
 				return ec.fieldContext_User_phone(ctx, field)
 			case "isAdmin":
 				return ec.fieldContext_User_isAdmin(ctx, field)
+			case "isSecretary":
+				return ec.fieldContext_User_isSecretary(ctx, field)
 			case "isActive":
 				return ec.fieldContext_User_isActive(ctx, field)
 			case "createdAt":
@@ -3097,6 +3155,88 @@ func (ec *executionContext) fieldContext_Token_token(ctx context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _Token_is_admin(ctx context.Context, field graphql.CollectedField, obj *Token) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Token_is_admin(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsAdmin, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Token_is_admin(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Token",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Token_is_secretary(ctx context.Context, field graphql.CollectedField, obj *Token) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Token_is_secretary(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsSecretary, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Token_is_secretary(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Token",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *ent.User) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_User_id(ctx, field)
 	if err != nil {
@@ -3261,6 +3401,50 @@ func (ec *executionContext) _User_isAdmin(ctx context.Context, field graphql.Col
 }
 
 func (ec *executionContext) fieldContext_User_isAdmin(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_isSecretary(ctx context.Context, field graphql.CollectedField, obj *ent.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_isSecretary(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsSecretary, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_isSecretary(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "User",
 		Field:      field,
@@ -3720,6 +3904,8 @@ func (ec *executionContext) fieldContext_UserEdge_node(ctx context.Context, fiel
 				return ec.fieldContext_User_phone(ctx, field)
 			case "isAdmin":
 				return ec.fieldContext_User_isAdmin(ctx, field)
+			case "isSecretary":
+				return ec.fieldContext_User_isSecretary(ctx, field)
 			case "isActive":
 				return ec.fieldContext_User_isActive(ctx, field)
 			case "createdAt":
@@ -5689,7 +5875,7 @@ func (ec *executionContext) unmarshalInputCreateUserInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"uname", "passwd", "phone", "isAdmin", "isActive", "createdAt", "updatedAt", "requestedIDs", "receivedIDs"}
+	fieldsInOrder := [...]string{"uname", "passwd", "phone", "isAdmin", "isSecretary", "isActive", "createdAt", "updatedAt", "requestedIDs", "receivedIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -5732,6 +5918,15 @@ func (ec *executionContext) unmarshalInputCreateUserInput(ctx context.Context, o
 				return it, err
 			}
 			it.IsAdmin = data
+		case "isSecretary":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isSecretary"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsSecretary = data
 		case "isActive":
 			var err error
 
@@ -7037,7 +7232,7 @@ func (ec *executionContext) unmarshalInputUpdateUserInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"uname", "passwd", "phone", "isAdmin", "isActive", "updatedAt", "addRequestedIDs", "removeRequestedIDs", "clearRequested", "addReceivedIDs", "removeReceivedIDs", "clearReceived"}
+	fieldsInOrder := [...]string{"uname", "passwd", "phone", "isAdmin", "isSecretary", "isActive", "updatedAt", "addRequestedIDs", "removeRequestedIDs", "clearRequested", "addReceivedIDs", "removeReceivedIDs", "clearReceived"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -7080,6 +7275,15 @@ func (ec *executionContext) unmarshalInputUpdateUserInput(ctx context.Context, o
 				return it, err
 			}
 			it.IsAdmin = data
+		case "isSecretary":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isSecretary"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsSecretary = data
 		case "isActive":
 			var err error
 
@@ -7207,7 +7411,7 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "uname", "unameNEQ", "unameIn", "unameNotIn", "unameGT", "unameGTE", "unameLT", "unameLTE", "unameContains", "unameHasPrefix", "unameHasSuffix", "unameEqualFold", "unameContainsFold", "phone", "phoneNEQ", "phoneIn", "phoneNotIn", "phoneGT", "phoneGTE", "phoneLT", "phoneLTE", "phoneContains", "phoneHasPrefix", "phoneHasSuffix", "phoneEqualFold", "phoneContainsFold", "isAdmin", "isAdminNEQ", "isActive", "isActiveNEQ", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "hasRequested", "hasRequestedWith", "hasReceived", "hasReceivedWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "uname", "unameNEQ", "unameIn", "unameNotIn", "unameGT", "unameGTE", "unameLT", "unameLTE", "unameContains", "unameHasPrefix", "unameHasSuffix", "unameEqualFold", "unameContainsFold", "phone", "phoneNEQ", "phoneIn", "phoneNotIn", "phoneGT", "phoneGTE", "phoneLT", "phoneLTE", "phoneContains", "phoneHasPrefix", "phoneHasSuffix", "phoneEqualFold", "phoneContainsFold", "isAdmin", "isAdminNEQ", "isSecretary", "isSecretaryNEQ", "isActive", "isActiveNEQ", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "hasRequested", "hasRequestedWith", "hasReceived", "hasReceivedWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -7565,6 +7769,24 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 				return it, err
 			}
 			it.IsAdminNEQ = data
+		case "isSecretary":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isSecretary"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsSecretary = data
+		case "isSecretaryNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isSecretaryNEQ"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsSecretaryNEQ = data
 		case "isActive":
 			var err error
 
@@ -8253,6 +8475,14 @@ func (ec *executionContext) _Token(ctx context.Context, sel ast.SelectionSet, ob
 
 			out.Values[i] = ec._Token_token(ctx, field, obj)
 
+		case "is_admin":
+
+			out.Values[i] = ec._Token_is_admin(ctx, field, obj)
+
+		case "is_secretary":
+
+			out.Values[i] = ec._Token_is_secretary(ctx, field, obj)
+
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -8298,6 +8528,13 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 		case "isAdmin":
 
 			out.Values[i] = ec._User_isAdmin(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "isSecretary":
+
+			out.Values[i] = ec._User_isSecretary(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)

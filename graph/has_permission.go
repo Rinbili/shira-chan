@@ -38,8 +38,14 @@ func HasPermission() func(ctx context.Context, obj interface{}, next graphql.Res
 			break
 		// 待完成！
 		case RoleSecretary:
+			if !gc.Value("is_secretary").(bool) || !gc.Value("is_admin").(bool) {
+				return nil, errors.New("permission denied")
+			}
 			break
 		case RoleUser:
+			if !gc.Value("is_authed").(bool) {
+				return nil, errors.New("permission denied")
+			}
 			break
 		}
 		// you can do your thing here for permissions

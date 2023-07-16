@@ -158,16 +158,20 @@ func init() {
 	userDescIsAdmin := userFields[3].Descriptor()
 	// user.DefaultIsAdmin holds the default value on creation for the is_admin field.
 	user.DefaultIsAdmin = userDescIsAdmin.Default.(bool)
+	// userDescIsSecretary is the schema descriptor for is_secretary field.
+	userDescIsSecretary := userFields[4].Descriptor()
+	// user.DefaultIsSecretary holds the default value on creation for the is_secretary field.
+	user.DefaultIsSecretary = userDescIsSecretary.Default.(bool)
 	// userDescIsActive is the schema descriptor for is_active field.
-	userDescIsActive := userFields[4].Descriptor()
+	userDescIsActive := userFields[5].Descriptor()
 	// user.DefaultIsActive holds the default value on creation for the is_active field.
 	user.DefaultIsActive = userDescIsActive.Default.(bool)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[5].Descriptor()
+	userDescCreatedAt := userFields[6].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() int64)
 	// userDescUpdatedAt is the schema descriptor for updated_at field.
-	userDescUpdatedAt := userFields[6].Descriptor()
+	userDescUpdatedAt := userFields[7].Descriptor()
 	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() int64)
 	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

@@ -52,6 +52,20 @@ func (uc *UserCreate) SetNillableIsAdmin(b *bool) *UserCreate {
 	return uc
 }
 
+// SetIsSecretary sets the "is_secretary" field.
+func (uc *UserCreate) SetIsSecretary(b bool) *UserCreate {
+	uc.mutation.SetIsSecretary(b)
+	return uc
+}
+
+// SetNillableIsSecretary sets the "is_secretary" field if the given value is not nil.
+func (uc *UserCreate) SetNillableIsSecretary(b *bool) *UserCreate {
+	if b != nil {
+		uc.SetIsSecretary(*b)
+	}
+	return uc
+}
+
 // SetIsActive sets the "is_active" field.
 func (uc *UserCreate) SetIsActive(b bool) *UserCreate {
 	uc.mutation.SetIsActive(b)
@@ -163,6 +177,10 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultIsAdmin
 		uc.mutation.SetIsAdmin(v)
 	}
+	if _, ok := uc.mutation.IsSecretary(); !ok {
+		v := user.DefaultIsSecretary
+		uc.mutation.SetIsSecretary(v)
+	}
 	if _, ok := uc.mutation.IsActive(); !ok {
 		v := user.DefaultIsActive
 		uc.mutation.SetIsActive(v)
@@ -205,6 +223,9 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.IsAdmin(); !ok {
 		return &ValidationError{Name: "is_admin", err: errors.New(`ent: missing required field "User.is_admin"`)}
+	}
+	if _, ok := uc.mutation.IsSecretary(); !ok {
+		return &ValidationError{Name: "is_secretary", err: errors.New(`ent: missing required field "User.is_secretary"`)}
 	}
 	if _, ok := uc.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "User.is_active"`)}
@@ -256,6 +277,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.IsAdmin(); ok {
 		_spec.SetField(user.FieldIsAdmin, field.TypeBool, value)
 		_node.IsAdmin = value
+	}
+	if value, ok := uc.mutation.IsSecretary(); ok {
+		_spec.SetField(user.FieldIsSecretary, field.TypeBool, value)
+		_node.IsSecretary = value
 	}
 	if value, ok := uc.mutation.IsActive(); ok {
 		_spec.SetField(user.FieldIsActive, field.TypeBool, value)

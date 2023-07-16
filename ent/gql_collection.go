@@ -454,6 +454,11 @@ func (u *UserQuery) collectField(ctx context.Context, opCtx *graphql.OperationCo
 				selectedFields = append(selectedFields, user.FieldIsAdmin)
 				fieldSeen[user.FieldIsAdmin] = struct{}{}
 			}
+		case "isSecretary":
+			if _, ok := fieldSeen[user.FieldIsSecretary]; !ok {
+				selectedFields = append(selectedFields, user.FieldIsSecretary)
+				fieldSeen[user.FieldIsSecretary] = struct{}{}
+			}
 		case "isActive":
 			if _, ok := fieldSeen[user.FieldIsActive]; !ok {
 				selectedFields = append(selectedFields, user.FieldIsActive)

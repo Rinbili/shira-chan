@@ -41,6 +41,8 @@ input CreateUserInput {
   phone: String!
   """是否管理员"""
   isAdmin: Boolean
+  """是否部员"""
+  isSecretary: Boolean
   """用户状态"""
   isActive: Boolean
   """创建时间"""
@@ -382,6 +384,8 @@ input UpdateUserInput {
   phone: String
   """是否管理员"""
   isAdmin: Boolean
+  """是否部员"""
+  isSecretary: Boolean
   """用户状态"""
   isActive: Boolean
   """更新时间"""
@@ -401,6 +405,8 @@ type User implements Node {
   phone: String!
   """是否管理员"""
   isAdmin: Boolean!
+  """是否部员"""
+  isSecretary: Boolean!
   """用户状态"""
   isActive: Boolean!
   """创建时间"""
@@ -473,6 +479,7 @@ input UserOrder {
 enum UserOrderField {
   UNAME
   IS_ADMIN
+  IS_SECRETARY
   STATE
   CREAT_AT
   UPDATED_AT
@@ -527,6 +534,9 @@ input UserWhereInput {
   """is_admin field predicates"""
   isAdmin: Boolean
   isAdminNEQ: Boolean
+  """is_secretary field predicates"""
+  isSecretary: Boolean
+  isSecretaryNEQ: Boolean
   """is_active field predicates"""
   isActive: Boolean
   isActiveNEQ: Boolean

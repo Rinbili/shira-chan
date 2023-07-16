@@ -20,6 +20,8 @@ const (
 	FieldPhone = "phone"
 	// FieldIsAdmin holds the string denoting the is_admin field in the database.
 	FieldIsAdmin = "is_admin"
+	// FieldIsSecretary holds the string denoting the is_secretary field in the database.
+	FieldIsSecretary = "is_secretary"
 	// FieldIsActive holds the string denoting the is_active field in the database.
 	FieldIsActive = "is_active"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -53,6 +55,7 @@ var Columns = []string{
 	FieldPasswd,
 	FieldPhone,
 	FieldIsAdmin,
+	FieldIsSecretary,
 	FieldIsActive,
 	FieldCreatedAt,
 	FieldUpdatedAt,
@@ -83,6 +86,8 @@ var (
 	PhoneValidator func(string) error
 	// DefaultIsAdmin holds the default value on creation for the "is_admin" field.
 	DefaultIsAdmin bool
+	// DefaultIsSecretary holds the default value on creation for the "is_secretary" field.
+	DefaultIsSecretary bool
 	// DefaultIsActive holds the default value on creation for the "is_active" field.
 	DefaultIsActive bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
@@ -119,6 +124,11 @@ func ByPhone(opts ...sql.OrderTermOption) OrderOption {
 // ByIsAdmin orders the results by the is_admin field.
 func ByIsAdmin(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsAdmin, opts...).ToFunc()
+}
+
+// ByIsSecretary orders the results by the is_secretary field.
+func ByIsSecretary(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsSecretary, opts...).ToFunc()
 }
 
 // ByIsActive orders the results by the is_active field.

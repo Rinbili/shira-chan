@@ -1160,6 +1160,7 @@ type UserMutation struct {
 	passwd           *string
 	phone            *string
 	is_admin         *bool
+	is_secretary     *bool
 	is_active        *bool
 	created_at       *int64
 	addcreated_at    *int64
@@ -1417,6 +1418,42 @@ func (m *UserMutation) OldIsAdmin(ctx context.Context) (v bool, err error) {
 // ResetIsAdmin resets all changes to the "is_admin" field.
 func (m *UserMutation) ResetIsAdmin() {
 	m.is_admin = nil
+}
+
+// SetIsSecretary sets the "is_secretary" field.
+func (m *UserMutation) SetIsSecretary(b bool) {
+	m.is_secretary = &b
+}
+
+// IsSecretary returns the value of the "is_secretary" field in the mutation.
+func (m *UserMutation) IsSecretary() (r bool, exists bool) {
+	v := m.is_secretary
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsSecretary returns the old "is_secretary" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldIsSecretary(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsSecretary is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsSecretary requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsSecretary: %w", err)
+	}
+	return oldValue.IsSecretary, nil
+}
+
+// ResetIsSecretary resets all changes to the "is_secretary" field.
+func (m *UserMutation) ResetIsSecretary() {
+	m.is_secretary = nil
 }
 
 // SetIsActive sets the "is_active" field.
@@ -1709,7 +1746,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.uname != nil {
 		fields = append(fields, user.FieldUname)
 	}
@@ -1721,6 +1758,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.is_admin != nil {
 		fields = append(fields, user.FieldIsAdmin)
+	}
+	if m.is_secretary != nil {
+		fields = append(fields, user.FieldIsSecretary)
 	}
 	if m.is_active != nil {
 		fields = append(fields, user.FieldIsActive)
@@ -1747,6 +1787,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Phone()
 	case user.FieldIsAdmin:
 		return m.IsAdmin()
+	case user.FieldIsSecretary:
+		return m.IsSecretary()
 	case user.FieldIsActive:
 		return m.IsActive()
 	case user.FieldCreatedAt:
@@ -1770,6 +1812,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldPhone(ctx)
 	case user.FieldIsAdmin:
 		return m.OldIsAdmin(ctx)
+	case user.FieldIsSecretary:
+		return m.OldIsSecretary(ctx)
 	case user.FieldIsActive:
 		return m.OldIsActive(ctx)
 	case user.FieldCreatedAt:
@@ -1812,6 +1856,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIsAdmin(v)
+		return nil
+	case user.FieldIsSecretary:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsSecretary(v)
 		return nil
 	case user.FieldIsActive:
 		v, ok := value.(bool)
@@ -1921,6 +1972,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldIsAdmin:
 		m.ResetIsAdmin()
+		return nil
+	case user.FieldIsSecretary:
+		m.ResetIsSecretary()
 		return nil
 	case user.FieldIsActive:
 		m.ResetIsActive()
