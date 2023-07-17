@@ -22,7 +22,7 @@ func AuthHandler() gin.HandlerFunc {
 					//token有效可用
 					c.Set("is_authed", true)
 					c.Set("is_admin", u.IsAdmin)
-					c.Set("is_admin", u.IsSecretary)
+					c.Set("is_secretary", u.IsSecretary)
 					c.Next()
 					return
 				}
