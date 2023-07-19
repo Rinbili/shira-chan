@@ -16,6 +16,5 @@ func InitRouter(r *gin.Engine) {
 	r.Use(cors.New(corsConf))
 	//
 	r.POST("/query", handlers.AuthHandler(), handlers.GraphqlHandler())
-	//r.POST("/auth", handlers.SignHandler())
 	r.GET("/graphql", handlers.PlaygroundHandler())
 }

@@ -2,7 +2,183 @@
 
 package runtime
 
-// The schema-stitching logic is generated in shira-chan-dev/ent/runtime.go
+import (
+	"shira-chan-dev/ent/order"
+	"shira-chan-dev/ent/schema"
+	"shira-chan-dev/ent/user"
+)
+
+// The init function reads all schema descriptors with runtime code
+// (default values, validators, hooks and policies) and stitches it
+// to their package variables.
+func init() {
+	orderFields := schema.Order{}.Fields()
+	_ = orderFields
+	// orderDescTitle is the schema descriptor for title field.
+	orderDescTitle := orderFields[0].Descriptor()
+	// order.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	order.TitleValidator = func() func(string) error {
+		validators := orderDescTitle.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(title string) error {
+			for _, fn := range fns {
+				if err := fn(title); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// orderDescContent is the schema descriptor for content field.
+	orderDescContent := orderFields[1].Descriptor()
+	// order.ContentValidator is a validator for the "content" field. It is called by the builders before save.
+	order.ContentValidator = func() func(string) error {
+		validators := orderDescContent.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(content string) error {
+			for _, fn := range fns {
+				if err := fn(content); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// orderDescContact is the schema descriptor for contact field.
+	orderDescContact := orderFields[2].Descriptor()
+	// order.ContactValidator is a validator for the "contact" field. It is called by the builders before save.
+	order.ContactValidator = func() func(string) error {
+		validators := orderDescContact.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(contact string) error {
+			for _, fn := range fns {
+				if err := fn(contact); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// orderDescType is the schema descriptor for type field.
+	orderDescType := orderFields[3].Descriptor()
+	// order.DefaultType holds the default value on creation for the type field.
+	order.DefaultType = orderDescType.Default.(string)
+	// orderDescIsClosed is the schema descriptor for is_closed field.
+	orderDescIsClosed := orderFields[4].Descriptor()
+	// order.DefaultIsClosed holds the default value on creation for the is_closed field.
+	order.DefaultIsClosed = orderDescIsClosed.Default.(bool)
+	// orderDescIsFinished is the schema descriptor for is_finished field.
+	orderDescIsFinished := orderFields[5].Descriptor()
+	// order.DefaultIsFinished holds the default value on creation for the is_finished field.
+	order.DefaultIsFinished = orderDescIsFinished.Default.(bool)
+	// orderDescEvaluation is the schema descriptor for evaluation field.
+	orderDescEvaluation := orderFields[6].Descriptor()
+	// order.EvaluationValidator is a validator for the "evaluation" field. It is called by the builders before save.
+	order.EvaluationValidator = func() func(float64) error {
+		validators := orderDescEvaluation.Validators
+		fns := [...]func(float64) error{
+			validators[0].(func(float64) error),
+			validators[1].(func(float64) error),
+		}
+		return func(evaluation float64) error {
+			for _, fn := range fns {
+				if err := fn(evaluation); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// orderDescHopeAt is the schema descriptor for hope_at field.
+	orderDescHopeAt := orderFields[7].Descriptor()
+	// order.DefaultHopeAt holds the default value on creation for the hope_at field.
+	order.DefaultHopeAt = orderDescHopeAt.Default.(func() int64)
+	// orderDescCreatedAt is the schema descriptor for created_at field.
+	orderDescCreatedAt := orderFields[8].Descriptor()
+	// order.DefaultCreatedAt holds the default value on creation for the created_at field.
+	order.DefaultCreatedAt = orderDescCreatedAt.Default.(func() int64)
+	// orderDescUpdatedAt is the schema descriptor for updated_at field.
+	orderDescUpdatedAt := orderFields[9].Descriptor()
+	// order.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	order.DefaultUpdatedAt = orderDescUpdatedAt.Default.(func() int64)
+	// order.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	order.UpdateDefaultUpdatedAt = orderDescUpdatedAt.UpdateDefault.(func() int64)
+	userHooks := schema.User{}.Hooks()
+	user.Hooks[0] = userHooks[0]
+	userFields := schema.User{}.Fields()
+	_ = userFields
+	// userDescUname is the schema descriptor for uname field.
+	userDescUname := userFields[0].Descriptor()
+	// user.UnameValidator is a validator for the "uname" field. It is called by the builders before save.
+	user.UnameValidator = func() func(string) error {
+		validators := userDescUname.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(uname string) error {
+			for _, fn := range fns {
+				if err := fn(uname); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// userDescPasswd is the schema descriptor for passwd field.
+	userDescPasswd := userFields[1].Descriptor()
+	// user.PasswdValidator is a validator for the "passwd" field. It is called by the builders before save.
+	user.PasswdValidator = userDescPasswd.Validators[0].(func(string) error)
+	// userDescPhone is the schema descriptor for phone field.
+	userDescPhone := userFields[2].Descriptor()
+	// user.PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
+	user.PhoneValidator = func() func(string) error {
+		validators := userDescPhone.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(phone string) error {
+			for _, fn := range fns {
+				if err := fn(phone); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// userDescIsAdmin is the schema descriptor for is_admin field.
+	userDescIsAdmin := userFields[3].Descriptor()
+	// user.DefaultIsAdmin holds the default value on creation for the is_admin field.
+	user.DefaultIsAdmin = userDescIsAdmin.Default.(bool)
+	// userDescIsSecretary is the schema descriptor for is_secretary field.
+	userDescIsSecretary := userFields[4].Descriptor()
+	// user.DefaultIsSecretary holds the default value on creation for the is_secretary field.
+	user.DefaultIsSecretary = userDescIsSecretary.Default.(bool)
+	// userDescIsActive is the schema descriptor for is_active field.
+	userDescIsActive := userFields[5].Descriptor()
+	// user.DefaultIsActive holds the default value on creation for the is_active field.
+	user.DefaultIsActive = userDescIsActive.Default.(bool)
+	// userDescCreatedAt is the schema descriptor for created_at field.
+	userDescCreatedAt := userFields[6].Descriptor()
+	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
+	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() int64)
+	// userDescUpdatedAt is the schema descriptor for updated_at field.
+	userDescUpdatedAt := userFields[7].Descriptor()
+	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() int64)
+	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	user.UpdateDefaultUpdatedAt = userDescUpdatedAt.UpdateDefault.(func() int64)
+}
 
 const (
 	Version = "v0.12.3"                                         // Version of ent codegen.

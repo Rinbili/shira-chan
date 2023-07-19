@@ -1533,7 +1533,7 @@ func (ec *executionContext) _Mutation_updateUser(ctx context.Context, field grap
 			return ec.resolvers.Mutation().UpdateUser(rctx, fc.Args["id"].(int), fc.Args["input"].(ent.UpdateUserInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2shiraᚑchanᚑdevᚋgraphᚐRole(ctx, "SECRETARY")
+			role, err := ec.unmarshalNRole2shiraᚑchanᚑdevᚋgraphᚐRole(ctx, "ADMIN")
 			if err != nil {
 				return nil, err
 			}

@@ -30,9 +30,5 @@ func AuthHandler() gin.HandlerFunc {
 		}
 		c.Set("is_authed", false)
 		c.Next()
-		//r.Code = http.StatusUnauthorized
-		//r.err = errors.New("unauthorized")
-		//ResponseJSON(c, r)
-		//c.Abort()
 	}
 }

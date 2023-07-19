@@ -2,10 +2,12 @@ package utils
 
 import (
 	"context"
+	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"os"
 	"shira-chan-dev/ent"
 	"shira-chan-dev/ent/migrate"
+	_ "shira-chan-dev/ent/runtime"
 )
 
 // Client 全局数据库连接

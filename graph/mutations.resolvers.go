@@ -7,6 +7,7 @@ package graph
 import (
 	"context"
 	"errors"
+	"golang.org/x/crypto/bcrypt"
 	"shira-chan-dev/app/utils"
 	"shira-chan-dev/ent"
 	"shira-chan-dev/ent/user"
@@ -21,16 +22,11 @@ func (r *mutationResolver) Sign(ctx context.Context, input SignInput) (*Token, e
 	if input.Uname != nil {
 		// 注册
 		if u != nil {
-			pwd, err := utils.GetPwd(input.Passwd)
-			if err == nil {
-				u, err = utils.Client.User.Create().
-					SetUname(*input.Uname).
-					SetPhone(input.Phone).
-					SetPasswd(string(pwd)).
-					Save(ctx)
-			} else {
-				return nil, err
-			}
+			u, err = utils.Client.User.Create().
+				SetUname(*input.Uname).
+				SetPhone(input.Phone).
+				SetPasswd(input.Passwd).
+				Save(ctx)
 		} else {
 			return nil, errors.New("user already exists")
 		}
@@ -39,7 +35,8 @@ func (r *mutationResolver) Sign(ctx context.Context, input SignInput) (*Token, e
 		if u == nil {
 			return nil, errors.New("user does not exists")
 		} else {
-			if !utils.ComparePwd(u.Passwd, input.Passwd) {
+			err := bcrypt.CompareHashAndPassword([]byte(u.Passwd), []byte(input.Passwd))
+			if err != nil {
 				return nil, errors.New("password incorrect")
 			}
 		}
@@ -79,12 +76,6 @@ func (r *mutationResolver) Receive(ctx context.Context, input *ReceiveInput) (*b
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input ent.CreateUserInput) (*ent.User, error) {
-	temp, err := utils.GetPwd(input.Passwd)
-	if err != nil {
-		return nil, err
-	} else {
-		input.Passwd = string(temp)
-	}
 	client := ent.FromContext(ctx)
 	return client.User.Create().SetInput(input).Save(ctx)
 }
@@ -97,12 +88,6 @@ func (r *mutationResolver) CreateOrder(ctx context.Context, input ent.CreateOrde
 
 // UpdateUser is the resolver for the updateUser field.
 func (r *mutationResolver) UpdateUser(ctx context.Context, id int, input ent.UpdateUserInput) (*ent.User, error) {
-	temp, err := utils.GetPwd(*input.Passwd)
-	if err != nil {
-		return nil, err
-	} else {
-		*input.Passwd = string(temp)
-	}
 	client := ent.FromContext(ctx)
 	return client.User.UpdateOneID(id).SetInput(input).Save(ctx)
 }

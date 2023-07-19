@@ -3,6 +3,7 @@
 package user
 
 import (
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -77,7 +78,13 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+// Note that the variables below are initialized by the runtime
+// package on the initialization of the application. Therefore,
+// it should be imported in the main as follows:
+//
+//	import _ "shira-chan-dev/ent/runtime"
 var (
+	Hooks [1]ent.Hook
 	// UnameValidator is a validator for the "uname" field. It is called by the builders before save.
 	UnameValidator func(string) error
 	// PasswdValidator is a validator for the "passwd" field. It is called by the builders before save.
