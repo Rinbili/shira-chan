@@ -28,6 +28,19 @@ func (uu *UserUpdate) Where(ps ...predicate.User) *UserUpdate {
 	return uu
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (uu *UserUpdate) SetUpdatedAt(i int64) *UserUpdate {
+	uu.mutation.ResetUpdatedAt()
+	uu.mutation.SetUpdatedAt(i)
+	return uu
+}
+
+// AddUpdatedAt adds i to the "updated_at" field.
+func (uu *UserUpdate) AddUpdatedAt(i int64) *UserUpdate {
+	uu.mutation.AddUpdatedAt(i)
+	return uu
+}
+
 // SetUname sets the "uname" field.
 func (uu *UserUpdate) SetUname(s string) *UserUpdate {
 	uu.mutation.SetUname(s)
@@ -85,19 +98,6 @@ func (uu *UserUpdate) SetNillableIsActive(b *bool) *UserUpdate {
 	if b != nil {
 		uu.SetIsActive(*b)
 	}
-	return uu
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (uu *UserUpdate) SetUpdatedAt(i int64) *UserUpdate {
-	uu.mutation.ResetUpdatedAt()
-	uu.mutation.SetUpdatedAt(i)
-	return uu
-}
-
-// AddUpdatedAt adds i to the "updated_at" field.
-func (uu *UserUpdate) AddUpdatedAt(i int64) *UserUpdate {
-	uu.mutation.AddUpdatedAt(i)
 	return uu
 }
 
@@ -252,6 +252,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := uu.mutation.UpdatedAt(); ok {
+		_spec.SetField(user.FieldUpdatedAt, field.TypeInt64, value)
+	}
+	if value, ok := uu.mutation.AddedUpdatedAt(); ok {
+		_spec.AddField(user.FieldUpdatedAt, field.TypeInt64, value)
+	}
 	if value, ok := uu.mutation.Uname(); ok {
 		_spec.SetField(user.FieldUname, field.TypeString, value)
 	}
@@ -269,12 +275,6 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := uu.mutation.IsActive(); ok {
 		_spec.SetField(user.FieldIsActive, field.TypeBool, value)
-	}
-	if value, ok := uu.mutation.UpdatedAt(); ok {
-		_spec.SetField(user.FieldUpdatedAt, field.TypeInt64, value)
-	}
-	if value, ok := uu.mutation.AddedUpdatedAt(); ok {
-		_spec.AddField(user.FieldUpdatedAt, field.TypeInt64, value)
 	}
 	if uu.mutation.RequestedCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -386,6 +386,19 @@ type UserUpdateOne struct {
 	mutation *UserMutation
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (uuo *UserUpdateOne) SetUpdatedAt(i int64) *UserUpdateOne {
+	uuo.mutation.ResetUpdatedAt()
+	uuo.mutation.SetUpdatedAt(i)
+	return uuo
+}
+
+// AddUpdatedAt adds i to the "updated_at" field.
+func (uuo *UserUpdateOne) AddUpdatedAt(i int64) *UserUpdateOne {
+	uuo.mutation.AddUpdatedAt(i)
+	return uuo
+}
+
 // SetUname sets the "uname" field.
 func (uuo *UserUpdateOne) SetUname(s string) *UserUpdateOne {
 	uuo.mutation.SetUname(s)
@@ -443,19 +456,6 @@ func (uuo *UserUpdateOne) SetNillableIsActive(b *bool) *UserUpdateOne {
 	if b != nil {
 		uuo.SetIsActive(*b)
 	}
-	return uuo
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (uuo *UserUpdateOne) SetUpdatedAt(i int64) *UserUpdateOne {
-	uuo.mutation.ResetUpdatedAt()
-	uuo.mutation.SetUpdatedAt(i)
-	return uuo
-}
-
-// AddUpdatedAt adds i to the "updated_at" field.
-func (uuo *UserUpdateOne) AddUpdatedAt(i int64) *UserUpdateOne {
-	uuo.mutation.AddUpdatedAt(i)
 	return uuo
 }
 
@@ -640,6 +640,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			}
 		}
 	}
+	if value, ok := uuo.mutation.UpdatedAt(); ok {
+		_spec.SetField(user.FieldUpdatedAt, field.TypeInt64, value)
+	}
+	if value, ok := uuo.mutation.AddedUpdatedAt(); ok {
+		_spec.AddField(user.FieldUpdatedAt, field.TypeInt64, value)
+	}
 	if value, ok := uuo.mutation.Uname(); ok {
 		_spec.SetField(user.FieldUname, field.TypeString, value)
 	}
@@ -657,12 +663,6 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.IsActive(); ok {
 		_spec.SetField(user.FieldIsActive, field.TypeBool, value)
-	}
-	if value, ok := uuo.mutation.UpdatedAt(); ok {
-		_spec.SetField(user.FieldUpdatedAt, field.TypeInt64, value)
-	}
-	if value, ok := uuo.mutation.AddedUpdatedAt(); ok {
-		_spec.AddField(user.FieldUpdatedAt, field.TypeInt64, value)
 	}
 	if uuo.mutation.RequestedCleared() {
 		edge := &sqlgraph.EdgeSpec{

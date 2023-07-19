@@ -4,6 +4,8 @@ package ent
 
 // CreateOrderInput represents a mutation input for creating orders.
 type CreateOrderInput struct {
+	CreatedAt   *int64
+	UpdatedAt   *int64
 	Title       string
 	Content     string
 	Contact     string
@@ -12,14 +14,18 @@ type CreateOrderInput struct {
 	IsFinished  *bool
 	Evaluation  *float64
 	HopeAt      *int64
-	CreatedAt   *int64
-	UpdatedAt   *int64
 	RequesterID *int
 	ReceiverIDs []int
 }
 
 // Mutate applies the CreateOrderInput on the OrderMutation builder.
 func (i *CreateOrderInput) Mutate(m *OrderMutation) {
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
 	m.SetTitle(i.Title)
 	m.SetContent(i.Content)
 	m.SetContact(i.Contact)
@@ -38,12 +44,6 @@ func (i *CreateOrderInput) Mutate(m *OrderMutation) {
 	if v := i.HopeAt; v != nil {
 		m.SetHopeAt(*v)
 	}
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
 	if v := i.RequesterID; v != nil {
 		m.SetRequesterID(*v)
 	}
@@ -60,6 +60,7 @@ func (c *OrderCreate) SetInput(i CreateOrderInput) *OrderCreate {
 
 // UpdateOrderInput represents a mutation input for updating orders.
 type UpdateOrderInput struct {
+	UpdatedAt         *int64
 	Title             *string
 	Content           *string
 	Contact           *string
@@ -69,7 +70,6 @@ type UpdateOrderInput struct {
 	ClearEvaluation   bool
 	Evaluation        *float64
 	HopeAt            *int64
-	UpdatedAt         *int64
 	ClearRequester    bool
 	RequesterID       *int
 	ClearReceiver     bool
@@ -79,6 +79,9 @@ type UpdateOrderInput struct {
 
 // Mutate applies the UpdateOrderInput on the OrderMutation builder.
 func (i *UpdateOrderInput) Mutate(m *OrderMutation) {
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
 	if v := i.Title; v != nil {
 		m.SetTitle(*v)
 	}
@@ -105,9 +108,6 @@ func (i *UpdateOrderInput) Mutate(m *OrderMutation) {
 	}
 	if v := i.HopeAt; v != nil {
 		m.SetHopeAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
 	}
 	if i.ClearRequester {
 		m.ClearRequester()
@@ -140,20 +140,26 @@ func (c *OrderUpdateOne) SetInput(i UpdateOrderInput) *OrderUpdateOne {
 
 // CreateUserInput represents a mutation input for creating users.
 type CreateUserInput struct {
+	CreatedAt    *int64
+	UpdatedAt    *int64
 	Uname        string
 	Passwd       string
 	Phone        string
 	IsAdmin      *bool
 	IsSecretary  *bool
 	IsActive     *bool
-	CreatedAt    *int64
-	UpdatedAt    *int64
 	RequestedIDs []int
 	ReceivedIDs  []int
 }
 
 // Mutate applies the CreateUserInput on the UserMutation builder.
 func (i *CreateUserInput) Mutate(m *UserMutation) {
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
 	m.SetUname(i.Uname)
 	m.SetPasswd(i.Passwd)
 	m.SetPhone(i.Phone)
@@ -165,12 +171,6 @@ func (i *CreateUserInput) Mutate(m *UserMutation) {
 	}
 	if v := i.IsActive; v != nil {
 		m.SetIsActive(*v)
-	}
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
 	}
 	if v := i.RequestedIDs; len(v) > 0 {
 		m.AddRequestedIDs(v...)
@@ -188,13 +188,13 @@ func (c *UserCreate) SetInput(i CreateUserInput) *UserCreate {
 
 // UpdateUserInput represents a mutation input for updating users.
 type UpdateUserInput struct {
+	UpdatedAt          *int64
 	Uname              *string
 	Passwd             *string
 	Phone              *string
 	IsAdmin            *bool
 	IsSecretary        *bool
 	IsActive           *bool
-	UpdatedAt          *int64
 	ClearRequested     bool
 	AddRequestedIDs    []int
 	RemoveRequestedIDs []int
@@ -205,6 +205,9 @@ type UpdateUserInput struct {
 
 // Mutate applies the UpdateUserInput on the UserMutation builder.
 func (i *UpdateUserInput) Mutate(m *UserMutation) {
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
 	if v := i.Uname; v != nil {
 		m.SetUname(*v)
 	}
@@ -222,9 +225,6 @@ func (i *UpdateUserInput) Mutate(m *UserMutation) {
 	}
 	if v := i.IsActive; v != nil {
 		m.SetIsActive(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
 	}
 	if i.ClearRequested {
 		m.ClearRequested()

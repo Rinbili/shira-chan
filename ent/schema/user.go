@@ -11,7 +11,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	gen "shira-chan-dev/ent"
 	"shira-chan-dev/ent/hook"
-	"time"
 )
 
 type User struct {
@@ -63,20 +62,6 @@ func (User) Fields() []ent.Field {
 			Annotations(
 				entgql.OrderField("STATE")).
 			Comment("用户状态"),
-		field.Int64("created_at").
-			DefaultFunc(func() int64 { return time.Now().Unix() }).
-			Annotations(
-				entgql.OrderField("CREAT_AT"),
-				entgql.Type("Int64")).
-			Comment("创建时间").
-			Immutable(),
-		field.Int64("updated_at").
-			DefaultFunc(func() int64 { return time.Now().Unix() }).
-			UpdateDefault(func() int64 { return time.Now().Unix() }).
-			Annotations(
-				entgql.OrderField("UPDATED_AT"),
-				entgql.Type("Int64")).
-			Comment("更新时间"),
 	}
 }
 
@@ -96,16 +81,10 @@ func (User) Edges() []ent.Edge {
 	}
 }
 
-func (User) Indexes() []ent.Index {
-	return nil
-	//return []ent.Index{
-	//	index.Fields("id").
-	//		Edges("receiver"),
-	//}
-	//return []ent.Index{
-	//	index.Fields("phone").
-	//		Unique(),
-	//}
+func (User) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		TimeMixin{},
+	}
 }
 
 func (User) Hooks() []ent.Hook {

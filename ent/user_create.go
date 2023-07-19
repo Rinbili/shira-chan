@@ -20,6 +20,34 @@ type UserCreate struct {
 	hooks    []Hook
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (uc *UserCreate) SetCreatedAt(i int64) *UserCreate {
+	uc.mutation.SetCreatedAt(i)
+	return uc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (uc *UserCreate) SetNillableCreatedAt(i *int64) *UserCreate {
+	if i != nil {
+		uc.SetCreatedAt(*i)
+	}
+	return uc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (uc *UserCreate) SetUpdatedAt(i int64) *UserCreate {
+	uc.mutation.SetUpdatedAt(i)
+	return uc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (uc *UserCreate) SetNillableUpdatedAt(i *int64) *UserCreate {
+	if i != nil {
+		uc.SetUpdatedAt(*i)
+	}
+	return uc
+}
+
 // SetUname sets the "uname" field.
 func (uc *UserCreate) SetUname(s string) *UserCreate {
 	uc.mutation.SetUname(s)
@@ -76,34 +104,6 @@ func (uc *UserCreate) SetIsActive(b bool) *UserCreate {
 func (uc *UserCreate) SetNillableIsActive(b *bool) *UserCreate {
 	if b != nil {
 		uc.SetIsActive(*b)
-	}
-	return uc
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (uc *UserCreate) SetCreatedAt(i int64) *UserCreate {
-	uc.mutation.SetCreatedAt(i)
-	return uc
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (uc *UserCreate) SetNillableCreatedAt(i *int64) *UserCreate {
-	if i != nil {
-		uc.SetCreatedAt(*i)
-	}
-	return uc
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (uc *UserCreate) SetUpdatedAt(i int64) *UserCreate {
-	uc.mutation.SetUpdatedAt(i)
-	return uc
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (uc *UserCreate) SetNillableUpdatedAt(i *int64) *UserCreate {
-	if i != nil {
-		uc.SetUpdatedAt(*i)
 	}
 	return uc
 }
@@ -175,18 +175,6 @@ func (uc *UserCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (uc *UserCreate) defaults() error {
-	if _, ok := uc.mutation.IsAdmin(); !ok {
-		v := user.DefaultIsAdmin
-		uc.mutation.SetIsAdmin(v)
-	}
-	if _, ok := uc.mutation.IsSecretary(); !ok {
-		v := user.DefaultIsSecretary
-		uc.mutation.SetIsSecretary(v)
-	}
-	if _, ok := uc.mutation.IsActive(); !ok {
-		v := user.DefaultIsActive
-		uc.mutation.SetIsActive(v)
-	}
 	if _, ok := uc.mutation.CreatedAt(); !ok {
 		if user.DefaultCreatedAt == nil {
 			return fmt.Errorf("ent: uninitialized user.DefaultCreatedAt (forgotten import ent/runtime?)")
@@ -201,11 +189,29 @@ func (uc *UserCreate) defaults() error {
 		v := user.DefaultUpdatedAt()
 		uc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := uc.mutation.IsAdmin(); !ok {
+		v := user.DefaultIsAdmin
+		uc.mutation.SetIsAdmin(v)
+	}
+	if _, ok := uc.mutation.IsSecretary(); !ok {
+		v := user.DefaultIsSecretary
+		uc.mutation.SetIsSecretary(v)
+	}
+	if _, ok := uc.mutation.IsActive(); !ok {
+		v := user.DefaultIsActive
+		uc.mutation.SetIsActive(v)
+	}
 	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (uc *UserCreate) check() error {
+	if _, ok := uc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "User.created_at"`)}
+	}
+	if _, ok := uc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "User.updated_at"`)}
+	}
 	if _, ok := uc.mutation.Uname(); !ok {
 		return &ValidationError{Name: "uname", err: errors.New(`ent: missing required field "User.uname"`)}
 	}
@@ -239,12 +245,6 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "User.is_active"`)}
 	}
-	if _, ok := uc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "User.created_at"`)}
-	}
-	if _, ok := uc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "User.updated_at"`)}
-	}
 	return nil
 }
 
@@ -271,6 +271,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_node = &User{config: uc.config}
 		_spec = sqlgraph.NewCreateSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt))
 	)
+	if value, ok := uc.mutation.CreatedAt(); ok {
+		_spec.SetField(user.FieldCreatedAt, field.TypeInt64, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := uc.mutation.UpdatedAt(); ok {
+		_spec.SetField(user.FieldUpdatedAt, field.TypeInt64, value)
+		_node.UpdatedAt = value
+	}
 	if value, ok := uc.mutation.Uname(); ok {
 		_spec.SetField(user.FieldUname, field.TypeString, value)
 		_node.Uname = value
@@ -294,14 +302,6 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.IsActive(); ok {
 		_spec.SetField(user.FieldIsActive, field.TypeBool, value)
 		_node.IsActive = value
-	}
-	if value, ok := uc.mutation.CreatedAt(); ok {
-		_spec.SetField(user.FieldCreatedAt, field.TypeInt64, value)
-		_node.CreatedAt = value
-	}
-	if value, ok := uc.mutation.UpdatedAt(); ok {
-		_spec.SetField(user.FieldUpdatedAt, field.TypeInt64, value)
-		_node.UpdatedAt = value
 	}
 	if nodes := uc.mutation.RequestedIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

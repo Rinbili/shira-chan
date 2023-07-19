@@ -27,6 +27,26 @@ type OrderWhereInput struct {
 	IDLT    *int  `json:"idLT,omitempty"`
 	IDLTE   *int  `json:"idLTE,omitempty"`
 
+	// "created_at" field predicates.
+	CreatedAt      *int64  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *int64  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []int64 `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []int64 `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *int64  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *int64  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *int64  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *int64  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *int64  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *int64  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []int64 `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []int64 `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *int64  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *int64  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *int64  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *int64  `json:"updatedAtLTE,omitempty"`
+
 	// "title" field predicates.
 	Title             *string  `json:"title,omitempty"`
 	TitleNEQ          *string  `json:"titleNEQ,omitempty"`
@@ -116,26 +136,6 @@ type OrderWhereInput struct {
 	HopeAtGTE   *int64  `json:"hopeAtGTE,omitempty"`
 	HopeAtLT    *int64  `json:"hopeAtLT,omitempty"`
 	HopeAtLTE   *int64  `json:"hopeAtLTE,omitempty"`
-
-	// "created_at" field predicates.
-	CreatedAt      *int64  `json:"createdAt,omitempty"`
-	CreatedAtNEQ   *int64  `json:"createdAtNEQ,omitempty"`
-	CreatedAtIn    []int64 `json:"createdAtIn,omitempty"`
-	CreatedAtNotIn []int64 `json:"createdAtNotIn,omitempty"`
-	CreatedAtGT    *int64  `json:"createdAtGT,omitempty"`
-	CreatedAtGTE   *int64  `json:"createdAtGTE,omitempty"`
-	CreatedAtLT    *int64  `json:"createdAtLT,omitempty"`
-	CreatedAtLTE   *int64  `json:"createdAtLTE,omitempty"`
-
-	// "updated_at" field predicates.
-	UpdatedAt      *int64  `json:"updatedAt,omitempty"`
-	UpdatedAtNEQ   *int64  `json:"updatedAtNEQ,omitempty"`
-	UpdatedAtIn    []int64 `json:"updatedAtIn,omitempty"`
-	UpdatedAtNotIn []int64 `json:"updatedAtNotIn,omitempty"`
-	UpdatedAtGT    *int64  `json:"updatedAtGT,omitempty"`
-	UpdatedAtGTE   *int64  `json:"updatedAtGTE,omitempty"`
-	UpdatedAtLT    *int64  `json:"updatedAtLT,omitempty"`
-	UpdatedAtLTE   *int64  `json:"updatedAtLTE,omitempty"`
 
 	// "requester" edge predicates.
 	HasRequester     *bool             `json:"hasRequester,omitempty"`
@@ -240,6 +240,54 @@ func (i *OrderWhereInput) P() (predicate.Order, error) {
 	}
 	if i.IDLTE != nil {
 		predicates = append(predicates, order.IDLTE(*i.IDLTE))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, order.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, order.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, order.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, order.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, order.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, order.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, order.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, order.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, order.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, order.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, order.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, order.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, order.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, order.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, order.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, order.UpdatedAtLTE(*i.UpdatedAtLTE))
 	}
 	if i.Title != nil {
 		predicates = append(predicates, order.TitleEQ(*i.Title))
@@ -463,54 +511,6 @@ func (i *OrderWhereInput) P() (predicate.Order, error) {
 	if i.HopeAtLTE != nil {
 		predicates = append(predicates, order.HopeAtLTE(*i.HopeAtLTE))
 	}
-	if i.CreatedAt != nil {
-		predicates = append(predicates, order.CreatedAtEQ(*i.CreatedAt))
-	}
-	if i.CreatedAtNEQ != nil {
-		predicates = append(predicates, order.CreatedAtNEQ(*i.CreatedAtNEQ))
-	}
-	if len(i.CreatedAtIn) > 0 {
-		predicates = append(predicates, order.CreatedAtIn(i.CreatedAtIn...))
-	}
-	if len(i.CreatedAtNotIn) > 0 {
-		predicates = append(predicates, order.CreatedAtNotIn(i.CreatedAtNotIn...))
-	}
-	if i.CreatedAtGT != nil {
-		predicates = append(predicates, order.CreatedAtGT(*i.CreatedAtGT))
-	}
-	if i.CreatedAtGTE != nil {
-		predicates = append(predicates, order.CreatedAtGTE(*i.CreatedAtGTE))
-	}
-	if i.CreatedAtLT != nil {
-		predicates = append(predicates, order.CreatedAtLT(*i.CreatedAtLT))
-	}
-	if i.CreatedAtLTE != nil {
-		predicates = append(predicates, order.CreatedAtLTE(*i.CreatedAtLTE))
-	}
-	if i.UpdatedAt != nil {
-		predicates = append(predicates, order.UpdatedAtEQ(*i.UpdatedAt))
-	}
-	if i.UpdatedAtNEQ != nil {
-		predicates = append(predicates, order.UpdatedAtNEQ(*i.UpdatedAtNEQ))
-	}
-	if len(i.UpdatedAtIn) > 0 {
-		predicates = append(predicates, order.UpdatedAtIn(i.UpdatedAtIn...))
-	}
-	if len(i.UpdatedAtNotIn) > 0 {
-		predicates = append(predicates, order.UpdatedAtNotIn(i.UpdatedAtNotIn...))
-	}
-	if i.UpdatedAtGT != nil {
-		predicates = append(predicates, order.UpdatedAtGT(*i.UpdatedAtGT))
-	}
-	if i.UpdatedAtGTE != nil {
-		predicates = append(predicates, order.UpdatedAtGTE(*i.UpdatedAtGTE))
-	}
-	if i.UpdatedAtLT != nil {
-		predicates = append(predicates, order.UpdatedAtLT(*i.UpdatedAtLT))
-	}
-	if i.UpdatedAtLTE != nil {
-		predicates = append(predicates, order.UpdatedAtLTE(*i.UpdatedAtLTE))
-	}
 
 	if i.HasRequester != nil {
 		p := order.HasRequester()
@@ -575,6 +575,26 @@ type UserWhereInput struct {
 	IDLT    *int  `json:"idLT,omitempty"`
 	IDLTE   *int  `json:"idLTE,omitempty"`
 
+	// "created_at" field predicates.
+	CreatedAt      *int64  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *int64  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []int64 `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []int64 `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *int64  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *int64  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *int64  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *int64  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *int64  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *int64  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []int64 `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []int64 `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *int64  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *int64  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *int64  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *int64  `json:"updatedAtLTE,omitempty"`
+
 	// "uname" field predicates.
 	Uname             *string  `json:"uname,omitempty"`
 	UnameNEQ          *string  `json:"unameNEQ,omitempty"`
@@ -631,26 +651,6 @@ type UserWhereInput struct {
 	// "is_active" field predicates.
 	IsActive    *bool `json:"isActive,omitempty"`
 	IsActiveNEQ *bool `json:"isActiveNEQ,omitempty"`
-
-	// "created_at" field predicates.
-	CreatedAt      *int64  `json:"createdAt,omitempty"`
-	CreatedAtNEQ   *int64  `json:"createdAtNEQ,omitempty"`
-	CreatedAtIn    []int64 `json:"createdAtIn,omitempty"`
-	CreatedAtNotIn []int64 `json:"createdAtNotIn,omitempty"`
-	CreatedAtGT    *int64  `json:"createdAtGT,omitempty"`
-	CreatedAtGTE   *int64  `json:"createdAtGTE,omitempty"`
-	CreatedAtLT    *int64  `json:"createdAtLT,omitempty"`
-	CreatedAtLTE   *int64  `json:"createdAtLTE,omitempty"`
-
-	// "updated_at" field predicates.
-	UpdatedAt      *int64  `json:"updatedAt,omitempty"`
-	UpdatedAtNEQ   *int64  `json:"updatedAtNEQ,omitempty"`
-	UpdatedAtIn    []int64 `json:"updatedAtIn,omitempty"`
-	UpdatedAtNotIn []int64 `json:"updatedAtNotIn,omitempty"`
-	UpdatedAtGT    *int64  `json:"updatedAtGT,omitempty"`
-	UpdatedAtGTE   *int64  `json:"updatedAtGTE,omitempty"`
-	UpdatedAtLT    *int64  `json:"updatedAtLT,omitempty"`
-	UpdatedAtLTE   *int64  `json:"updatedAtLTE,omitempty"`
 
 	// "requested" edge predicates.
 	HasRequested     *bool              `json:"hasRequested,omitempty"`
@@ -755,6 +755,54 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 	}
 	if i.IDLTE != nil {
 		predicates = append(predicates, user.IDLTE(*i.IDLTE))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, user.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, user.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, user.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, user.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, user.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, user.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, user.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, user.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, user.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, user.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, user.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, user.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, user.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, user.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, user.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, user.UpdatedAtLTE(*i.UpdatedAtLTE))
 	}
 	if i.Uname != nil {
 		predicates = append(predicates, user.UnameEQ(*i.Uname))
@@ -890,54 +938,6 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 	}
 	if i.IsActiveNEQ != nil {
 		predicates = append(predicates, user.IsActiveNEQ(*i.IsActiveNEQ))
-	}
-	if i.CreatedAt != nil {
-		predicates = append(predicates, user.CreatedAtEQ(*i.CreatedAt))
-	}
-	if i.CreatedAtNEQ != nil {
-		predicates = append(predicates, user.CreatedAtNEQ(*i.CreatedAtNEQ))
-	}
-	if len(i.CreatedAtIn) > 0 {
-		predicates = append(predicates, user.CreatedAtIn(i.CreatedAtIn...))
-	}
-	if len(i.CreatedAtNotIn) > 0 {
-		predicates = append(predicates, user.CreatedAtNotIn(i.CreatedAtNotIn...))
-	}
-	if i.CreatedAtGT != nil {
-		predicates = append(predicates, user.CreatedAtGT(*i.CreatedAtGT))
-	}
-	if i.CreatedAtGTE != nil {
-		predicates = append(predicates, user.CreatedAtGTE(*i.CreatedAtGTE))
-	}
-	if i.CreatedAtLT != nil {
-		predicates = append(predicates, user.CreatedAtLT(*i.CreatedAtLT))
-	}
-	if i.CreatedAtLTE != nil {
-		predicates = append(predicates, user.CreatedAtLTE(*i.CreatedAtLTE))
-	}
-	if i.UpdatedAt != nil {
-		predicates = append(predicates, user.UpdatedAtEQ(*i.UpdatedAt))
-	}
-	if i.UpdatedAtNEQ != nil {
-		predicates = append(predicates, user.UpdatedAtNEQ(*i.UpdatedAtNEQ))
-	}
-	if len(i.UpdatedAtIn) > 0 {
-		predicates = append(predicates, user.UpdatedAtIn(i.UpdatedAtIn...))
-	}
-	if len(i.UpdatedAtNotIn) > 0 {
-		predicates = append(predicates, user.UpdatedAtNotIn(i.UpdatedAtNotIn...))
-	}
-	if i.UpdatedAtGT != nil {
-		predicates = append(predicates, user.UpdatedAtGT(*i.UpdatedAtGT))
-	}
-	if i.UpdatedAtGTE != nil {
-		predicates = append(predicates, user.UpdatedAtGTE(*i.UpdatedAtGTE))
-	}
-	if i.UpdatedAtLT != nil {
-		predicates = append(predicates, user.UpdatedAtLT(*i.UpdatedAtLT))
-	}
-	if i.UpdatedAtLTE != nil {
-		predicates = append(predicates, user.UpdatedAtLTE(*i.UpdatedAtLTE))
 	}
 
 	if i.HasRequested != nil {

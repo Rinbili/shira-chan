@@ -12,6 +12,10 @@ const (
 	Label = "order"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	FieldCreatedAt = "created_at"
+	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
+	FieldUpdatedAt = "updated_at"
 	// FieldTitle holds the string denoting the title field in the database.
 	FieldTitle = "title"
 	// FieldContent holds the string denoting the content field in the database.
@@ -28,10 +32,6 @@ const (
 	FieldEvaluation = "evaluation"
 	// FieldHopeAt holds the string denoting the hope_at field in the database.
 	FieldHopeAt = "hope_at"
-	// FieldCreatedAt holds the string denoting the created_at field in the database.
-	FieldCreatedAt = "created_at"
-	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
-	FieldUpdatedAt = "updated_at"
 	// EdgeRequester holds the string denoting the requester edge name in mutations.
 	EdgeRequester = "requester"
 	// EdgeReceiver holds the string denoting the receiver edge name in mutations.
@@ -55,6 +55,8 @@ const (
 // Columns holds all SQL columns for order fields.
 var Columns = []string{
 	FieldID,
+	FieldCreatedAt,
+	FieldUpdatedAt,
 	FieldTitle,
 	FieldContent,
 	FieldContact,
@@ -63,8 +65,6 @@ var Columns = []string{
 	FieldIsFinished,
 	FieldEvaluation,
 	FieldHopeAt,
-	FieldCreatedAt,
-	FieldUpdatedAt,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "Orders"
@@ -95,6 +95,12 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
+	DefaultCreatedAt func() int64
+	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
+	DefaultUpdatedAt func() int64
+	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
+	UpdateDefaultUpdatedAt func() int64
 	// TitleValidator is a validator for the "title" field. It is called by the builders before save.
 	TitleValidator func(string) error
 	// ContentValidator is a validator for the "content" field. It is called by the builders before save.
@@ -111,12 +117,6 @@ var (
 	EvaluationValidator func(float64) error
 	// DefaultHopeAt holds the default value on creation for the "hope_at" field.
 	DefaultHopeAt func() int64
-	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
-	DefaultCreatedAt func() int64
-	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
-	DefaultUpdatedAt func() int64
-	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
-	UpdateDefaultUpdatedAt func() int64
 )
 
 // OrderOption defines the ordering options for the Order queries.
@@ -125,6 +125,16 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
 // ByTitle orders the results by the title field.
@@ -165,16 +175,6 @@ func ByEvaluation(opts ...sql.OrderTermOption) OrderOption {
 // ByHopeAt orders the results by the hope_at field.
 func ByHopeAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldHopeAt, opts...).ToFunc()
-}
-
-// ByCreatedAt orders the results by the created_at field.
-func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
-}
-
-// ByUpdatedAt orders the results by the updated_at field.
-func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
 // ByRequesterField orders the results by requester field.

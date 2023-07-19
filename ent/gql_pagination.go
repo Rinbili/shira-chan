@@ -316,6 +316,34 @@ func (o *OrderQuery) Paginate(
 }
 
 var (
+	// OrderOrderFieldCreatedAt orders Order by created_at.
+	OrderOrderFieldCreatedAt = &OrderOrderField{
+		Value: func(o *Order) (ent.Value, error) {
+			return o.CreatedAt, nil
+		},
+		column: order.FieldCreatedAt,
+		toTerm: order.ByCreatedAt,
+		toCursor: func(o *Order) Cursor {
+			return Cursor{
+				ID:    o.ID,
+				Value: o.CreatedAt,
+			}
+		},
+	}
+	// OrderOrderFieldUpdatedAt orders Order by updated_at.
+	OrderOrderFieldUpdatedAt = &OrderOrderField{
+		Value: func(o *Order) (ent.Value, error) {
+			return o.UpdatedAt, nil
+		},
+		column: order.FieldUpdatedAt,
+		toTerm: order.ByUpdatedAt,
+		toCursor: func(o *Order) Cursor {
+			return Cursor{
+				ID:    o.ID,
+				Value: o.UpdatedAt,
+			}
+		},
+	}
 	// OrderOrderFieldTitle orders Order by title.
 	OrderOrderFieldTitle = &OrderOrderField{
 		Value: func(o *Order) (ent.Value, error) {
@@ -400,34 +428,6 @@ var (
 			}
 		},
 	}
-	// OrderOrderFieldCreatedAt orders Order by created_at.
-	OrderOrderFieldCreatedAt = &OrderOrderField{
-		Value: func(o *Order) (ent.Value, error) {
-			return o.CreatedAt, nil
-		},
-		column: order.FieldCreatedAt,
-		toTerm: order.ByCreatedAt,
-		toCursor: func(o *Order) Cursor {
-			return Cursor{
-				ID:    o.ID,
-				Value: o.CreatedAt,
-			}
-		},
-	}
-	// OrderOrderFieldUpdatedAt orders Order by updated_at.
-	OrderOrderFieldUpdatedAt = &OrderOrderField{
-		Value: func(o *Order) (ent.Value, error) {
-			return o.UpdatedAt, nil
-		},
-		column: order.FieldUpdatedAt,
-		toTerm: order.ByUpdatedAt,
-		toCursor: func(o *Order) Cursor {
-			return Cursor{
-				ID:    o.ID,
-				Value: o.UpdatedAt,
-			}
-		},
-	}
 	// OrderOrderFieldReceiverCount orders by RECEIVER_COUNT.
 	OrderOrderFieldReceiverCount = &OrderOrderField{
 		Value: func(o *Order) (ent.Value, error) {
@@ -453,6 +453,10 @@ var (
 func (f OrderOrderField) String() string {
 	var str string
 	switch f.column {
+	case OrderOrderFieldCreatedAt.column:
+		str = "CREAT_AT"
+	case OrderOrderFieldUpdatedAt.column:
+		str = "UPDATED_AT"
 	case OrderOrderFieldTitle.column:
 		str = "TITLE"
 	case OrderOrderFieldType.column:
@@ -465,10 +469,6 @@ func (f OrderOrderField) String() string {
 		str = "EVALUATION"
 	case OrderOrderFieldHopeAt.column:
 		str = "HOPE_AT"
-	case OrderOrderFieldCreatedAt.column:
-		str = "CREAT_AT"
-	case OrderOrderFieldUpdatedAt.column:
-		str = "UPDATED_AT"
 	case OrderOrderFieldReceiverCount.column:
 		str = "RECEIVER_COUNT"
 	}
@@ -487,6 +487,10 @@ func (f *OrderOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("OrderOrderField %T must be a string", v)
 	}
 	switch str {
+	case "CREAT_AT":
+		*f = *OrderOrderFieldCreatedAt
+	case "UPDATED_AT":
+		*f = *OrderOrderFieldUpdatedAt
 	case "TITLE":
 		*f = *OrderOrderFieldTitle
 	case "TYPE":
@@ -499,10 +503,6 @@ func (f *OrderOrderField) UnmarshalGQL(v interface{}) error {
 		*f = *OrderOrderFieldEvaluation
 	case "HOPE_AT":
 		*f = *OrderOrderFieldHopeAt
-	case "CREAT_AT":
-		*f = *OrderOrderFieldCreatedAt
-	case "UPDATED_AT":
-		*f = *OrderOrderFieldUpdatedAt
 	case "RECEIVER_COUNT":
 		*f = *OrderOrderFieldReceiverCount
 	default:
@@ -769,6 +769,34 @@ func (u *UserQuery) Paginate(
 }
 
 var (
+	// UserOrderFieldCreatedAt orders User by created_at.
+	UserOrderFieldCreatedAt = &UserOrderField{
+		Value: func(u *User) (ent.Value, error) {
+			return u.CreatedAt, nil
+		},
+		column: user.FieldCreatedAt,
+		toTerm: user.ByCreatedAt,
+		toCursor: func(u *User) Cursor {
+			return Cursor{
+				ID:    u.ID,
+				Value: u.CreatedAt,
+			}
+		},
+	}
+	// UserOrderFieldUpdatedAt orders User by updated_at.
+	UserOrderFieldUpdatedAt = &UserOrderField{
+		Value: func(u *User) (ent.Value, error) {
+			return u.UpdatedAt, nil
+		},
+		column: user.FieldUpdatedAt,
+		toTerm: user.ByUpdatedAt,
+		toCursor: func(u *User) Cursor {
+			return Cursor{
+				ID:    u.ID,
+				Value: u.UpdatedAt,
+			}
+		},
+	}
 	// UserOrderFieldUname orders User by uname.
 	UserOrderFieldUname = &UserOrderField{
 		Value: func(u *User) (ent.Value, error) {
@@ -825,34 +853,6 @@ var (
 			}
 		},
 	}
-	// UserOrderFieldCreatedAt orders User by created_at.
-	UserOrderFieldCreatedAt = &UserOrderField{
-		Value: func(u *User) (ent.Value, error) {
-			return u.CreatedAt, nil
-		},
-		column: user.FieldCreatedAt,
-		toTerm: user.ByCreatedAt,
-		toCursor: func(u *User) Cursor {
-			return Cursor{
-				ID:    u.ID,
-				Value: u.CreatedAt,
-			}
-		},
-	}
-	// UserOrderFieldUpdatedAt orders User by updated_at.
-	UserOrderFieldUpdatedAt = &UserOrderField{
-		Value: func(u *User) (ent.Value, error) {
-			return u.UpdatedAt, nil
-		},
-		column: user.FieldUpdatedAt,
-		toTerm: user.ByUpdatedAt,
-		toCursor: func(u *User) Cursor {
-			return Cursor{
-				ID:    u.ID,
-				Value: u.UpdatedAt,
-			}
-		},
-	}
 	// UserOrderFieldRequestedCount orders by REQUESTED_COUNT.
 	UserOrderFieldRequestedCount = &UserOrderField{
 		Value: func(u *User) (ent.Value, error) {
@@ -897,6 +897,10 @@ var (
 func (f UserOrderField) String() string {
 	var str string
 	switch f.column {
+	case UserOrderFieldCreatedAt.column:
+		str = "CREAT_AT"
+	case UserOrderFieldUpdatedAt.column:
+		str = "UPDATED_AT"
 	case UserOrderFieldUname.column:
 		str = "UNAME"
 	case UserOrderFieldIsAdmin.column:
@@ -905,10 +909,6 @@ func (f UserOrderField) String() string {
 		str = "IS_SECRETARY"
 	case UserOrderFieldIsActive.column:
 		str = "STATE"
-	case UserOrderFieldCreatedAt.column:
-		str = "CREAT_AT"
-	case UserOrderFieldUpdatedAt.column:
-		str = "UPDATED_AT"
 	case UserOrderFieldRequestedCount.column:
 		str = "REQUESTED_COUNT"
 	case UserOrderFieldReceivedCount.column:
@@ -929,6 +929,10 @@ func (f *UserOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("UserOrderField %T must be a string", v)
 	}
 	switch str {
+	case "CREAT_AT":
+		*f = *UserOrderFieldCreatedAt
+	case "UPDATED_AT":
+		*f = *UserOrderFieldUpdatedAt
 	case "UNAME":
 		*f = *UserOrderFieldUname
 	case "IS_ADMIN":
@@ -937,10 +941,6 @@ func (f *UserOrderField) UnmarshalGQL(v interface{}) error {
 		*f = *UserOrderFieldIsSecretary
 	case "STATE":
 		*f = *UserOrderFieldIsActive
-	case "CREAT_AT":
-		*f = *UserOrderFieldCreatedAt
-	case "UPDATED_AT":
-		*f = *UserOrderFieldUpdatedAt
 	case "REQUESTED_COUNT":
 		*f = *UserOrderFieldRequestedCount
 	case "RECEIVED_COUNT":

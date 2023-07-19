@@ -12,8 +12,21 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	orderMixin := schema.Order{}.Mixin()
+	orderMixinFields0 := orderMixin[0].Fields()
+	_ = orderMixinFields0
 	orderFields := schema.Order{}.Fields()
 	_ = orderFields
+	// orderDescCreatedAt is the schema descriptor for created_at field.
+	orderDescCreatedAt := orderMixinFields0[0].Descriptor()
+	// order.DefaultCreatedAt holds the default value on creation for the created_at field.
+	order.DefaultCreatedAt = orderDescCreatedAt.Default.(func() int64)
+	// orderDescUpdatedAt is the schema descriptor for updated_at field.
+	orderDescUpdatedAt := orderMixinFields0[1].Descriptor()
+	// order.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	order.DefaultUpdatedAt = orderDescUpdatedAt.Default.(func() int64)
+	// order.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	order.UpdateDefaultUpdatedAt = orderDescUpdatedAt.UpdateDefault.(func() int64)
 	// orderDescTitle is the schema descriptor for title field.
 	orderDescTitle := orderFields[0].Descriptor()
 	// order.TitleValidator is a validator for the "title" field. It is called by the builders before save.
@@ -102,20 +115,23 @@ func init() {
 	orderDescHopeAt := orderFields[7].Descriptor()
 	// order.DefaultHopeAt holds the default value on creation for the hope_at field.
 	order.DefaultHopeAt = orderDescHopeAt.Default.(func() int64)
-	// orderDescCreatedAt is the schema descriptor for created_at field.
-	orderDescCreatedAt := orderFields[8].Descriptor()
-	// order.DefaultCreatedAt holds the default value on creation for the created_at field.
-	order.DefaultCreatedAt = orderDescCreatedAt.Default.(func() int64)
-	// orderDescUpdatedAt is the schema descriptor for updated_at field.
-	orderDescUpdatedAt := orderFields[9].Descriptor()
-	// order.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	order.DefaultUpdatedAt = orderDescUpdatedAt.Default.(func() int64)
-	// order.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	order.UpdateDefaultUpdatedAt = orderDescUpdatedAt.UpdateDefault.(func() int64)
+	userMixin := schema.User{}.Mixin()
 	userHooks := schema.User{}.Hooks()
 	user.Hooks[0] = userHooks[0]
+	userMixinFields0 := userMixin[0].Fields()
+	_ = userMixinFields0
 	userFields := schema.User{}.Fields()
 	_ = userFields
+	// userDescCreatedAt is the schema descriptor for created_at field.
+	userDescCreatedAt := userMixinFields0[0].Descriptor()
+	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
+	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() int64)
+	// userDescUpdatedAt is the schema descriptor for updated_at field.
+	userDescUpdatedAt := userMixinFields0[1].Descriptor()
+	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() int64)
+	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	user.UpdateDefaultUpdatedAt = userDescUpdatedAt.UpdateDefault.(func() int64)
 	// userDescUname is the schema descriptor for uname field.
 	userDescUname := userFields[0].Descriptor()
 	// user.UnameValidator is a validator for the "uname" field. It is called by the builders before save.
@@ -168,16 +184,6 @@ func init() {
 	userDescIsActive := userFields[5].Descriptor()
 	// user.DefaultIsActive holds the default value on creation for the is_active field.
 	user.DefaultIsActive = userDescIsActive.Default.(bool)
-	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[6].Descriptor()
-	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
-	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() int64)
-	// userDescUpdatedAt is the schema descriptor for updated_at field.
-	userDescUpdatedAt := userFields[7].Descriptor()
-	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() int64)
-	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	user.UpdateDefaultUpdatedAt = userDescUpdatedAt.UpdateDefault.(func() int64)
 }
 
 const (

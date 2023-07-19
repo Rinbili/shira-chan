@@ -28,6 +28,19 @@ func (ou *OrderUpdate) Where(ps ...predicate.Order) *OrderUpdate {
 	return ou
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (ou *OrderUpdate) SetUpdatedAt(i int64) *OrderUpdate {
+	ou.mutation.ResetUpdatedAt()
+	ou.mutation.SetUpdatedAt(i)
+	return ou
+}
+
+// AddUpdatedAt adds i to the "updated_at" field.
+func (ou *OrderUpdate) AddUpdatedAt(i int64) *OrderUpdate {
+	ou.mutation.AddUpdatedAt(i)
+	return ou
+}
+
 // SetTitle sets the "title" field.
 func (ou *OrderUpdate) SetTitle(s string) *OrderUpdate {
 	ou.mutation.SetTitle(s)
@@ -133,19 +146,6 @@ func (ou *OrderUpdate) SetNillableHopeAt(i *int64) *OrderUpdate {
 // AddHopeAt adds i to the "hope_at" field.
 func (ou *OrderUpdate) AddHopeAt(i int64) *OrderUpdate {
 	ou.mutation.AddHopeAt(i)
-	return ou
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (ou *OrderUpdate) SetUpdatedAt(i int64) *OrderUpdate {
-	ou.mutation.ResetUpdatedAt()
-	ou.mutation.SetUpdatedAt(i)
-	return ou
-}
-
-// AddUpdatedAt adds i to the "updated_at" field.
-func (ou *OrderUpdate) AddUpdatedAt(i int64) *OrderUpdate {
-	ou.mutation.AddUpdatedAt(i)
 	return ou
 }
 
@@ -288,6 +288,12 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := ou.mutation.UpdatedAt(); ok {
+		_spec.SetField(order.FieldUpdatedAt, field.TypeInt64, value)
+	}
+	if value, ok := ou.mutation.AddedUpdatedAt(); ok {
+		_spec.AddField(order.FieldUpdatedAt, field.TypeInt64, value)
+	}
 	if value, ok := ou.mutation.Title(); ok {
 		_spec.SetField(order.FieldTitle, field.TypeString, value)
 	}
@@ -320,12 +326,6 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ou.mutation.AddedHopeAt(); ok {
 		_spec.AddField(order.FieldHopeAt, field.TypeInt64, value)
-	}
-	if value, ok := ou.mutation.UpdatedAt(); ok {
-		_spec.SetField(order.FieldUpdatedAt, field.TypeInt64, value)
-	}
-	if value, ok := ou.mutation.AddedUpdatedAt(); ok {
-		_spec.AddField(order.FieldUpdatedAt, field.TypeInt64, value)
 	}
 	if ou.mutation.RequesterCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -419,6 +419,19 @@ type OrderUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *OrderMutation
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (ouo *OrderUpdateOne) SetUpdatedAt(i int64) *OrderUpdateOne {
+	ouo.mutation.ResetUpdatedAt()
+	ouo.mutation.SetUpdatedAt(i)
+	return ouo
+}
+
+// AddUpdatedAt adds i to the "updated_at" field.
+func (ouo *OrderUpdateOne) AddUpdatedAt(i int64) *OrderUpdateOne {
+	ouo.mutation.AddUpdatedAt(i)
+	return ouo
 }
 
 // SetTitle sets the "title" field.
@@ -526,19 +539,6 @@ func (ouo *OrderUpdateOne) SetNillableHopeAt(i *int64) *OrderUpdateOne {
 // AddHopeAt adds i to the "hope_at" field.
 func (ouo *OrderUpdateOne) AddHopeAt(i int64) *OrderUpdateOne {
 	ouo.mutation.AddHopeAt(i)
-	return ouo
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (ouo *OrderUpdateOne) SetUpdatedAt(i int64) *OrderUpdateOne {
-	ouo.mutation.ResetUpdatedAt()
-	ouo.mutation.SetUpdatedAt(i)
-	return ouo
-}
-
-// AddUpdatedAt adds i to the "updated_at" field.
-func (ouo *OrderUpdateOne) AddUpdatedAt(i int64) *OrderUpdateOne {
-	ouo.mutation.AddUpdatedAt(i)
 	return ouo
 }
 
@@ -711,6 +711,12 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 			}
 		}
 	}
+	if value, ok := ouo.mutation.UpdatedAt(); ok {
+		_spec.SetField(order.FieldUpdatedAt, field.TypeInt64, value)
+	}
+	if value, ok := ouo.mutation.AddedUpdatedAt(); ok {
+		_spec.AddField(order.FieldUpdatedAt, field.TypeInt64, value)
+	}
 	if value, ok := ouo.mutation.Title(); ok {
 		_spec.SetField(order.FieldTitle, field.TypeString, value)
 	}
@@ -743,12 +749,6 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 	}
 	if value, ok := ouo.mutation.AddedHopeAt(); ok {
 		_spec.AddField(order.FieldHopeAt, field.TypeInt64, value)
-	}
-	if value, ok := ouo.mutation.UpdatedAt(); ok {
-		_spec.SetField(order.FieldUpdatedAt, field.TypeInt64, value)
-	}
-	if value, ok := ouo.mutation.AddedUpdatedAt(); ok {
-		_spec.AddField(order.FieldUpdatedAt, field.TypeInt64, value)
 	}
 	if ouo.mutation.RequesterCleared() {
 		edge := &sqlgraph.EdgeSpec{

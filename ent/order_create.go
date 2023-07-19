@@ -20,6 +20,34 @@ type OrderCreate struct {
 	hooks    []Hook
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (oc *OrderCreate) SetCreatedAt(i int64) *OrderCreate {
+	oc.mutation.SetCreatedAt(i)
+	return oc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableCreatedAt(i *int64) *OrderCreate {
+	if i != nil {
+		oc.SetCreatedAt(*i)
+	}
+	return oc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (oc *OrderCreate) SetUpdatedAt(i int64) *OrderCreate {
+	oc.mutation.SetUpdatedAt(i)
+	return oc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableUpdatedAt(i *int64) *OrderCreate {
+	if i != nil {
+		oc.SetUpdatedAt(*i)
+	}
+	return oc
+}
+
 // SetTitle sets the "title" field.
 func (oc *OrderCreate) SetTitle(s string) *OrderCreate {
 	oc.mutation.SetTitle(s)
@@ -108,34 +136,6 @@ func (oc *OrderCreate) SetNillableHopeAt(i *int64) *OrderCreate {
 	return oc
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (oc *OrderCreate) SetCreatedAt(i int64) *OrderCreate {
-	oc.mutation.SetCreatedAt(i)
-	return oc
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (oc *OrderCreate) SetNillableCreatedAt(i *int64) *OrderCreate {
-	if i != nil {
-		oc.SetCreatedAt(*i)
-	}
-	return oc
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (oc *OrderCreate) SetUpdatedAt(i int64) *OrderCreate {
-	oc.mutation.SetUpdatedAt(i)
-	return oc
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (oc *OrderCreate) SetNillableUpdatedAt(i *int64) *OrderCreate {
-	if i != nil {
-		oc.SetUpdatedAt(*i)
-	}
-	return oc
-}
-
 // SetRequesterID sets the "requester" edge to the User entity by ID.
 func (oc *OrderCreate) SetRequesterID(id int) *OrderCreate {
 	oc.mutation.SetRequesterID(id)
@@ -205,6 +205,14 @@ func (oc *OrderCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (oc *OrderCreate) defaults() {
+	if _, ok := oc.mutation.CreatedAt(); !ok {
+		v := order.DefaultCreatedAt()
+		oc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := oc.mutation.UpdatedAt(); !ok {
+		v := order.DefaultUpdatedAt()
+		oc.mutation.SetUpdatedAt(v)
+	}
 	if _, ok := oc.mutation.GetType(); !ok {
 		v := order.DefaultType
 		oc.mutation.SetType(v)
@@ -221,18 +229,16 @@ func (oc *OrderCreate) defaults() {
 		v := order.DefaultHopeAt()
 		oc.mutation.SetHopeAt(v)
 	}
-	if _, ok := oc.mutation.CreatedAt(); !ok {
-		v := order.DefaultCreatedAt()
-		oc.mutation.SetCreatedAt(v)
-	}
-	if _, ok := oc.mutation.UpdatedAt(); !ok {
-		v := order.DefaultUpdatedAt()
-		oc.mutation.SetUpdatedAt(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (oc *OrderCreate) check() error {
+	if _, ok := oc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Order.created_at"`)}
+	}
+	if _, ok := oc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Order.updated_at"`)}
+	}
 	if _, ok := oc.mutation.Title(); !ok {
 		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "Order.title"`)}
 	}
@@ -274,12 +280,6 @@ func (oc *OrderCreate) check() error {
 	if _, ok := oc.mutation.HopeAt(); !ok {
 		return &ValidationError{Name: "hope_at", err: errors.New(`ent: missing required field "Order.hope_at"`)}
 	}
-	if _, ok := oc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Order.created_at"`)}
-	}
-	if _, ok := oc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Order.updated_at"`)}
-	}
 	return nil
 }
 
@@ -306,6 +306,14 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 		_node = &Order{config: oc.config}
 		_spec = sqlgraph.NewCreateSpec(order.Table, sqlgraph.NewFieldSpec(order.FieldID, field.TypeInt))
 	)
+	if value, ok := oc.mutation.CreatedAt(); ok {
+		_spec.SetField(order.FieldCreatedAt, field.TypeInt64, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := oc.mutation.UpdatedAt(); ok {
+		_spec.SetField(order.FieldUpdatedAt, field.TypeInt64, value)
+		_node.UpdatedAt = value
+	}
 	if value, ok := oc.mutation.Title(); ok {
 		_spec.SetField(order.FieldTitle, field.TypeString, value)
 		_node.Title = value
@@ -337,14 +345,6 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 	if value, ok := oc.mutation.HopeAt(); ok {
 		_spec.SetField(order.FieldHopeAt, field.TypeInt64, value)
 		_node.HopeAt = value
-	}
-	if value, ok := oc.mutation.CreatedAt(); ok {
-		_spec.SetField(order.FieldCreatedAt, field.TypeInt64, value)
-		_node.CreatedAt = value
-	}
-	if value, ok := oc.mutation.UpdatedAt(); ok {
-		_spec.SetField(order.FieldUpdatedAt, field.TypeInt64, value)
-		_node.UpdatedAt = value
 	}
 	if nodes := oc.mutation.RequesterIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

@@ -16,6 +16,10 @@ type User struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
+	// 创建时间
+	CreatedAt int64 `json:"created_at,omitempty"`
+	// 更新时间
+	UpdatedAt int64 `json:"updated_at,omitempty"`
 	// 用户名
 	Uname string `json:"uname,omitempty"`
 	// 密码
@@ -28,10 +32,6 @@ type User struct {
 	IsSecretary bool `json:"is_secretary,omitempty"`
 	// 用户状态
 	IsActive bool `json:"is_active,omitempty"`
-	// 创建时间
-	CreatedAt int64 `json:"created_at,omitempty"`
-	// 更新时间
-	UpdatedAt int64 `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges        UserEdges `json:"edges"`
@@ -104,6 +104,18 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			u.ID = int(value.Int64)
+		case user.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				u.CreatedAt = value.Int64
+			}
+		case user.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				u.UpdatedAt = value.Int64
+			}
 		case user.FieldUname:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field uname", values[i])
@@ -139,18 +151,6 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field is_active", values[i])
 			} else if value.Valid {
 				u.IsActive = value.Bool
-			}
-		case user.FieldCreatedAt:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field created_at", values[i])
-			} else if value.Valid {
-				u.CreatedAt = value.Int64
-			}
-		case user.FieldUpdatedAt:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
-			} else if value.Valid {
-				u.UpdatedAt = value.Int64
 			}
 		default:
 			u.selectValues.Set(columns[i], values[i])
@@ -198,6 +198,12 @@ func (u *User) String() string {
 	var builder strings.Builder
 	builder.WriteString("User(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", u.ID))
+	builder.WriteString("created_at=")
+	builder.WriteString(fmt.Sprintf("%v", u.CreatedAt))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(fmt.Sprintf("%v", u.UpdatedAt))
+	builder.WriteString(", ")
 	builder.WriteString("uname=")
 	builder.WriteString(u.Uname)
 	builder.WriteString(", ")
@@ -214,12 +220,6 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_active=")
 	builder.WriteString(fmt.Sprintf("%v", u.IsActive))
-	builder.WriteString(", ")
-	builder.WriteString("created_at=")
-	builder.WriteString(fmt.Sprintf("%v", u.CreatedAt))
-	builder.WriteString(", ")
-	builder.WriteString("updated_at=")
-	builder.WriteString(fmt.Sprintf("%v", u.UpdatedAt))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -133,6 +133,16 @@ func (o *OrderQuery) collectField(ctx context.Context, opCtx *graphql.OperationC
 			o.WithNamedReceiver(alias, func(wq *UserQuery) {
 				*wq = *query
 			})
+		case "createdAt":
+			if _, ok := fieldSeen[order.FieldCreatedAt]; !ok {
+				selectedFields = append(selectedFields, order.FieldCreatedAt)
+				fieldSeen[order.FieldCreatedAt] = struct{}{}
+			}
+		case "updatedAt":
+			if _, ok := fieldSeen[order.FieldUpdatedAt]; !ok {
+				selectedFields = append(selectedFields, order.FieldUpdatedAt)
+				fieldSeen[order.FieldUpdatedAt] = struct{}{}
+			}
 		case "title":
 			if _, ok := fieldSeen[order.FieldTitle]; !ok {
 				selectedFields = append(selectedFields, order.FieldTitle)
@@ -172,16 +182,6 @@ func (o *OrderQuery) collectField(ctx context.Context, opCtx *graphql.OperationC
 			if _, ok := fieldSeen[order.FieldHopeAt]; !ok {
 				selectedFields = append(selectedFields, order.FieldHopeAt)
 				fieldSeen[order.FieldHopeAt] = struct{}{}
-			}
-		case "createdAt":
-			if _, ok := fieldSeen[order.FieldCreatedAt]; !ok {
-				selectedFields = append(selectedFields, order.FieldCreatedAt)
-				fieldSeen[order.FieldCreatedAt] = struct{}{}
-			}
-		case "updatedAt":
-			if _, ok := fieldSeen[order.FieldUpdatedAt]; !ok {
-				selectedFields = append(selectedFields, order.FieldUpdatedAt)
-				fieldSeen[order.FieldUpdatedAt] = struct{}{}
 			}
 		case "id":
 		case "__typename":
@@ -439,6 +439,16 @@ func (u *UserQuery) collectField(ctx context.Context, opCtx *graphql.OperationCo
 			u.WithNamedReceived(alias, func(wq *OrderQuery) {
 				*wq = *query
 			})
+		case "createdAt":
+			if _, ok := fieldSeen[user.FieldCreatedAt]; !ok {
+				selectedFields = append(selectedFields, user.FieldCreatedAt)
+				fieldSeen[user.FieldCreatedAt] = struct{}{}
+			}
+		case "updatedAt":
+			if _, ok := fieldSeen[user.FieldUpdatedAt]; !ok {
+				selectedFields = append(selectedFields, user.FieldUpdatedAt)
+				fieldSeen[user.FieldUpdatedAt] = struct{}{}
+			}
 		case "uname":
 			if _, ok := fieldSeen[user.FieldUname]; !ok {
 				selectedFields = append(selectedFields, user.FieldUname)
@@ -463,16 +473,6 @@ func (u *UserQuery) collectField(ctx context.Context, opCtx *graphql.OperationCo
 			if _, ok := fieldSeen[user.FieldIsActive]; !ok {
 				selectedFields = append(selectedFields, user.FieldIsActive)
 				fieldSeen[user.FieldIsActive] = struct{}{}
-			}
-		case "createdAt":
-			if _, ok := fieldSeen[user.FieldCreatedAt]; !ok {
-				selectedFields = append(selectedFields, user.FieldCreatedAt)
-				fieldSeen[user.FieldCreatedAt] = struct{}{}
-			}
-		case "updatedAt":
-			if _, ok := fieldSeen[user.FieldUpdatedAt]; !ok {
-				selectedFields = append(selectedFields, user.FieldUpdatedAt)
-				fieldSeen[user.FieldUpdatedAt] = struct{}{}
 			}
 		case "id":
 		case "__typename":

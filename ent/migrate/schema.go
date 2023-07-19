@@ -12,6 +12,8 @@ var (
 	// OrdersColumns holds the columns for the "Orders" table.
 	OrdersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeInt64},
+		{Name: "updated_at", Type: field.TypeInt64},
 		{Name: "title", Type: field.TypeString, Size: 100},
 		{Name: "content", Type: field.TypeString, Size: 15000},
 		{Name: "contact", Type: field.TypeString, Size: 20},
@@ -20,8 +22,6 @@ var (
 		{Name: "is_finished", Type: field.TypeBool, Default: false},
 		{Name: "evaluation", Type: field.TypeFloat64, Nullable: true},
 		{Name: "hope_at", Type: field.TypeInt64},
-		{Name: "created_at", Type: field.TypeInt64},
-		{Name: "updated_at", Type: field.TypeInt64},
 		{Name: "user_requested", Type: field.TypeInt, Nullable: true},
 	}
 	// OrdersTable holds the schema information for the "Orders" table.
@@ -41,14 +41,14 @@ var (
 	// UsersColumns holds the columns for the "Users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeInt64},
+		{Name: "updated_at", Type: field.TypeInt64},
 		{Name: "uname", Type: field.TypeString, Size: 30},
 		{Name: "passwd", Type: field.TypeString, Size: 2147483647},
 		{Name: "phone", Type: field.TypeString, Unique: true, Size: 15},
 		{Name: "is_admin", Type: field.TypeBool, Default: false},
 		{Name: "is_secretary", Type: field.TypeBool, Default: false},
 		{Name: "is_active", Type: field.TypeBool, Default: true},
-		{Name: "created_at", Type: field.TypeInt64},
-		{Name: "updated_at", Type: field.TypeInt64},
 	}
 	// UsersTable holds the schema information for the "Users" table.
 	UsersTable = &schema.Table{
