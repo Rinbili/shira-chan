@@ -26,11 +26,11 @@
 1) 如上所述可以从[这里](https://baidu.com)获取打包好的镜像, 也可在/Docker/backend/database中自行构建:
 
 ```shell
-	# 先进入mysql.preseed中修改[PASSWORD]的值为密码，否则默认密码0000!!!
+	# 先进入mysql.preseed中修改'0000'的值为新密码，否则默认密码0000!!!
 	docker build -t db:latest .
 ```
 
-2) 获取镜像后即可启动服务，如果是下载我们的镜像记得修改默认密码0000以防安全问题。
+2) 获取镜像后即可启动服务，如果是下载我们的镜像记得自行修改默认密码0000以防安全问题。
 
 ```shell
 	docker run -p [PORT]:3306 db:latest
