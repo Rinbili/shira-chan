@@ -26,7 +26,8 @@
 1) 如上所述可以从[这里](https://baidu.com)获取打包好的镜像, 也可在/Docker/backend/database中自行构建:
 
 ```shell
-	# 先进入mysql.preseed中修改'0000'的值为新密码，否则默认密码0000!!!
+	# 先将mysql.preseed中两个'0000'的值修改为新密码，否则默认密码0000!!!
+	# 接着将start.sh中的两个'0000'修改为新密码
 	docker build -t db:latest .
 ```
 
