@@ -5,6 +5,7 @@ package ent
 import (
 	"context"
 	"database/sql/driver"
+	"errors"
 	"fmt"
 	"math"
 	"shira-chan-dev/ent/order"
@@ -401,6 +402,12 @@ func (oq *OrderQuery) prepareQuery(ctx context.Context) error {
 			return err
 		}
 		oq.sql = prev
+	}
+	if order.Policy == nil {
+		return errors.New("ent: uninitialized order.Policy (forgotten import ent/runtime?)")
+	}
+	if err := order.Policy.EvalQuery(ctx, oq); err != nil {
+		return err
 	}
 	return nil
 }

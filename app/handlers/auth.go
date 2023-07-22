@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"shira-chan-dev/app/utils"
+	"shira-chan-dev/ent/privacy"
 )
 
 // AuthHandler
@@ -10,25 +11,22 @@ import (
 // @return gin.HandlerFunc:
 func AuthHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		//r := Response{}
 		tokenString := c.Request.Header.Get("Authorization")
 		if len(tokenString) != 0 {
 			tokenString = tokenString[7:]
 			claims, err := utils.ParseToken(tokenString)
 			if err == nil {
-				u, err := utils.Client.User.Get(c.Copy(), claims.UId)
+				u, err := utils.Client.User.Get(privacy.DecisionContext(c, privacy.Allow), claims.UId)
 				//不接受用户数据修改前签发的token
 				if err == nil && u.IsActive == true && u.UpdatedAt < claims.IssuedAt.Time.Unix() {
 					//token有效可用
-					c.Set("is_authed", true)
-					c.Set("is_admin", u.IsAdmin)
-					c.Set("is_secretary", u.IsSecretary)
+					c.Set("user", u)
 					c.Next()
 					return
 				}
 			}
 		}
-		c.Set("is_authed", false)
+		c.Set("user", nil)
 		c.Next()
 	}
 }

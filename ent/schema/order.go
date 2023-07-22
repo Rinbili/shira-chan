@@ -7,6 +7,8 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"shira-chan-dev/ent/privacy"
+	"shira-chan-dev/ent/rule"
 	"time"
 )
 
@@ -96,5 +98,22 @@ func (Order) Edges() []ent.Edge {
 func (Order) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		TimeMixin{},
+	}
+}
+
+func (Order) Policy() ent.Policy {
+	return privacy.Policy{
+		Mutation: privacy.MutationPolicy{
+			rule.DenyIfNoViewer(),
+			rule.AllowIfAdmin(),
+			rule.OrderSelfCheckRule(),
+			privacy.AlwaysDenyRule(),
+		},
+		Query: privacy.QueryPolicy{
+			rule.DenyIfNoViewer(),
+			rule.AllowIfSecretary(),
+			rule.OrderSelfCheckRule(),
+			privacy.AlwaysDenyRule(),
+		},
 	}
 }

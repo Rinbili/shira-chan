@@ -18,11 +18,14 @@ func main() {
 		entgql.WithConfigPath("./gqlgen.yml"),
 		entgql.WithWhereInputs(true),
 	)
-
+	opts := []entc.Option{
+		entc.Extensions(ex),
+		entc.FeatureNames("privacy", "schema/snapshot", "entql"),
+	}
 	if err != nil {
 		log.Fatalf("creating entgql extension: %v", err)
 	}
-	if err := entc.Generate("./../ent/schema", &gen.Config{}, entc.Extensions(ex)); err != nil {
+	if err := entc.Generate("./../ent/schema", &gen.Config{}, opts...); err != nil {
 		log.Fatalf("running ent codegen: %v", err)
 	}
 }

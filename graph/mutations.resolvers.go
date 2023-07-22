@@ -7,21 +7,25 @@ package graph
 import (
 	"context"
 	"errors"
-	"golang.org/x/crypto/bcrypt"
 	"shira-chan-dev/app/utils"
 	"shira-chan-dev/ent"
+	"shira-chan-dev/ent/privacy"
 	"shira-chan-dev/ent/user"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Sign is the resolver for the sign field.
 func (r *mutationResolver) Sign(ctx context.Context, input SignInput) (*Token, error) {
+	ctx = privacy.DecisionContext(ctx, privacy.Allow)
 	// 通过手机号查找用户
 	u, err := r.client.User.Query().
 		Where(user.PhoneEQ(input.Phone)).
+		// 该查找不经过privacy规则
 		Only(ctx)
 	if input.Uname != nil {
 		// 注册
-		if u != nil {
+		if u == nil {
 			u, err = utils.Client.User.Create().
 				SetUname(*input.Uname).
 				SetPhone(input.Phone).

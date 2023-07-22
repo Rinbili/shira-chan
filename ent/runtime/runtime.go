@@ -3,9 +3,13 @@
 package runtime
 
 import (
+	"context"
 	"shira-chan-dev/ent/order"
 	"shira-chan-dev/ent/schema"
 	"shira-chan-dev/ent/user"
+
+	"entgo.io/ent"
+	"entgo.io/ent/privacy"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -13,6 +17,15 @@ import (
 // to their package variables.
 func init() {
 	orderMixin := schema.Order{}.Mixin()
+	order.Policy = privacy.NewPolicies(schema.Order{})
+	order.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := order.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
 	orderMixinFields0 := orderMixin[0].Fields()
 	_ = orderMixinFields0
 	orderFields := schema.Order{}.Fields()
@@ -116,8 +129,18 @@ func init() {
 	// order.DefaultHopeAt holds the default value on creation for the hope_at field.
 	order.DefaultHopeAt = orderDescHopeAt.Default.(func() int64)
 	userMixin := schema.User{}.Mixin()
+	user.Policy = privacy.NewPolicies(schema.User{})
+	user.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := user.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
 	userHooks := schema.User{}.Hooks()
-	user.Hooks[0] = userHooks[0]
+
+	user.Hooks[1] = userHooks[0]
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0
 	userFields := schema.User{}.Fields()

@@ -11,6 +11,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	gen "shira-chan-dev/ent"
 	"shira-chan-dev/ent/hook"
+	"shira-chan-dev/ent/privacy"
+	"shira-chan-dev/ent/rule"
 )
 
 type User struct {
@@ -111,5 +113,22 @@ func (User) Hooks() []ent.Hook {
 			// Limit the hook only for these operations.
 			ent.OpCreate|ent.OpUpdate|ent.OpUpdateOne,
 		),
+	}
+}
+
+func (User) Policy() ent.Policy {
+	return privacy.Policy{
+		Mutation: privacy.MutationPolicy{
+			rule.DenyIfNoViewer(),
+			rule.AllowIfAdmin(),
+			rule.UserSelfCheckRule(),
+			privacy.AlwaysDenyRule(),
+		},
+		Query: privacy.QueryPolicy{
+			rule.DenyIfNoViewer(),
+			rule.AllowIfSecretary(),
+			rule.UserSelfCheckRule(),
+			privacy.AlwaysDenyRule(),
+		},
 	}
 }

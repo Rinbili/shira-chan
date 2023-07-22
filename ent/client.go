@@ -328,7 +328,8 @@ func (c *OrderClient) QueryReceiver(o *Order) *UserQuery {
 
 // Hooks returns the client hooks.
 func (c *OrderClient) Hooks() []Hook {
-	return c.hooks.Order
+	hooks := c.hooks.Order
+	return append(hooks[:len(hooks):len(hooks)], order.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.

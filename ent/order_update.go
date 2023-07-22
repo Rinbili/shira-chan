@@ -217,7 +217,9 @@ func (ou *OrderUpdate) RemoveReceiver(u ...*User) *OrderUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ou *OrderUpdate) Save(ctx context.Context) (int, error) {
-	ou.defaults()
+	if err := ou.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, ou.sqlSave, ou.mutation, ou.hooks)
 }
 
@@ -244,11 +246,15 @@ func (ou *OrderUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (ou *OrderUpdate) defaults() {
+func (ou *OrderUpdate) defaults() error {
 	if _, ok := ou.mutation.UpdatedAt(); !ok {
+		if order.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized order.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := order.UpdateDefaultUpdatedAt()
 		ou.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -623,7 +629,9 @@ func (ouo *OrderUpdateOne) Select(field string, fields ...string) *OrderUpdateOn
 
 // Save executes the query and returns the updated Order entity.
 func (ouo *OrderUpdateOne) Save(ctx context.Context) (*Order, error) {
-	ouo.defaults()
+	if err := ouo.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, ouo.sqlSave, ouo.mutation, ouo.hooks)
 }
 
@@ -650,11 +658,15 @@ func (ouo *OrderUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (ouo *OrderUpdateOne) defaults() {
+func (ouo *OrderUpdateOne) defaults() error {
 	if _, ok := ouo.mutation.UpdatedAt(); !ok {
+		if order.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized order.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := order.UpdateDefaultUpdatedAt()
 		ouo.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

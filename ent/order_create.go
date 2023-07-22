@@ -177,7 +177,9 @@ func (oc *OrderCreate) Mutation() *OrderMutation {
 
 // Save creates the Order in the database.
 func (oc *OrderCreate) Save(ctx context.Context) (*Order, error) {
-	oc.defaults()
+	if err := oc.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, oc.sqlSave, oc.mutation, oc.hooks)
 }
 
@@ -204,12 +206,18 @@ func (oc *OrderCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (oc *OrderCreate) defaults() {
+func (oc *OrderCreate) defaults() error {
 	if _, ok := oc.mutation.CreatedAt(); !ok {
+		if order.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized order.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := order.DefaultCreatedAt()
 		oc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := oc.mutation.UpdatedAt(); !ok {
+		if order.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized order.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := order.DefaultUpdatedAt()
 		oc.mutation.SetUpdatedAt(v)
 	}
@@ -226,9 +234,13 @@ func (oc *OrderCreate) defaults() {
 		oc.mutation.SetIsFinished(v)
 	}
 	if _, ok := oc.mutation.HopeAt(); !ok {
+		if order.DefaultHopeAt == nil {
+			return fmt.Errorf("ent: uninitialized order.DefaultHopeAt (forgotten import ent/runtime?)")
+		}
 		v := order.DefaultHopeAt()
 		oc.mutation.SetHopeAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
