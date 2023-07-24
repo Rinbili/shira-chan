@@ -6,18 +6,19 @@
 
 ### 环境要求
 
-- 支持Go的平台
+- Go>=1.19(ent代码生成需要Go>=1.20)
 
 ### 运行
 
-- 配置环境变量
-  ```
-  secret=jwt密钥
-  sql_host=数据库地址
-  sql_port=数据库端口
-  sql_name=数据库名
-  sql_user=数据库用户
-  sql_passwd=数据库密码
+- 编辑配置文件`./config/config.yml`
+  ```yaml
+  secret: jwt密钥
+  sql:
+    user: 用户
+    passwd: 密码
+    host: 地址
+    port: 端口
+    name: 数据库名
   ```
 - 运行 
-  `go run .\cmd\main\main.go`
+  `go run ./cmd/main/main.go`
