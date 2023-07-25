@@ -88,9 +88,7 @@ func (Order) Edges() []ent.Edge {
 			Unique().
 			Comment("需求者"),
 		edge.To("receiver", User.Type).
-			Annotations(
-				entgql.RelayConnection(),
-				entgql.OrderField("RECEIVER_COUNT")).
+			Through("receives", Receive.Type).
 			Comment("接单者"),
 	}
 }

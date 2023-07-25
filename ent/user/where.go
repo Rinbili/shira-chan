@@ -445,6 +445,29 @@ func HasReceivedWith(preds ...predicate.Order) predicate.User {
 	})
 }
 
+// HasReceives applies the HasEdge predicate on the "receives" edge.
+func HasReceives() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, ReceivesTable, ReceivesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasReceivesWith applies the HasEdge predicate on the "receives" edge with a given conditions (other predicates).
+func HasReceivesWith(preds ...predicate.Receive) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newReceivesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(func(s *sql.Selector) {

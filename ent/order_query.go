@@ -10,6 +10,7 @@ import (
 	"math"
 	"shira-chan-dev/ent/order"
 	"shira-chan-dev/ent/predicate"
+	"shira-chan-dev/ent/receive"
 	"shira-chan-dev/ent/user"
 
 	"entgo.io/ent/dialect/sql"
@@ -26,10 +27,12 @@ type OrderQuery struct {
 	predicates        []predicate.Order
 	withRequester     *UserQuery
 	withReceiver      *UserQuery
+	withReceives      *ReceiveQuery
 	withFKs           bool
 	modifiers         []func(*sql.Selector)
 	loadTotal         []func(context.Context, []*Order) error
 	withNamedReceiver map[string]*UserQuery
+	withNamedReceives map[string]*ReceiveQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -103,6 +106,28 @@ func (oq *OrderQuery) QueryReceiver() *UserQuery {
 			sqlgraph.From(order.Table, order.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, order.ReceiverTable, order.ReceiverPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryReceives chains the current query on the "receives" edge.
+func (oq *OrderQuery) QueryReceives() *ReceiveQuery {
+	query := (&ReceiveClient{config: oq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := oq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := oq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, selector),
+			sqlgraph.To(receive.Table, receive.OrderColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, order.ReceivesTable, order.ReceivesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
 		return fromU, nil
@@ -304,6 +329,7 @@ func (oq *OrderQuery) Clone() *OrderQuery {
 		predicates:    append([]predicate.Order{}, oq.predicates...),
 		withRequester: oq.withRequester.Clone(),
 		withReceiver:  oq.withReceiver.Clone(),
+		withReceives:  oq.withReceives.Clone(),
 		// clone intermediate query.
 		sql:  oq.sql.Clone(),
 		path: oq.path,
@@ -329,6 +355,17 @@ func (oq *OrderQuery) WithReceiver(opts ...func(*UserQuery)) *OrderQuery {
 		opt(query)
 	}
 	oq.withReceiver = query
+	return oq
+}
+
+// WithReceives tells the query-builder to eager-load the nodes that are connected to
+// the "receives" edge. The optional arguments are used to configure the query builder of the edge.
+func (oq *OrderQuery) WithReceives(opts ...func(*ReceiveQuery)) *OrderQuery {
+	query := (&ReceiveClient{config: oq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	oq.withReceives = query
 	return oq
 }
 
@@ -417,9 +454,10 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 		nodes       = []*Order{}
 		withFKs     = oq.withFKs
 		_spec       = oq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			oq.withRequester != nil,
 			oq.withReceiver != nil,
+			oq.withReceives != nil,
 		}
 	)
 	if oq.withRequester != nil {
@@ -462,10 +500,24 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 			return nil, err
 		}
 	}
+	if query := oq.withReceives; query != nil {
+		if err := oq.loadReceives(ctx, query, nodes,
+			func(n *Order) { n.Edges.Receives = []*Receive{} },
+			func(n *Order, e *Receive) { n.Edges.Receives = append(n.Edges.Receives, e) }); err != nil {
+			return nil, err
+		}
+	}
 	for name, query := range oq.withNamedReceiver {
 		if err := oq.loadReceiver(ctx, query, nodes,
 			func(n *Order) { n.appendNamedReceiver(name) },
 			func(n *Order, e *User) { n.appendNamedReceiver(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range oq.withNamedReceives {
+		if err := oq.loadReceives(ctx, query, nodes,
+			func(n *Order) { n.appendNamedReceives(name) },
+			func(n *Order, e *Receive) { n.appendNamedReceives(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -570,6 +622,36 @@ func (oq *OrderQuery) loadReceiver(ctx context.Context, query *UserQuery, nodes 
 	}
 	return nil
 }
+func (oq *OrderQuery) loadReceives(ctx context.Context, query *ReceiveQuery, nodes []*Order, init func(*Order), assign func(*Order, *Receive)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Order)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(receive.FieldOrderID)
+	}
+	query.Where(predicate.Receive(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(order.ReceivesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.OrderID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "order_id" returned %v for node %v`, fk, n)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (oq *OrderQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := oq.querySpec()
@@ -666,6 +748,20 @@ func (oq *OrderQuery) WithNamedReceiver(name string, opts ...func(*UserQuery)) *
 		oq.withNamedReceiver = make(map[string]*UserQuery)
 	}
 	oq.withNamedReceiver[name] = query
+	return oq
+}
+
+// WithNamedReceives tells the query-builder to eager-load the nodes that are connected to the "receives"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (oq *OrderQuery) WithNamedReceives(name string, opts ...func(*ReceiveQuery)) *OrderQuery {
+	query := (&ReceiveClient{config: oq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if oq.withNamedReceives == nil {
+		oq.withNamedReceives = make(map[string]*ReceiveQuery)
+	}
+	oq.withNamedReceives[name] = query
 	return oq
 }
 

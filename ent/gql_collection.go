@@ -51,84 +51,8 @@ func (o *OrderQuery) collectField(ctx context.Context, opCtx *graphql.OperationC
 				path  = append(path, alias)
 				query = (&UserClient{config: o.config}).Query()
 			)
-			args := newUserPaginateArgs(fieldArgs(ctx, new(UserWhereInput), path...))
-			if err := validateFirstLast(args.first, args.last); err != nil {
-				return fmt.Errorf("validate first and last in path %q: %w", path, err)
-			}
-			pager, err := newUserPager(args.opts, args.last != nil)
-			if err != nil {
-				return fmt.Errorf("create new pager in path %q: %w", path, err)
-			}
-			if query, err = pager.applyFilter(query); err != nil {
+			if err := query.collectField(ctx, opCtx, field, path, mayAddCondition(satisfies, userImplementors)...); err != nil {
 				return err
-			}
-			ignoredEdges := !hasCollectedField(ctx, append(path, edgesField)...)
-			if hasCollectedField(ctx, append(path, totalCountField)...) || hasCollectedField(ctx, append(path, pageInfoField)...) {
-				hasPagination := args.after != nil || args.first != nil || args.before != nil || args.last != nil
-				if hasPagination || ignoredEdges {
-					query := query.Clone()
-					o.loadTotal = append(o.loadTotal, func(ctx context.Context, nodes []*Order) error {
-						ids := make([]driver.Value, len(nodes))
-						for i := range nodes {
-							ids[i] = nodes[i].ID
-						}
-						var v []struct {
-							NodeID int `sql:"order_id"`
-							Count  int `sql:"count"`
-						}
-						query.Where(func(s *sql.Selector) {
-							joinT := sql.Table(order.ReceiverTable)
-							s.Join(joinT).On(s.C(user.FieldID), joinT.C(order.ReceiverPrimaryKey[1]))
-							s.Where(sql.InValues(joinT.C(order.ReceiverPrimaryKey[0]), ids...))
-							s.Select(joinT.C(order.ReceiverPrimaryKey[0]), sql.Count("*"))
-							s.GroupBy(joinT.C(order.ReceiverPrimaryKey[0]))
-						})
-						if err := query.Select().Scan(ctx, &v); err != nil {
-							return err
-						}
-						m := make(map[int]int, len(v))
-						for i := range v {
-							m[v[i].NodeID] = v[i].Count
-						}
-						for i := range nodes {
-							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[1] == nil {
-								nodes[i].Edges.totalCount[1] = make(map[string]int)
-							}
-							nodes[i].Edges.totalCount[1][alias] = n
-						}
-						return nil
-					})
-				} else {
-					o.loadTotal = append(o.loadTotal, func(_ context.Context, nodes []*Order) error {
-						for i := range nodes {
-							n := len(nodes[i].Edges.Receiver)
-							if nodes[i].Edges.totalCount[1] == nil {
-								nodes[i].Edges.totalCount[1] = make(map[string]int)
-							}
-							nodes[i].Edges.totalCount[1][alias] = n
-						}
-						return nil
-					})
-				}
-			}
-			if ignoredEdges || (args.first != nil && *args.first == 0) || (args.last != nil && *args.last == 0) {
-				continue
-			}
-			if query, err = pager.applyCursors(query, args.after, args.before); err != nil {
-				return err
-			}
-			path = append(path, edgesField, nodeField)
-			if field := collectedField(ctx, path...); field != nil {
-				if err := query.collectField(ctx, opCtx, *field, path, mayAddCondition(satisfies, userImplementors)...); err != nil {
-					return err
-				}
-			}
-			if limit := paginateLimit(args.first, args.last); limit > 0 {
-				modify := limitRows(order.ReceiverPrimaryKey[0], limit, pager.orderExpr(query))
-				query.modifiers = append(query.modifiers, modify)
-			} else {
-				query = pager.applyOrder(query)
 			}
 			o.WithNamedReceiver(alias, func(wq *UserQuery) {
 				*wq = *query
@@ -357,84 +281,8 @@ func (u *UserQuery) collectField(ctx context.Context, opCtx *graphql.OperationCo
 				path  = append(path, alias)
 				query = (&OrderClient{config: u.config}).Query()
 			)
-			args := newOrderPaginateArgs(fieldArgs(ctx, new(OrderWhereInput), path...))
-			if err := validateFirstLast(args.first, args.last); err != nil {
-				return fmt.Errorf("validate first and last in path %q: %w", path, err)
-			}
-			pager, err := newOrderPager(args.opts, args.last != nil)
-			if err != nil {
-				return fmt.Errorf("create new pager in path %q: %w", path, err)
-			}
-			if query, err = pager.applyFilter(query); err != nil {
+			if err := query.collectField(ctx, opCtx, field, path, mayAddCondition(satisfies, orderImplementors)...); err != nil {
 				return err
-			}
-			ignoredEdges := !hasCollectedField(ctx, append(path, edgesField)...)
-			if hasCollectedField(ctx, append(path, totalCountField)...) || hasCollectedField(ctx, append(path, pageInfoField)...) {
-				hasPagination := args.after != nil || args.first != nil || args.before != nil || args.last != nil
-				if hasPagination || ignoredEdges {
-					query := query.Clone()
-					u.loadTotal = append(u.loadTotal, func(ctx context.Context, nodes []*User) error {
-						ids := make([]driver.Value, len(nodes))
-						for i := range nodes {
-							ids[i] = nodes[i].ID
-						}
-						var v []struct {
-							NodeID int `sql:"user_id"`
-							Count  int `sql:"count"`
-						}
-						query.Where(func(s *sql.Selector) {
-							joinT := sql.Table(user.ReceivedTable)
-							s.Join(joinT).On(s.C(order.FieldID), joinT.C(user.ReceivedPrimaryKey[0]))
-							s.Where(sql.InValues(joinT.C(user.ReceivedPrimaryKey[1]), ids...))
-							s.Select(joinT.C(user.ReceivedPrimaryKey[1]), sql.Count("*"))
-							s.GroupBy(joinT.C(user.ReceivedPrimaryKey[1]))
-						})
-						if err := query.Select().Scan(ctx, &v); err != nil {
-							return err
-						}
-						m := make(map[int]int, len(v))
-						for i := range v {
-							m[v[i].NodeID] = v[i].Count
-						}
-						for i := range nodes {
-							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[1] == nil {
-								nodes[i].Edges.totalCount[1] = make(map[string]int)
-							}
-							nodes[i].Edges.totalCount[1][alias] = n
-						}
-						return nil
-					})
-				} else {
-					u.loadTotal = append(u.loadTotal, func(_ context.Context, nodes []*User) error {
-						for i := range nodes {
-							n := len(nodes[i].Edges.Received)
-							if nodes[i].Edges.totalCount[1] == nil {
-								nodes[i].Edges.totalCount[1] = make(map[string]int)
-							}
-							nodes[i].Edges.totalCount[1][alias] = n
-						}
-						return nil
-					})
-				}
-			}
-			if ignoredEdges || (args.first != nil && *args.first == 0) || (args.last != nil && *args.last == 0) {
-				continue
-			}
-			if query, err = pager.applyCursors(query, args.after, args.before); err != nil {
-				return err
-			}
-			path = append(path, edgesField, nodeField)
-			if field := collectedField(ctx, path...); field != nil {
-				if err := query.collectField(ctx, opCtx, *field, path, mayAddCondition(satisfies, orderImplementors)...); err != nil {
-					return err
-				}
-			}
-			if limit := paginateLimit(args.first, args.last); limit > 0 {
-				modify := limitRows(user.ReceivedPrimaryKey[1], limit, pager.orderExpr(query))
-				query.modifiers = append(query.modifiers, modify)
-			} else {
-				query = pager.applyOrder(query)
 			}
 			u.WithNamedReceived(alias, func(wq *OrderQuery) {
 				*wq = *query

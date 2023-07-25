@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"shira-chan-dev/ent/order"
 	"shira-chan-dev/ent/predicate"
+	"shira-chan-dev/ent/receive"
 	"shira-chan-dev/ent/user"
 	"sync"
 
@@ -24,8 +25,9 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeOrder = "Order"
-	TypeUser  = "User"
+	TypeOrder   = "Order"
+	TypeReceive = "Receive"
+	TypeUser    = "User"
 )
 
 // OrderMutation represents an operation that mutates the Order nodes in the graph.
@@ -1148,6 +1150,522 @@ func (m *OrderMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Order edge %s", name)
+}
+
+// ReceiveMutation represents an operation that mutates the Receive nodes in the graph.
+type ReceiveMutation struct {
+	config
+	op            Op
+	typ           string
+	created_at    *int64
+	addcreated_at *int64
+	updated_at    *int64
+	addupdated_at *int64
+	clearedFields map[string]struct{}
+	user          *int
+	cleareduser   bool
+	_order        *int
+	cleared_order bool
+	done          bool
+	oldValue      func(context.Context) (*Receive, error)
+	predicates    []predicate.Receive
+}
+
+var _ ent.Mutation = (*ReceiveMutation)(nil)
+
+// receiveOption allows management of the mutation configuration using functional options.
+type receiveOption func(*ReceiveMutation)
+
+// newReceiveMutation creates new mutation for the Receive entity.
+func newReceiveMutation(c config, op Op, opts ...receiveOption) *ReceiveMutation {
+	m := &ReceiveMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeReceive,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ReceiveMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ReceiveMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ReceiveMutation) SetCreatedAt(i int64) {
+	m.created_at = &i
+	m.addcreated_at = nil
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ReceiveMutation) CreatedAt() (r int64, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// AddCreatedAt adds i to the "created_at" field.
+func (m *ReceiveMutation) AddCreatedAt(i int64) {
+	if m.addcreated_at != nil {
+		*m.addcreated_at += i
+	} else {
+		m.addcreated_at = &i
+	}
+}
+
+// AddedCreatedAt returns the value that was added to the "created_at" field in this mutation.
+func (m *ReceiveMutation) AddedCreatedAt() (r int64, exists bool) {
+	v := m.addcreated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ReceiveMutation) ResetCreatedAt() {
+	m.created_at = nil
+	m.addcreated_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ReceiveMutation) SetUpdatedAt(i int64) {
+	m.updated_at = &i
+	m.addupdated_at = nil
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ReceiveMutation) UpdatedAt() (r int64, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// AddUpdatedAt adds i to the "updated_at" field.
+func (m *ReceiveMutation) AddUpdatedAt(i int64) {
+	if m.addupdated_at != nil {
+		*m.addupdated_at += i
+	} else {
+		m.addupdated_at = &i
+	}
+}
+
+// AddedUpdatedAt returns the value that was added to the "updated_at" field in this mutation.
+func (m *ReceiveMutation) AddedUpdatedAt() (r int64, exists bool) {
+	v := m.addupdated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ReceiveMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+	m.addupdated_at = nil
+}
+
+// SetUserID sets the "user_id" field.
+func (m *ReceiveMutation) SetUserID(i int) {
+	m.user = &i
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *ReceiveMutation) UserID() (r int, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *ReceiveMutation) ResetUserID() {
+	m.user = nil
+}
+
+// SetOrderID sets the "order_id" field.
+func (m *ReceiveMutation) SetOrderID(i int) {
+	m._order = &i
+}
+
+// OrderID returns the value of the "order_id" field in the mutation.
+func (m *ReceiveMutation) OrderID() (r int, exists bool) {
+	v := m._order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetOrderID resets all changes to the "order_id" field.
+func (m *ReceiveMutation) ResetOrderID() {
+	m._order = nil
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *ReceiveMutation) ClearUser() {
+	m.cleareduser = true
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *ReceiveMutation) UserCleared() bool {
+	return m.cleareduser
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *ReceiveMutation) UserIDs() (ids []int) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *ReceiveMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
+// ClearOrder clears the "order" edge to the Order entity.
+func (m *ReceiveMutation) ClearOrder() {
+	m.cleared_order = true
+}
+
+// OrderCleared reports if the "order" edge to the Order entity was cleared.
+func (m *ReceiveMutation) OrderCleared() bool {
+	return m.cleared_order
+}
+
+// OrderIDs returns the "order" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// OrderID instead. It exists only for internal usage by the builders.
+func (m *ReceiveMutation) OrderIDs() (ids []int) {
+	if id := m._order; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetOrder resets all changes to the "order" edge.
+func (m *ReceiveMutation) ResetOrder() {
+	m._order = nil
+	m.cleared_order = false
+}
+
+// Where appends a list predicates to the ReceiveMutation builder.
+func (m *ReceiveMutation) Where(ps ...predicate.Receive) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ReceiveMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ReceiveMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Receive, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ReceiveMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ReceiveMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Receive).
+func (m *ReceiveMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ReceiveMutation) Fields() []string {
+	fields := make([]string, 0, 4)
+	if m.created_at != nil {
+		fields = append(fields, receive.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, receive.FieldUpdatedAt)
+	}
+	if m.user != nil {
+		fields = append(fields, receive.FieldUserID)
+	}
+	if m._order != nil {
+		fields = append(fields, receive.FieldOrderID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ReceiveMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case receive.FieldCreatedAt:
+		return m.CreatedAt()
+	case receive.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case receive.FieldUserID:
+		return m.UserID()
+	case receive.FieldOrderID:
+		return m.OrderID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ReceiveMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	return nil, errors.New("edge schema Receive does not support getting old values")
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ReceiveMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case receive.FieldCreatedAt:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case receive.FieldUpdatedAt:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case receive.FieldUserID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case receive.FieldOrderID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOrderID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Receive field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ReceiveMutation) AddedFields() []string {
+	var fields []string
+	if m.addcreated_at != nil {
+		fields = append(fields, receive.FieldCreatedAt)
+	}
+	if m.addupdated_at != nil {
+		fields = append(fields, receive.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ReceiveMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case receive.FieldCreatedAt:
+		return m.AddedCreatedAt()
+	case receive.FieldUpdatedAt:
+		return m.AddedUpdatedAt()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ReceiveMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case receive.FieldCreatedAt:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedAt(v)
+		return nil
+	case receive.FieldUpdatedAt:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Receive numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ReceiveMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ReceiveMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ReceiveMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Receive nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ReceiveMutation) ResetField(name string) error {
+	switch name {
+	case receive.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case receive.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case receive.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case receive.FieldOrderID:
+		m.ResetOrderID()
+		return nil
+	}
+	return fmt.Errorf("unknown Receive field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ReceiveMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.user != nil {
+		edges = append(edges, receive.EdgeUser)
+	}
+	if m._order != nil {
+		edges = append(edges, receive.EdgeOrder)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ReceiveMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case receive.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
+	case receive.EdgeOrder:
+		if id := m._order; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ReceiveMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ReceiveMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ReceiveMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.cleareduser {
+		edges = append(edges, receive.EdgeUser)
+	}
+	if m.cleared_order {
+		edges = append(edges, receive.EdgeOrder)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ReceiveMutation) EdgeCleared(name string) bool {
+	switch name {
+	case receive.EdgeUser:
+		return m.cleareduser
+	case receive.EdgeOrder:
+		return m.cleared_order
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ReceiveMutation) ClearEdge(name string) error {
+	switch name {
+	case receive.EdgeUser:
+		m.ClearUser()
+		return nil
+	case receive.EdgeOrder:
+		m.ClearOrder()
+		return nil
+	}
+	return fmt.Errorf("unknown Receive unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ReceiveMutation) ResetEdge(name string) error {
+	switch name {
+	case receive.EdgeUser:
+		m.ResetUser()
+		return nil
+	case receive.EdgeOrder:
+		m.ResetOrder()
+		return nil
+	}
+	return fmt.Errorf("unknown Receive edge %s", name)
 }
 
 // UserMutation represents an operation that mutates the User nodes in the graph.

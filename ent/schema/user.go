@@ -76,9 +76,7 @@ func (User) Edges() []ent.Edge {
 			Comment("需求"),
 		edge.From("received", Order.Type).
 			Ref("receiver").
-			Annotations(
-				entgql.RelayConnection(),
-				entgql.OrderField("RECEIVED_COUNT")).
+			Through("receives", Receive.Type).
 			Comment("接单"),
 	}
 }

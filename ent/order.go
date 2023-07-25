@@ -50,13 +50,16 @@ type OrderEdges struct {
 	Requester *User `json:"requester,omitempty"`
 	// 接单者
 	Receiver []*User `json:"receiver,omitempty"`
+	// Receives holds the value of the receives edge.
+	Receives []*Receive `json:"receives,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 	// totalCount holds the count of the edges above.
 	totalCount [2]map[string]int
 
 	namedReceiver map[string][]*User
+	namedReceives map[string][]*Receive
 }
 
 // RequesterOrErr returns the Requester value or an error if the edge
@@ -79,6 +82,15 @@ func (e OrderEdges) ReceiverOrErr() ([]*User, error) {
 		return e.Receiver, nil
 	}
 	return nil, &NotLoadedError{edge: "receiver"}
+}
+
+// ReceivesOrErr returns the Receives value or an error if the edge
+// was not loaded in eager-loading.
+func (e OrderEdges) ReceivesOrErr() ([]*Receive, error) {
+	if e.loadedTypes[2] {
+		return e.Receives, nil
+	}
+	return nil, &NotLoadedError{edge: "receives"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -208,6 +220,11 @@ func (o *Order) QueryReceiver() *UserQuery {
 	return NewOrderClient(o.config).QueryReceiver(o)
 }
 
+// QueryReceives queries the "receives" edge of the Order entity.
+func (o *Order) QueryReceives() *ReceiveQuery {
+	return NewOrderClient(o.config).QueryReceives(o)
+}
+
 // Update returns a builder for updating this Order.
 // Note that you need to call Order.Unwrap() before calling this method if this Order
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -287,6 +304,30 @@ func (o *Order) appendNamedReceiver(name string, edges ...*User) {
 		o.Edges.namedReceiver[name] = []*User{}
 	} else {
 		o.Edges.namedReceiver[name] = append(o.Edges.namedReceiver[name], edges...)
+	}
+}
+
+// NamedReceives returns the Receives named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (o *Order) NamedReceives(name string) ([]*Receive, error) {
+	if o.Edges.namedReceives == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := o.Edges.namedReceives[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (o *Order) appendNamedReceives(name string, edges ...*Receive) {
+	if o.Edges.namedReceives == nil {
+		o.Edges.namedReceives = make(map[string][]*Receive)
+	}
+	if len(edges) == 0 {
+		o.Edges.namedReceives[name] = []*Receive{}
+	} else {
+		o.Edges.namedReceives[name] = append(o.Edges.namedReceives[name], edges...)
 	}
 }
 

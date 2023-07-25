@@ -2,11 +2,6 @@
 
 package graph
 
-type ReceiveInput struct {
-	UID int `json:"uid"`
-	Oid int `json:"oid"`
-}
-
 type SignInput struct {
 	// 用户名
 	Uname *string `json:"uname,omitempty"`

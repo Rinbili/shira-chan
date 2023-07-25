@@ -5,6 +5,7 @@ package runtime
 import (
 	"context"
 	"shira-chan-dev/ent/order"
+	"shira-chan-dev/ent/receive"
 	"shira-chan-dev/ent/schema"
 	"shira-chan-dev/ent/user"
 
@@ -128,6 +129,21 @@ func init() {
 	orderDescHopeAt := orderFields[7].Descriptor()
 	// order.DefaultHopeAt holds the default value on creation for the hope_at field.
 	order.DefaultHopeAt = orderDescHopeAt.Default.(func() int64)
+	receiveMixin := schema.Receive{}.Mixin()
+	receiveMixinFields0 := receiveMixin[0].Fields()
+	_ = receiveMixinFields0
+	receiveFields := schema.Receive{}.Fields()
+	_ = receiveFields
+	// receiveDescCreatedAt is the schema descriptor for created_at field.
+	receiveDescCreatedAt := receiveMixinFields0[0].Descriptor()
+	// receive.DefaultCreatedAt holds the default value on creation for the created_at field.
+	receive.DefaultCreatedAt = receiveDescCreatedAt.Default.(func() int64)
+	// receiveDescUpdatedAt is the schema descriptor for updated_at field.
+	receiveDescUpdatedAt := receiveMixinFields0[1].Descriptor()
+	// receive.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	receive.DefaultUpdatedAt = receiveDescUpdatedAt.Default.(func() int64)
+	// receive.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	receive.UpdateDefaultUpdatedAt = receiveDescUpdatedAt.UpdateDefault.(func() int64)
 	userMixin := schema.User{}.Mixin()
 	user.Policy = privacy.NewPolicies(schema.User{})
 	user.Hooks[0] = func(next ent.Mutator) ent.Mutator {

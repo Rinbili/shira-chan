@@ -5,6 +5,7 @@ package ent
 import (
 	"shira-chan-dev/ent/order"
 	"shira-chan-dev/ent/predicate"
+	"shira-chan-dev/ent/receive"
 	"shira-chan-dev/ent/user"
 
 	"entgo.io/ent/dialect/sql"
@@ -15,7 +16,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 2)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 3)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   order.Table,
@@ -40,6 +41,29 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   receive.Table,
+			Columns: receive.Columns,
+			CompositeID: []*sqlgraph.FieldSpec{
+				{
+					Type:   field.TypeInt,
+					Column: receive.FieldOrderID,
+				},
+				{
+					Type:   field.TypeInt,
+					Column: receive.FieldUserID,
+				},
+			},
+		},
+		Type: "Receive",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			receive.FieldCreatedAt: {Type: field.TypeInt64, Column: receive.FieldCreatedAt},
+			receive.FieldUpdatedAt: {Type: field.TypeInt64, Column: receive.FieldUpdatedAt},
+			receive.FieldUserID:    {Type: field.TypeInt, Column: receive.FieldUserID},
+			receive.FieldOrderID:   {Type: field.TypeInt, Column: receive.FieldOrderID},
+		},
+	}
+	graph.Nodes[2] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   user.Table,
 			Columns: user.Columns,
@@ -85,6 +109,42 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"User",
 	)
 	graph.MustAddE(
+		"receives",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   order.ReceivesTable,
+			Columns: []string{order.ReceivesColumn},
+			Bidi:    false,
+		},
+		"Order",
+		"Receive",
+	)
+	graph.MustAddE(
+		"user",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   receive.UserTable,
+			Columns: []string{receive.UserColumn},
+			Bidi:    false,
+		},
+		"Receive",
+		"User",
+	)
+	graph.MustAddE(
+		"order",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   receive.OrderTable,
+			Columns: []string{receive.OrderColumn},
+			Bidi:    false,
+		},
+		"Receive",
+		"Order",
+	)
+	graph.MustAddE(
 		"requested",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -107,6 +167,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"User",
 		"Order",
+	)
+	graph.MustAddE(
+		"receives",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   user.ReceivesTable,
+			Columns: []string{user.ReceivesColumn},
+			Bidi:    false,
+		},
+		"User",
+		"Receive",
 	)
 	return graph
 }()
@@ -235,6 +307,103 @@ func (f *OrderFilter) WhereHasReceiverWith(preds ...predicate.User) {
 	})))
 }
 
+// WhereHasReceives applies a predicate to check if query has an edge receives.
+func (f *OrderFilter) WhereHasReceives() {
+	f.Where(entql.HasEdge("receives"))
+}
+
+// WhereHasReceivesWith applies a predicate to check if query has an edge receives with a given conditions (other predicates).
+func (f *OrderFilter) WhereHasReceivesWith(preds ...predicate.Receive) {
+	f.Where(entql.HasEdgeWith("receives", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (rq *ReceiveQuery) addPredicate(pred func(s *sql.Selector)) {
+	rq.predicates = append(rq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the ReceiveQuery builder.
+func (rq *ReceiveQuery) Filter() *ReceiveFilter {
+	return &ReceiveFilter{config: rq.config, predicateAdder: rq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *ReceiveMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the ReceiveMutation builder.
+func (m *ReceiveMutation) Filter() *ReceiveFilter {
+	return &ReceiveFilter{config: m.config, predicateAdder: m}
+}
+
+// ReceiveFilter provides a generic filtering capability at runtime for ReceiveQuery.
+type ReceiveFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *ReceiveFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereCreatedAt applies the entql int64 predicate on the created_at field.
+func (f *ReceiveFilter) WhereCreatedAt(p entql.Int64P) {
+	f.Where(p.Field(receive.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql int64 predicate on the updated_at field.
+func (f *ReceiveFilter) WhereUpdatedAt(p entql.Int64P) {
+	f.Where(p.Field(receive.FieldUpdatedAt))
+}
+
+// WhereUserID applies the entql int predicate on the user_id field.
+func (f *ReceiveFilter) WhereUserID(p entql.IntP) {
+	f.Where(p.Field(receive.FieldUserID))
+}
+
+// WhereOrderID applies the entql int predicate on the order_id field.
+func (f *ReceiveFilter) WhereOrderID(p entql.IntP) {
+	f.Where(p.Field(receive.FieldOrderID))
+}
+
+// WhereHasUser applies a predicate to check if query has an edge user.
+func (f *ReceiveFilter) WhereHasUser() {
+	f.Where(entql.HasEdge("user"))
+}
+
+// WhereHasUserWith applies a predicate to check if query has an edge user with a given conditions (other predicates).
+func (f *ReceiveFilter) WhereHasUserWith(preds ...predicate.User) {
+	f.Where(entql.HasEdgeWith("user", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasOrder applies a predicate to check if query has an edge order.
+func (f *ReceiveFilter) WhereHasOrder() {
+	f.Where(entql.HasEdge("order"))
+}
+
+// WhereHasOrderWith applies a predicate to check if query has an edge order with a given conditions (other predicates).
+func (f *ReceiveFilter) WhereHasOrderWith(preds ...predicate.Order) {
+	f.Where(entql.HasEdgeWith("order", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (uq *UserQuery) addPredicate(pred func(s *sql.Selector)) {
 	uq.predicates = append(uq.predicates, pred)
@@ -264,7 +433,7 @@ type UserFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -337,6 +506,20 @@ func (f *UserFilter) WhereHasReceived() {
 // WhereHasReceivedWith applies a predicate to check if query has an edge received with a given conditions (other predicates).
 func (f *UserFilter) WhereHasReceivedWith(preds ...predicate.Order) {
 	f.Where(entql.HasEdgeWith("received", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasReceives applies a predicate to check if query has an edge receives.
+func (f *UserFilter) WhereHasReceives() {
+	f.Where(entql.HasEdge("receives"))
+}
+
+// WhereHasReceivesWith applies a predicate to check if query has an edge receives with a given conditions (other predicates).
+func (f *UserFilter) WhereHasReceivesWith(preds ...predicate.Receive) {
+	f.Where(entql.HasEdgeWith("receives", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

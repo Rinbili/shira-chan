@@ -37,6 +37,8 @@ const (
 	EdgeRequester = "requester"
 	// EdgeReceiver holds the string denoting the receiver edge name in mutations.
 	EdgeReceiver = "receiver"
+	// EdgeReceives holds the string denoting the receives edge name in mutations.
+	EdgeReceives = "receives"
 	// Table holds the table name of the order in the database.
 	Table = "Orders"
 	// RequesterTable is the table that holds the requester relation/edge.
@@ -51,6 +53,13 @@ const (
 	// ReceiverInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	ReceiverInverseTable = "Users"
+	// ReceivesTable is the table that holds the receives relation/edge.
+	ReceivesTable = "order_receiver"
+	// ReceivesInverseTable is the table name for the Receive entity.
+	// It exists in this package in order to avoid circular dependency with the "receive" package.
+	ReceivesInverseTable = "order_receiver"
+	// ReceivesColumn is the table column denoting the receives relation/edge.
+	ReceivesColumn = "order_id"
 )
 
 // Columns holds all SQL columns for order fields.
@@ -205,6 +214,20 @@ func ByReceiver(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newReceiverStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByReceivesCount orders the results by receives count.
+func ByReceivesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newReceivesStep(), opts...)
+	}
+}
+
+// ByReceives orders the results by receives terms.
+func ByReceives(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newReceivesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newRequesterStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -217,5 +240,12 @@ func newReceiverStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ReceiverInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, ReceiverTable, ReceiverPrimaryKey...),
+	)
+}
+func newReceivesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ReceivesInverseTable, ReceivesColumn),
+		sqlgraph.Edge(sqlgraph.O2M, true, ReceivesTable, ReceivesColumn),
 	)
 }

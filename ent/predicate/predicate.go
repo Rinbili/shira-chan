@@ -9,5 +9,8 @@ import (
 // Order is the predicate function for order builders.
 type Order func(*sql.Selector)
 
+// Receive is the predicate function for receive builders.
+type Receive func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

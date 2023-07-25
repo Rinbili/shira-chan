@@ -16,25 +16,16 @@ func (o *Order) Requester(ctx context.Context) (*User, error) {
 	return result, MaskNotFound(err)
 }
 
-func (o *Order) Receiver(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *UserOrder, where *UserWhereInput,
-) (*UserConnection, error) {
-	opts := []UserPaginateOption{
-		WithUserOrder(orderBy),
-		WithUserFilter(where.Filter),
+func (o *Order) Receiver(ctx context.Context) (result []*User, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = o.NamedReceiver(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = o.Edges.ReceiverOrErr()
 	}
-	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := o.Edges.totalCount[1][alias]
-	if nodes, err := o.NamedReceiver(alias); err == nil || hasTotalCount {
-		pager, err := newUserPager(opts, last != nil)
-		if err != nil {
-			return nil, err
-		}
-		conn := &UserConnection{Edges: []*UserEdge{}, TotalCount: totalCount}
-		conn.build(nodes, pager, after, first, before, last)
-		return conn, nil
+	if IsNotLoaded(err) {
+		result, err = o.QueryReceiver().All(ctx)
 	}
-	return o.QueryReceiver().Paginate(ctx, after, first, before, last, opts...)
+	return result, err
 }
 
 func (u *User) Requested(
@@ -58,23 +49,14 @@ func (u *User) Requested(
 	return u.QueryRequested().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (u *User) Received(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *OrderOrder, where *OrderWhereInput,
-) (*OrderConnection, error) {
-	opts := []OrderPaginateOption{
-		WithOrderOrder(orderBy),
-		WithOrderFilter(where.Filter),
+func (u *User) Received(ctx context.Context) (result []*Order, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = u.NamedReceived(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = u.Edges.ReceivedOrErr()
 	}
-	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := u.Edges.totalCount[1][alias]
-	if nodes, err := u.NamedReceived(alias); err == nil || hasTotalCount {
-		pager, err := newOrderPager(opts, last != nil)
-		if err != nil {
-			return nil, err
-		}
-		conn := &OrderConnection{Edges: []*OrderEdge{}, TotalCount: totalCount}
-		conn.build(nodes, pager, after, first, before, last)
-		return conn, nil
+	if IsNotLoaded(err) {
+		result, err = u.QueryReceived().All(ctx)
 	}
-	return u.QueryReceived().Paginate(ctx, after, first, before, last, opts...)
+	return result, err
 }

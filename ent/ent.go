@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"reflect"
 	"shira-chan-dev/ent/order"
+	"shira-chan-dev/ent/receive"
 	"shira-chan-dev/ent/user"
 	"sync"
 
@@ -74,8 +75,9 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			order.Table: order.ValidColumn,
-			user.Table:  user.ValidColumn,
+			order.Table:   order.ValidColumn,
+			receive.Table: receive.ValidColumn,
+			user.Table:    user.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

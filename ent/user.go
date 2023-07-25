@@ -44,14 +44,17 @@ type UserEdges struct {
 	Requested []*Order `json:"requested,omitempty"`
 	// 接单
 	Received []*Order `json:"received,omitempty"`
+	// Receives holds the value of the receives edge.
+	Receives []*Receive `json:"receives,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 	// totalCount holds the count of the edges above.
 	totalCount [2]map[string]int
 
 	namedRequested map[string][]*Order
 	namedReceived  map[string][]*Order
+	namedReceives  map[string][]*Receive
 }
 
 // RequestedOrErr returns the Requested value or an error if the edge
@@ -70,6 +73,15 @@ func (e UserEdges) ReceivedOrErr() ([]*Order, error) {
 		return e.Received, nil
 	}
 	return nil, &NotLoadedError{edge: "received"}
+}
+
+// ReceivesOrErr returns the Receives value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) ReceivesOrErr() ([]*Receive, error) {
+	if e.loadedTypes[2] {
+		return e.Receives, nil
+	}
+	return nil, &NotLoadedError{edge: "receives"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -175,6 +187,11 @@ func (u *User) QueryReceived() *OrderQuery {
 	return NewUserClient(u.config).QueryReceived(u)
 }
 
+// QueryReceives queries the "receives" edge of the User entity.
+func (u *User) QueryReceives() *ReceiveQuery {
+	return NewUserClient(u.config).QueryReceives(u)
+}
+
 // Update returns a builder for updating this User.
 // Note that you need to call User.Unwrap() before calling this method if this User
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -269,6 +286,30 @@ func (u *User) appendNamedReceived(name string, edges ...*Order) {
 		u.Edges.namedReceived[name] = []*Order{}
 	} else {
 		u.Edges.namedReceived[name] = append(u.Edges.namedReceived[name], edges...)
+	}
+}
+
+// NamedReceives returns the Receives named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (u *User) NamedReceives(name string) ([]*Receive, error) {
+	if u.Edges.namedReceives == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := u.Edges.namedReceives[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (u *User) appendNamedReceives(name string, edges ...*Receive) {
+	if u.Edges.namedReceives == nil {
+		u.Edges.namedReceives = make(map[string][]*Receive)
+	}
+	if len(edges) == 0 {
+		u.Edges.namedReceives[name] = []*Receive{}
+	} else {
+		u.Edges.namedReceives[name] = append(u.Edges.namedReceives[name], edges...)
 	}
 }
 

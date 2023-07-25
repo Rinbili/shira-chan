@@ -173,6 +173,30 @@ func (f OrderMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation)
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.OrderMutation", m)
 }
 
+// The ReceiveQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type ReceiveQueryRuleFunc func(context.Context, *ent.ReceiveQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f ReceiveQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.ReceiveQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.ReceiveQuery", q)
+}
+
+// The ReceiveMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type ReceiveMutationRuleFunc func(context.Context, *ent.ReceiveMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f ReceiveMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.ReceiveMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.ReceiveMutation", m)
+}
+
 // The UserQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type UserQueryRuleFunc func(context.Context, *ent.UserQuery) error
@@ -234,6 +258,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 	switch q := q.(type) {
 	case *ent.OrderQuery:
 		return q.Filter(), nil
+	case *ent.ReceiveQuery:
+		return q.Filter(), nil
 	case *ent.UserQuery:
 		return q.Filter(), nil
 	default:
@@ -244,6 +270,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 func mutationFilter(m ent.Mutation) (Filter, error) {
 	switch m := m.(type) {
 	case *ent.OrderMutation:
+		return m.Filter(), nil
+	case *ent.ReceiveMutation:
 		return m.Filter(), nil
 	case *ent.UserMutation:
 		return m.Filter(), nil

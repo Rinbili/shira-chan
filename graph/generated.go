@@ -49,7 +49,6 @@ type ComplexityRoot struct {
 	Mutation struct {
 		CreateOrder func(childComplexity int, input ent.CreateOrderInput) int
 		CreateUser  func(childComplexity int, input ent.CreateUserInput) int
-		Receive     func(childComplexity int, input *ReceiveInput) int
 		Sign        func(childComplexity int, input SignInput) int
 		UpdateOrder func(childComplexity int, id int, input ent.UpdateOrderInput) int
 		UpdateUser  func(childComplexity int, id int, input ent.UpdateUserInput) int
@@ -64,7 +63,7 @@ type ComplexityRoot struct {
 		ID         func(childComplexity int) int
 		IsClosed   func(childComplexity int) int
 		IsFinished func(childComplexity int) int
-		Receiver   func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.UserOrder, where *ent.UserWhereInput) int
+		Receiver   func(childComplexity int) int
 		Requester  func(childComplexity int) int
 		Title      func(childComplexity int) int
 		Type       func(childComplexity int) int
@@ -109,7 +108,7 @@ type ComplexityRoot struct {
 		IsAdmin     func(childComplexity int) int
 		IsSecretary func(childComplexity int) int
 		Phone       func(childComplexity int) int
-		Received    func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.OrderOrder, where *ent.OrderWhereInput) int
+		Received    func(childComplexity int) int
 		Requested   func(childComplexity int, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.OrderOrder, where *ent.OrderWhereInput) int
 		Uname       func(childComplexity int) int
 		UpdatedAt   func(childComplexity int) int
@@ -129,7 +128,6 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	Sign(ctx context.Context, input SignInput) (*Token, error)
-	Receive(ctx context.Context, input *ReceiveInput) (*bool, error)
 	CreateUser(ctx context.Context, input ent.CreateUserInput) (*ent.User, error)
 	CreateOrder(ctx context.Context, input ent.CreateOrderInput) (*ent.Order, error)
 	UpdateUser(ctx context.Context, id int, input ent.UpdateUserInput) (*ent.User, error)
@@ -180,18 +178,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateUser(childComplexity, args["input"].(ent.CreateUserInput)), true
-
-	case "Mutation.receive":
-		if e.complexity.Mutation.Receive == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_receive_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.Receive(childComplexity, args["input"].(*ReceiveInput)), true
 
 	case "Mutation.sign":
 		if e.complexity.Mutation.Sign == nil {
@@ -290,12 +276,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_Order_receiver_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Order.Receiver(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["orderBy"].(*ent.UserOrder), args["where"].(*ent.UserWhereInput)), true
+		return e.complexity.Order.Receiver(childComplexity), true
 
 	case "Order.requester":
 		if e.complexity.Order.Requester == nil {
@@ -504,12 +485,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_User_received_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.User.Received(childComplexity, args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["orderBy"].(*ent.OrderOrder), args["where"].(*ent.OrderWhereInput)), true
+		return e.complexity.User.Received(childComplexity), true
 
 	case "User.requested":
 		if e.complexity.User.Requested == nil {
@@ -584,7 +560,6 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputCreateUserInput,
 		ec.unmarshalInputOrderOrder,
 		ec.unmarshalInputOrderWhereInput,
-		ec.unmarshalInputReceiveInput,
 		ec.unmarshalInputSignInput,
 		ec.unmarshalInputUpdateOrderInput,
 		ec.unmarshalInputUpdateUserInput,
@@ -700,21 +675,6 @@ func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, 
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_receive_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *ReceiveInput
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalOReceiveInput2ᚖshiraᚑchanᚑdevᚋgraphᚐReceiveInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
 func (ec *executionContext) field_Mutation_sign_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -775,66 +735,6 @@ func (ec *executionContext) field_Mutation_updateUser_args(ctx context.Context, 
 		}
 	}
 	args["input"] = arg1
-	return args, nil
-}
-
-func (ec *executionContext) field_Order_receiver_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *entgql.Cursor[int]
-	if tmp, ok := rawArgs["after"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["after"] = arg0
-	var arg1 *int
-	if tmp, ok := rawArgs["first"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
-		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["first"] = arg1
-	var arg2 *entgql.Cursor[int]
-	if tmp, ok := rawArgs["before"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
-		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["before"] = arg2
-	var arg3 *int
-	if tmp, ok := rawArgs["last"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
-		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["last"] = arg3
-	var arg4 *ent.UserOrder
-	if tmp, ok := rawArgs["orderBy"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg4, err = ec.unmarshalOUserOrder2ᚖshiraᚑchanᚑdevᚋentᚐUserOrder(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["orderBy"] = arg4
-	var arg5 *ent.UserWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOUserWhereInput2ᚖshiraᚑchanᚑdevᚋentᚐUserWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
 	return args, nil
 }
 
@@ -1003,66 +903,6 @@ func (ec *executionContext) field_Query_users_args(ctx context.Context, rawArgs 
 	return args, nil
 }
 
-func (ec *executionContext) field_User_received_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *entgql.Cursor[int]
-	if tmp, ok := rawArgs["after"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["after"] = arg0
-	var arg1 *int
-	if tmp, ok := rawArgs["first"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
-		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["first"] = arg1
-	var arg2 *entgql.Cursor[int]
-	if tmp, ok := rawArgs["before"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
-		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["before"] = arg2
-	var arg3 *int
-	if tmp, ok := rawArgs["last"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
-		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["last"] = arg3
-	var arg4 *ent.OrderOrder
-	if tmp, ok := rawArgs["orderBy"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg4, err = ec.unmarshalOOrderOrder2ᚖshiraᚑchanᚑdevᚋentᚐOrderOrder(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["orderBy"] = arg4
-	var arg5 *ent.OrderWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOOrderWhereInput2ᚖshiraᚑchanᚑdevᚋentᚐOrderWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
-	return args, nil
-}
-
 func (ec *executionContext) field_User_requested_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1215,58 +1055,6 @@ func (ec *executionContext) fieldContext_Mutation_sign(ctx context.Context, fiel
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_sign_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_receive(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_receive(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().Receive(rctx, fc.Args["input"].(*ReceiveInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*bool)
-	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_receive(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_receive_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -2139,21 +1927,18 @@ func (ec *executionContext) _Order_receiver(ctx context.Context, field graphql.C
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Receiver(ctx, fc.Args["after"].(*entgql.Cursor[int]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[int]), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.UserOrder), fc.Args["where"].(*ent.UserWhereInput))
+		return obj.Receiver(ctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(*ent.UserConnection)
+	res := resTmp.([]*ent.User)
 	fc.Result = res
-	return ec.marshalNUserConnection2ᚖshiraᚑchanᚑdevᚋentᚐUserConnection(ctx, field.Selections, res)
+	return ec.marshalOUser2ᚕᚖshiraᚑchanᚑdevᚋentᚐUserᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Order_receiver(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2164,26 +1949,29 @@ func (ec *executionContext) fieldContext_Order_receiver(ctx context.Context, fie
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "edges":
-				return ec.fieldContext_UserConnection_edges(ctx, field)
-			case "pageInfo":
-				return ec.fieldContext_UserConnection_pageInfo(ctx, field)
-			case "totalCount":
-				return ec.fieldContext_UserConnection_totalCount(ctx, field)
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_User_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_User_updatedAt(ctx, field)
+			case "uname":
+				return ec.fieldContext_User_uname(ctx, field)
+			case "phone":
+				return ec.fieldContext_User_phone(ctx, field)
+			case "isAdmin":
+				return ec.fieldContext_User_isAdmin(ctx, field)
+			case "isSecretary":
+				return ec.fieldContext_User_isSecretary(ctx, field)
+			case "isActive":
+				return ec.fieldContext_User_isActive(ctx, field)
+			case "requested":
+				return ec.fieldContext_User_requested(ctx, field)
+			case "received":
+				return ec.fieldContext_User_received(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type UserConnection", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Order_receiver_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
 	}
 	return fc, nil
 }
@@ -3530,21 +3318,18 @@ func (ec *executionContext) _User_received(ctx context.Context, field graphql.Co
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Received(ctx, fc.Args["after"].(*entgql.Cursor[int]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[int]), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.OrderOrder), fc.Args["where"].(*ent.OrderWhereInput))
+		return obj.Received(ctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(*ent.OrderConnection)
+	res := resTmp.([]*ent.Order)
 	fc.Result = res
-	return ec.marshalNOrderConnection2ᚖshiraᚑchanᚑdevᚋentᚐOrderConnection(ctx, field.Selections, res)
+	return ec.marshalOOrder2ᚕᚖshiraᚑchanᚑdevᚋentᚐOrderᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_User_received(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3555,26 +3340,35 @@ func (ec *executionContext) fieldContext_User_received(ctx context.Context, fiel
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "edges":
-				return ec.fieldContext_OrderConnection_edges(ctx, field)
-			case "pageInfo":
-				return ec.fieldContext_OrderConnection_pageInfo(ctx, field)
-			case "totalCount":
-				return ec.fieldContext_OrderConnection_totalCount(ctx, field)
+			case "id":
+				return ec.fieldContext_Order_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Order_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Order_updatedAt(ctx, field)
+			case "title":
+				return ec.fieldContext_Order_title(ctx, field)
+			case "content":
+				return ec.fieldContext_Order_content(ctx, field)
+			case "contact":
+				return ec.fieldContext_Order_contact(ctx, field)
+			case "type":
+				return ec.fieldContext_Order_type(ctx, field)
+			case "isClosed":
+				return ec.fieldContext_Order_isClosed(ctx, field)
+			case "isFinished":
+				return ec.fieldContext_Order_isFinished(ctx, field)
+			case "evaluation":
+				return ec.fieldContext_Order_evaluation(ctx, field)
+			case "hopeAt":
+				return ec.fieldContext_Order_hopeAt(ctx, field)
+			case "requester":
+				return ec.fieldContext_Order_requester(ctx, field)
+			case "receiver":
+				return ec.fieldContext_Order_receiver(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type OrderConnection", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Order", field.Name)
 		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_User_received_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
 	}
 	return fc, nil
 }
@@ -6849,44 +6643,6 @@ func (ec *executionContext) unmarshalInputOrderWhereInput(ctx context.Context, o
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputReceiveInput(ctx context.Context, obj interface{}) (ReceiveInput, error) {
-	var it ReceiveInput
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
-		asMap[k] = v
-	}
-
-	fieldsInOrder := [...]string{"uid", "oid"}
-	for _, k := range fieldsInOrder {
-		v, ok := asMap[k]
-		if !ok {
-			continue
-		}
-		switch k {
-		case "uid":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("uid"))
-			data, err := ec.unmarshalNID2int(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.UID = data
-		case "oid":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("oid"))
-			data, err := ec.unmarshalNID2int(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Oid = data
-		}
-	}
-
-	return it, nil
-}
-
 func (ec *executionContext) unmarshalInputSignInput(ctx context.Context, obj interface{}) (SignInput, error) {
 	var it SignInput
 	asMap := map[string]interface{}{}
@@ -7907,12 +7663,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 				return ec._Mutation_sign(ctx, field)
 			})
 
-		case "receive":
-
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_receive(ctx, field)
-			})
-
 		case "createUser":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
@@ -8059,9 +7809,6 @@ func (ec *executionContext) _Order(ctx context.Context, sel ast.SelectionSet, ob
 					}
 				}()
 				res = ec._Order_receiver(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
 				return res
 			}
 
@@ -8454,9 +8201,6 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 					}
 				}()
 				res = ec._User_received(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
 				return res
 			}
 
@@ -9029,6 +8773,16 @@ func (ec *executionContext) marshalNNode2ᚕshiraᚑchanᚑdevᚋentᚐNoder(ctx
 	return ret
 }
 
+func (ec *executionContext) marshalNOrder2ᚖshiraᚑchanᚑdevᚋentᚐOrder(ctx context.Context, sel ast.SelectionSet, v *ent.Order) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Order(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNOrderConnection2shiraᚑchanᚑdevᚋentᚐOrderConnection(ctx context.Context, sel ast.SelectionSet, v ent.OrderConnection) graphql.Marshaler {
 	return ec._OrderConnection(ctx, sel, &v)
 }
@@ -9106,6 +8860,16 @@ func (ec *executionContext) unmarshalNUpdateOrderInput2shiraᚑchanᚑdevᚋent�
 func (ec *executionContext) unmarshalNUpdateUserInput2shiraᚑchanᚑdevᚋentᚐUpdateUserInput(ctx context.Context, v interface{}) (ent.UpdateUserInput, error) {
 	res, err := ec.unmarshalInputUpdateUserInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNUser2ᚖshiraᚑchanᚑdevᚋentᚐUser(ctx context.Context, sel ast.SelectionSet, v *ent.User) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._User(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNUserConnection2shiraᚑchanᚑdevᚋentᚐUserConnection(ctx context.Context, sel ast.SelectionSet, v ent.UserConnection) graphql.Marshaler {
@@ -9623,6 +9387,53 @@ func (ec *executionContext) marshalONode2shiraᚑchanᚑdevᚋentᚐNoder(ctx co
 	return ec._Node(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalOOrder2ᚕᚖshiraᚑchanᚑdevᚋentᚐOrderᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.Order) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNOrder2ᚖshiraᚑchanᚑdevᚋentᚐOrder(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalOOrder2ᚖshiraᚑchanᚑdevᚋentᚐOrder(ctx context.Context, sel ast.SelectionSet, v *ent.Order) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -9714,14 +9525,6 @@ func (ec *executionContext) unmarshalOOrderWhereInput2ᚖshiraᚑchanᚑdevᚋen
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOReceiveInput2ᚖshiraᚑchanᚑdevᚋgraphᚐReceiveInput(ctx context.Context, v interface{}) (*ReceiveInput, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalInputReceiveInput(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
 	if v == nil {
 		return nil, nil
@@ -9781,6 +9584,53 @@ func (ec *executionContext) marshalOToken2ᚖshiraᚑchanᚑdevᚋgraphᚐToken(
 		return graphql.Null
 	}
 	return ec._Token(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOUser2ᚕᚖshiraᚑchanᚑdevᚋentᚐUserᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.User) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNUser2ᚖshiraᚑchanᚑdevᚋentᚐUser(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalOUser2ᚖshiraᚑchanᚑdevᚋentᚐUser(ctx context.Context, sel ast.SelectionSet, v *ent.User) graphql.Marshaler {
