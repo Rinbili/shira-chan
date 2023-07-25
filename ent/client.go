@@ -11,6 +11,7 @@ import (
 	"shira-chan-dev/ent/migrate"
 
 	"shira-chan-dev/ent/order"
+	"shira-chan-dev/ent/receive"
 	"shira-chan-dev/ent/user"
 
 	"entgo.io/ent"
@@ -26,6 +27,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Order is the client for interacting with the Order builders.
 	Order *OrderClient
+	// Receive is the client for interacting with the Receive builders.
+	Receive *ReceiveClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// additional fields for node api
@@ -44,6 +47,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Order = NewOrderClient(c.config)
+	c.Receive = NewReceiveClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -125,10 +129,11 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		Order:  NewOrderClient(cfg),
-		User:   NewUserClient(cfg),
+		ctx:     ctx,
+		config:  cfg,
+		Order:   NewOrderClient(cfg),
+		Receive: NewReceiveClient(cfg),
+		User:    NewUserClient(cfg),
 	}, nil
 }
 
@@ -146,10 +151,11 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		Order:  NewOrderClient(cfg),
-		User:   NewUserClient(cfg),
+		ctx:     ctx,
+		config:  cfg,
+		Order:   NewOrderClient(cfg),
+		Receive: NewReceiveClient(cfg),
+		User:    NewUserClient(cfg),
 	}, nil
 }
 
@@ -179,6 +185,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Order.Use(hooks...)
+	c.Receive.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
@@ -186,6 +193,7 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Order.Intercept(interceptors...)
+	c.Receive.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
 }
 
@@ -194,6 +202,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *OrderMutation:
 		return c.Order.mutate(ctx, m)
+	case *ReceiveMutation:
+		return c.Receive.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	default:
@@ -326,6 +336,22 @@ func (c *OrderClient) QueryReceiver(o *Order) *UserQuery {
 	return query
 }
 
+// QueryReceives queries the receives edge of a Order.
+func (c *OrderClient) QueryReceives(o *Order) *ReceiveQuery {
+	query := (&ReceiveClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, id),
+			sqlgraph.To(receive.Table, receive.OrderColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, order.ReceivesTable, order.ReceivesColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *OrderClient) Hooks() []Hook {
 	hooks := c.hooks.Order
@@ -349,6 +375,107 @@ func (c *OrderClient) mutate(ctx context.Context, m *OrderMutation) (Value, erro
 		return (&OrderDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Order mutation op: %q", m.Op())
+	}
+}
+
+// ReceiveClient is a client for the Receive schema.
+type ReceiveClient struct {
+	config
+}
+
+// NewReceiveClient returns a client for the Receive from the given config.
+func NewReceiveClient(c config) *ReceiveClient {
+	return &ReceiveClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `receive.Hooks(f(g(h())))`.
+func (c *ReceiveClient) Use(hooks ...Hook) {
+	c.hooks.Receive = append(c.hooks.Receive, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `receive.Intercept(f(g(h())))`.
+func (c *ReceiveClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Receive = append(c.inters.Receive, interceptors...)
+}
+
+// Create returns a builder for creating a Receive entity.
+func (c *ReceiveClient) Create() *ReceiveCreate {
+	mutation := newReceiveMutation(c.config, OpCreate)
+	return &ReceiveCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Receive entities.
+func (c *ReceiveClient) CreateBulk(builders ...*ReceiveCreate) *ReceiveCreateBulk {
+	return &ReceiveCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Receive.
+func (c *ReceiveClient) Update() *ReceiveUpdate {
+	mutation := newReceiveMutation(c.config, OpUpdate)
+	return &ReceiveUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ReceiveClient) UpdateOne(r *Receive) *ReceiveUpdateOne {
+	mutation := newReceiveMutation(c.config, OpUpdateOne)
+	mutation._order = &r.OrderID
+	mutation.user = &r.UserID
+	return &ReceiveUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Receive.
+func (c *ReceiveClient) Delete() *ReceiveDelete {
+	mutation := newReceiveMutation(c.config, OpDelete)
+	return &ReceiveDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Query returns a query builder for Receive.
+func (c *ReceiveClient) Query() *ReceiveQuery {
+	return &ReceiveQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeReceive},
+		inters: c.Interceptors(),
+	}
+}
+
+// QueryUser queries the user edge of a Receive.
+func (c *ReceiveClient) QueryUser(r *Receive) *UserQuery {
+	return c.Query().
+		Where(receive.OrderID(r.OrderID), receive.UserID(r.UserID)).
+		QueryUser()
+}
+
+// QueryOrder queries the order edge of a Receive.
+func (c *ReceiveClient) QueryOrder(r *Receive) *OrderQuery {
+	return c.Query().
+		Where(receive.OrderID(r.OrderID), receive.UserID(r.UserID)).
+		QueryOrder()
+}
+
+// Hooks returns the client hooks.
+func (c *ReceiveClient) Hooks() []Hook {
+	return c.hooks.Receive
+}
+
+// Interceptors returns the client interceptors.
+func (c *ReceiveClient) Interceptors() []Interceptor {
+	return c.inters.Receive
+}
+
+func (c *ReceiveClient) mutate(ctx context.Context, m *ReceiveMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ReceiveCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ReceiveUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ReceiveUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ReceiveDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Receive mutation op: %q", m.Op())
 	}
 }
 
@@ -477,6 +604,22 @@ func (c *UserClient) QueryReceived(u *User) *OrderQuery {
 	return query
 }
 
+// QueryReceives queries the receives edge of a User.
+func (c *UserClient) QueryReceives(u *User) *ReceiveQuery {
+	query := (&ReceiveClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(receive.Table, receive.UserColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, user.ReceivesTable, user.ReceivesColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	hooks := c.hooks.User
@@ -506,9 +649,9 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Order, User []ent.Hook
+		Order, Receive, User []ent.Hook
 	}
 	inters struct {
-		Order, User []ent.Interceptor
+		Order, Receive, User []ent.Interceptor
 	}
 )
