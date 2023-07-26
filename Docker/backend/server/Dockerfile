@@ -1,7 +1,9 @@
 FROM debian:latest
+
 RUN apt update
-#RUN apt install -y curl
-#RUN apt install -y git
-#COPY ./start.sh ./
-#COPY ./env.sh ./
-#CMD [ "start.sh" ]
+RUN apt install -y git
+RUN apt install -y golang
+RUN apt install -y curl
+COPY ./start.sh ./
+CMD [ "./start.sh" ]
+# last building checkpoint
