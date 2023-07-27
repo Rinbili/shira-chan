@@ -4,13 +4,14 @@ import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"shira-chan-dev/config"
 	"strconv"
 	"time"
 )
 
 const TokenExpireDuration = 24 * time.Hour
 
-var mySigningKey = []byte(conf.Secret)
+var mySigningKey = []byte(config.Config.Secret)
 
 type JwtCustomClaims struct {
 	UId     int

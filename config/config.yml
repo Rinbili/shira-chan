@@ -1,4 +1,9 @@
 secret:
+port:
+ssl:
+  enable:
+  crt:
+  key:
 sql:
   user:
   passwd:

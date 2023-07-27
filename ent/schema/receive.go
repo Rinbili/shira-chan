@@ -18,10 +18,6 @@ func (Receive) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		field.ID("order_id", "user_id"),
 		entsql.Annotation{Table: "order_receiver"},
-		entgql.Mutations(
-			entgql.MutationCreate(),
-			entgql.MutationUpdate(),
-		),
 	}
 }
 

@@ -138,64 +138,6 @@ func (c *OrderUpdateOne) SetInput(i UpdateOrderInput) *OrderUpdateOne {
 	return c
 }
 
-// CreateReceiveInput represents a mutation input for creating receives.
-type CreateReceiveInput struct {
-	CreatedAt *int64
-	UpdatedAt *int64
-	UserID    int
-	OrderID   int
-}
-
-// Mutate applies the CreateReceiveInput on the ReceiveMutation builder.
-func (i *CreateReceiveInput) Mutate(m *ReceiveMutation) {
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	m.SetUserID(i.UserID)
-	m.SetOrderID(i.OrderID)
-}
-
-// SetInput applies the change-set in the CreateReceiveInput on the ReceiveCreate builder.
-func (c *ReceiveCreate) SetInput(i CreateReceiveInput) *ReceiveCreate {
-	i.Mutate(c.Mutation())
-	return c
-}
-
-// UpdateReceiveInput represents a mutation input for updating receives.
-type UpdateReceiveInput struct {
-	UpdatedAt *int64
-	UserID    *int
-	OrderID   *int
-}
-
-// Mutate applies the UpdateReceiveInput on the ReceiveMutation builder.
-func (i *UpdateReceiveInput) Mutate(m *ReceiveMutation) {
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	if v := i.UserID; v != nil {
-		m.SetUserID(*v)
-	}
-	if v := i.OrderID; v != nil {
-		m.SetOrderID(*v)
-	}
-}
-
-// SetInput applies the change-set in the UpdateReceiveInput on the ReceiveUpdate builder.
-func (c *ReceiveUpdate) SetInput(i UpdateReceiveInput) *ReceiveUpdate {
-	i.Mutate(c.Mutation())
-	return c
-}
-
-// SetInput applies the change-set in the UpdateReceiveInput on the ReceiveUpdateOne builder.
-func (c *ReceiveUpdateOne) SetInput(i UpdateReceiveInput) *ReceiveUpdateOne {
-	i.Mutate(c.Mutation())
-	return c
-}
-
 // CreateUserInput represents a mutation input for creating users.
 type CreateUserInput struct {
 	CreatedAt    *int64
