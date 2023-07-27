@@ -51,7 +51,7 @@
 
 1) 同样可以从/Docker/frontend自行构建镜像，但是推荐直接拉取
 
-* 从[**DockerHub**]()拉取
+* 从**DockerHub**拉取
 
 ```
 	docker pull azusaing/frontend:latest
@@ -59,8 +59,31 @@
 
 
 2) 接着可以选择直接运行服务，或者配置负载均衡后再运行服务
+* 两个选择都需要先配置Docker服务
 ```shell
-	docker run -p [PORT]:80 frontend:latest
-	# 将[PORT]替换为主机的某个可用端口，服务将会通过这个端口进行通信
+	docker run -p [PORT]:80 azusaing/frontend:latest
+	# 将[PORT]替换为主机的某个可用端口，网页服务将会通过这个端口进行通信
+
+	docker exec -it [CONTAINER_ID] /bin/bash
+	# 将[CONTAINER_ID]替换为容器ID，进入容器
 ```
 
+* 假如不需要配置负载均衡服务器
+```shell
+	rm /etc/nginx/sites-enabled/balancer.conf
+	# 删除掉不需要的负载均衡文件
+	nginx
+	# 此时服务即运行在本机[PORT]端口
+```
+
+* 假如需要配置负载均衡，在配置了几个上述的下游服务器的基础上，配置负载均衡服务器
+```shell
+	rm /etc/nginx/sites-enabled/server.conf
+	# 删除不需要的文件
+
+	vim /etc/nginx/sites-enabled/balancer.conf
+	# 进入负载均衡配置文件添加下游服务器，':wq'保存退出
+	
+	nginx
+	# 此时服务即运行在本机[PORT]端口，作为所有web服务器的入口
+```
