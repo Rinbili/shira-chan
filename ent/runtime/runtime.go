@@ -154,9 +154,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	userHooks := schema.User{}.Hooks()
-
-	user.Hooks[1] = userHooks[0]
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0
 	userFields := schema.User{}.Fields()

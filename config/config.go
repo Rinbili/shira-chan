@@ -10,6 +10,7 @@ var Config = initConf()
 type Yaml struct {
 	Secret string `yaml:"secret"`
 	Port   string `yaml:"port"`
+	Rsakey string `yaml:"rsakey"`
 	Ssl    struct {
 		Enable bool   `yaml:"enable"`
 		Crt    string `yaml:"crt"`

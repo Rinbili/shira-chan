@@ -93,7 +93,7 @@ func ValidColumn(column string) bool {
 //
 //	import _ "shira-chan-dev/ent/runtime"
 var (
-	Hooks  [2]ent.Hook
+	Hooks  [1]ent.Hook
 	Policy ent.Policy
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() int64

@@ -13,7 +13,6 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/vektah/gqlparser/v2 v2.5.1
-	golang.org/x/crypto v0.9.0
 	golang.org/x/sync v0.2.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -52,6 +51,7 @@ require (
 	github.com/vmihailenco/tagparser v0.1.2 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
 	golang.org/x/arch v0.3.0 // indirect
+	golang.org/x/crypto v0.9.0 // indirect
 	golang.org/x/exp v0.0.0-20221230185412-738e83a70c30 // indirect
 	golang.org/x/mod v0.10.0 // indirect
 	golang.org/x/net v0.10.0 // indirect

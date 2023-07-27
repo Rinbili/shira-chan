@@ -11,18 +11,20 @@ import (
 	"shira-chan-dev/ent"
 	"shira-chan-dev/ent/privacy"
 	"shira-chan-dev/ent/user"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 // Sign is the resolver for the sign field.
 func (r *mutationResolver) Sign(ctx context.Context, input SignInput) (*Token, error) {
+	// 注册登陆不经过privacy规则
 	ctx = privacy.DecisionContext(ctx, privacy.Allow)
 	// 通过手机号查找用户
-	u, err := r.client.User.Query().
+	u, _ := r.client.User.Query().
 		Where(user.PhoneEQ(input.Phone)).
-		// 该查找不经过privacy规则
 		Only(ctx)
+	inputPasswd, err := utils.RSADecrypt(input.Passwd)
+	if err != nil {
+		return nil, errors.New("password unreadable")
+	}
 	if input.Uname != nil {
 		// 注册
 		if u == nil {
@@ -39,8 +41,12 @@ func (r *mutationResolver) Sign(ctx context.Context, input SignInput) (*Token, e
 		if u == nil {
 			return nil, errors.New("user does not exists")
 		} else {
-			err := bcrypt.CompareHashAndPassword([]byte(u.Passwd), []byte(input.Passwd))
+			userPasswd, err := utils.RSADecrypt(u.Passwd)
 			if err != nil {
+				return nil, errors.New("user's data is broken")
+			}
+			if inputPasswd != userPasswd {
+
 				return nil, errors.New("password incorrect")
 			}
 		}

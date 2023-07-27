@@ -14,6 +14,7 @@
   ```yaml
   secret: jwt密钥
   port: 端口
+  rsakey: rsa私钥路径
   ssl:
     enable: 是否启用https
     crt: 证书路径

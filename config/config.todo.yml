@@ -1,5 +1,6 @@
 secret:
 port:
+rsakey:
 ssl:
   enable:
   crt:

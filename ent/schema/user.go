@@ -1,16 +1,12 @@
 package schema
 
 import (
-	"context"
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"golang.org/x/crypto/bcrypt"
-	gen "shira-chan-dev/ent"
-	"shira-chan-dev/ent/hook"
 	"shira-chan-dev/ent/privacy"
 	"shira-chan-dev/ent/rule"
 )
@@ -87,32 +83,32 @@ func (User) Mixin() []ent.Mixin {
 	}
 }
 
-func (User) Hooks() []ent.Hook {
-	return []ent.Hook{
-		hook.On(
-			// 增、改：密码加密
-			func(next ent.Mutator) ent.Mutator {
-				return hook.UserFunc(func(ctx context.Context, m *gen.UserMutation) (ent.Value, error) {
-					// 获取密码字段的值
-					passwd, ok := m.Passwd()
-					if !ok {
-						// 如果字段不存在或类型不正确，直接调用下一个处理器
-						return next.Mutate(ctx, m)
-					}
-					temp, err := bcrypt.GenerateFromPassword([]byte(passwd), bcrypt.DefaultCost)
-					if err != nil {
-						return nil, err
-					} else {
-						m.SetPasswd(string(temp))
-					}
-					return next.Mutate(ctx, m)
-				})
-			},
-			// Limit the hook only for these operations.
-			ent.OpCreate|ent.OpUpdate|ent.OpUpdateOne,
-		),
-	}
-}
+//func (User) Hooks() []ent.Hook {
+//	return []ent.Hook{
+//		hook.On(
+//			// 增、改：密码加密
+//			func(next ent.Mutator) ent.Mutator {
+//				return hook.UserFunc(func(ctx context.Context, m *gen.UserMutation) (ent.Value, error) {
+//					// 获取密码字段的值
+//					passwd, ok := m.Passwd()
+//					if !ok {
+//						// 如果字段不存在或类型不正确，直接调用下一个处理器
+//						return next.Mutate(ctx, m)
+//					}
+//					temp, err := bcrypt.GenerateFromPassword([]byte(passwd), bcrypt.DefaultCost)
+//					if err != nil {
+//						return nil, err
+//					} else {
+//						m.SetPasswd(string(temp))
+//					}
+//					return next.Mutate(ctx, m)
+//				})
+//			},
+//			// Limit the hook only for these operations.
+//			ent.OpCreate|ent.OpUpdate|ent.OpUpdateOne,
+//		),
+//	}
+//}
 
 func (User) Policy() ent.Policy {
 	return privacy.Policy{
