@@ -52,7 +52,7 @@
 
 * 从**DockerHub**拉取
 
-```
+```shell
 	docker pull azusaing/frontend:latest
 ```
 
