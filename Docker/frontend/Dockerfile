@@ -7,4 +7,4 @@ COPY ./dist /var/www/html
 COPY ./start.sh ./
 # Apache is named as 'apache2' in Debian and Ubuntu,
 # instead of 'httpd' in Centos or other Red-Hat distributes.
-CMD ["./start.sh"]
+CMD ["bash", "./start.sh"]
