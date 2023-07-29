@@ -18,7 +18,7 @@ func AuthHandler() gin.HandlerFunc {
 			if err == nil {
 				u, err := utils.Client.User.Get(privacy.DecisionContext(c, privacy.Allow), claims.UId)
 				//不接受用户数据修改前签发的token
-				if err == nil && u.IsActive == true && u.UpdatedAt < claims.IssuedAt.Time.Unix() {
+				if err == nil && u.IsActive == true && u.UpdatedAt <= claims.IssuedAt.Time.Unix() {
 					//token有效可用
 					c.Set("user", u)
 					c.Next()
